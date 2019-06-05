@@ -1,0 +1,70 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Aivec LLC.\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-01-20 00:00+0900\n"
+"PO-Revision-Date: 2018-11-21 22:15+0900\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.8.11\n"
+"Last-Translator: \n"
+"Language: ja\n"
+
+# Description of the plugin/theme
+msgid "%s for Welcart by Aivec LLC."
+msgstr "%s Welcart（ウェルカート）。"
+
+# Author of the plugin/theme
+msgid "Aivec LLC."
+msgstr "Aivec LLC."
+
+msgid "Thoroughly test your integration before going live."
+msgstr "十分にテストを行ってから運用してください。"
+
+msgid "enable/disable %s"
+msgstr "%s決済の利用"
+
+msgid "Enable"
+msgstr "利用する"
+
+msgid "Disable"
+msgstr "利用しない"
+
+msgid "Merchant ID"
+msgstr "出品者ID"
+
+msgid "The Merchant ID issued by Google."
+msgstr "契約時にGoogleから発行される出品者ID（半角数字）"
+
+msgid "Client ID"
+msgstr "クライントID"
+
+msgid "The Client ID issued by Google."
+msgstr "契約時にGoogleから発行されるクライントID（半角数字）"
+
+msgid "Test environment"
+msgstr "テスト環境"
+
+msgid "Production environment"
+msgstr "本番環境"
+
+msgid "Changes between test and production versions."
+msgstr "動作環境を切り替えます。"
+
+msgid "%s Settlement"
+msgstr "%s決済"
+
+msgid "Click here for more information about %s"
+msgstr "%s決済の詳細はこちら 》"
+
+msgid "This module is for %s"
+msgstr "この決済は%sのみ決済システムです。"
+
+msgid "Environment"
+msgstr "動作環境"
+
+msgid "Update %s Settings"
+msgstr "%sの設定を更新する"

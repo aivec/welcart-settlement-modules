@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Aivec LLC.\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-01-20 00:00+0900\n"
+"PO-Revision-Date: 2018-11-21 22:15+0900\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.8.11\n"
+"Last-Translator: \n"
+"Language: en\n"
+
+# Description of the plugin/theme
+msgid "%s for Welcart by Aivec LLC."
+msgstr "%s for Welcart by Aivec LLC."
+
+# Author of the plugin/theme
+msgid "Aivec LLC."
+msgstr "Aivec LLC."
+
+# Settlement config
+msgid "Thoroughly test your integration before going live."
+msgstr "Thoroughly test your integration before going live."
+
+msgid "enable/disable %s"
+msgstr "enable/disable %s"
+
+msgid "Enable"
+msgstr "Enable"
+
+msgid "Disable"
+msgstr "Disable"
+
+msgid "Test environment"
+msgstr "Test environment"
+
+msgid "Production environment"
+msgstr "Production environment"
+
+msgid "Changes between test and production versions."
+msgstr "Changes between test and production versions."
+
+msgid "%s Settlement"
+msgstr "%s Settlement"
+
+msgid "Click here for more information about %s"
+msgstr "Click here for more information about %s 》"
+
+msgid "This module is for %s"
+msgstr "This module is for %s"
+
+msgid "Environment"
+msgstr "Environment"
+
+msgid "Update %s Settings"
+msgstr "Update %s Settings"
