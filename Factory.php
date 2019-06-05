@@ -33,7 +33,7 @@ class Factory {
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
      */
-    public function __construct($module) {
+    public function init($module) {
         $this->module = $module;
 
         add_action('usces_action_settlement_tab_title', array( $this, 'settlementTabTitle' ));
