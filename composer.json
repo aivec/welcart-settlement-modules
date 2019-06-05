@@ -9,7 +9,15 @@
             "email": "evandanielshaw@gmail.com"
         }
     ],
-    "require": {},
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://bitbucket.org/aivec/welcart-generic"
+        }
+    ],
+    "require": {
+        "aivec/welcart-generic": "^1.2.1"
+    },
     "autoload": {
         "psr-4": {"Aivec\\Welcart\\SettlementModules\\": ""}
     }

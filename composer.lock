@@ -1,0 +1,54 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "8b4ccd711b83255c66503e8c251b221d",
+    "packages": [
+        {
+            "name": "aivec/welcart-generic",
+            "version": "v1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/aivec/welcart-generic.git",
+                "reference": "35c74798a65abaf153df7116c5b47308d4de9e93"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/aivec/welcart-generic/get/35c74798a65abaf153df7116c5b47308d4de9e93.zip",
+                "reference": "35c74798a65abaf153df7116c5b47308d4de9e93",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aivec\\Welcart\\Generic\\": ""
+                }
+            },
+            "license": [
+                "GPL-2.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Evan Shaw",
+                    "email": "evandanielshaw@gmail.com"
+                }
+            ],
+            "description": "Generic interfaces/abstract-classes/utils for Welcart libraries (settlement modules, customizations, etc.)",
+            "homepage": "https://bitbucket.org/aivec/welcart-generic",
+            "support": {
+                "source": "https://bitbucket.org/aivec/welcart-generic/src/35c74798a65abaf153df7116c5b47308d4de9e93/?at=v1.2.1"
+            },
+            "time": "2019-06-05T07:47:09+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

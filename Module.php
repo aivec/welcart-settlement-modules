@@ -1,6 +1,8 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Welcart\Generic;
+
 /**
  * Settlement Module registration factory
  */
@@ -51,6 +53,63 @@ class Module {
         $this->acting = $acting;
         $this->acting_flag = $acting_flag;
         $this->hook_suffix = $hook_suffix;
+    }
+
+    /**
+     * Filters the confirm page purchase button for this module
+     *
+     * Calls passed in view object method if the filter is called for this module
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param mixed  $viewObject  // object to call for pay button filter
+     * @param string $callback  // $viewObject callback method
+     * @return void
+     */
+    public function filterConfirmPagePayButton($viewObject, $callback) {
+        add_filter(
+            'usces_filter_confirm_inform',
+            function ($html, $payments, $acting_flag, $rand, $purchase_disabled) use ($viewObject, $callback) {
+                if ($this->acting_flag !== $acting_flag) {
+                    return $html;
+                }
+                return call_user_func(
+                    array($viewObject, $callback),
+                    $html,
+                    $payments,
+                    $acting_flag,
+                    $rand,
+                    $purchase_disabled
+                );
+            },
+            8,
+            5
+        );
+    }
+
+    /**
+     * Conditional view loader
+     *
+     * Returns true if confirm page assets should be loaded for this page. false otherwise
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
+     * @return boolean
+     */
+    public function loadConfirmPage() {
+        global $usces;
+
+        $load = false;
+        if (Generic\WelcartUtils::isConfirmPage() === true) {
+            if (isset($_SESSION['usces_entry']['order']['payment_name'])) {
+                $payments = $usces->getPayments($_SESSION['usces_entry']['order']['payment_name']);
+                $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
+                if ($acting_flg === $this->acting_flag) {
+                    $load = true;
+                }
+            }
+        }
+
+        return $load;
     }
 
     /**
