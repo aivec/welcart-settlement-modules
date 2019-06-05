@@ -40,19 +40,57 @@ class Module {
     private $hook_suffix;
 
     /**
+     * Aivec proprietary authentication instance or null if not required
+     *
+     * @var \Aivec\Welcart\ProprietaryAuthentication\Auth|null
+     */
+    private $aauth;
+
+    /**
      * Initializes a settlement module.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param string $payment_name
-     * @param string $acting
-     * @param string $acting_flag
-     * @param string $hook_suffix
+     * @param string                                             $payment_name
+     * @param string                                             $acting
+     * @param string                                             $acting_flag
+     * @param string                                             $hook_suffix
+     * @param \Aivec\Welcart\ProprietaryAuthentication\Auth|null $aauth
      */
-    public function __construct($payment_name, $acting, $acting_flag, $hook_suffix) {
+    public function __construct(
+        $payment_name,
+        $acting,
+        $acting_flag,
+        $hook_suffix,
+        $aauth = null
+    ) {
         $this->payment_name = $payment_name;
         $this->acting = $acting;
         $this->acting_flag = $acting_flag;
         $this->hook_suffix = $hook_suffix;
+        $this->aauth = $aauth;
+    }
+
+    /**
+     * Returns true if settlement module can be used
+     *
+     * Always returns true if authentication is not required
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return boolean
+     */
+    public function ready() {
+        $ready = false;
+        if ($this->aauth !== null) {
+            if (method_exists($this->aauth, 'authenticated')) {
+                if ($this->aauth->authenticated()) {
+                    $ready = true;
+                }
+            }
+        } else {
+            $ready = true;
+        }
+
+        return $ready;
     }
 
     /**

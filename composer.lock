@@ -4,8 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8b4ccd711b83255c66503e8c251b221d",
+    "content-hash": "a7f2b973f47703bb9f238013314f059a",
     "packages": [
+        {
+            "name": "aivec/aauth",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/aivec/aauth.git",
+                "reference": "84aff043ccf5a007949c026434559bb423f9867e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/aivec/aauth/get/84aff043ccf5a007949c026434559bb423f9867e.zip",
+                "reference": "84aff043ccf5a007949c026434559bb423f9867e",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aivec\\Welcart\\ProprietaryAuthentication\\": ""
+                }
+            },
+            "license": [
+                "GPL-2.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "Evan Shaw",
+                    "email": "evandanielshaw@gmail.com"
+                }
+            ],
+            "description": "Domain/SKU client-side authentication for a 継続課金 plugin/theme purchase. Client variant to server-side plugin ninsho-validator.",
+            "homepage": "https://bitbucket.org/aivec/aauth",
+            "support": {
+                "source": "https://bitbucket.org/aivec/aauth/src/84aff043ccf5a007949c026434559bb423f9867e/?at=v1.0.1"
+            },
+            "time": "2019-04-24T06:41:02+00:00"
+        },
         {
             "name": "aivec/welcart-generic",
             "version": "v1.2.1",
