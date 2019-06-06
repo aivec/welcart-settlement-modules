@@ -21,7 +21,7 @@
     ],
     "require": {
         "aivec/welcart-generic": "^1.2.1",
-        "aivec/aauth": "^1.0.0"
+        "aivec/aauth": "^1.0.2"
     },
     "autoload": {
         "psr-4": {"Aivec\\Welcart\\SettlementModules\\": ""}

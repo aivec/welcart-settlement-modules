@@ -68,6 +68,15 @@ class Module {
         $this->acting_flag = $acting_flag;
         $this->hook_suffix = $hook_suffix;
         $this->aauth = $aauth;
+
+        load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
+        load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
+
+        if (is_admin()) {
+            (new Factory())->init($this);
+        }
+        
+        (new DisabledViews())->init($this);
     }
 
     /**

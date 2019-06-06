@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7f2b973f47703bb9f238013314f059a",
+    "content-hash": "e6f507a0d828aa8e45ae75dc70cf03e5",
     "packages": [
         {
             "name": "aivec/aauth",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://bitbucket.org/aivec/aauth.git",
-                "reference": "84aff043ccf5a007949c026434559bb423f9867e"
+                "reference": "5466d7c1b2313fadbd6c009e76c9d0ffaf1bf937"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/aivec/aauth/get/84aff043ccf5a007949c026434559bb423f9867e.zip",
-                "reference": "84aff043ccf5a007949c026434559bb423f9867e",
+                "url": "https://bitbucket.org/aivec/aauth/get/5466d7c1b2313fadbd6c009e76c9d0ffaf1bf937.zip",
+                "reference": "5466d7c1b2313fadbd6c009e76c9d0ffaf1bf937",
                 "shasum": ""
             },
             "type": "library",
@@ -38,9 +38,9 @@
             "description": "Domain/SKU client-side authentication for a 継続課金 plugin/theme purchase. Client variant to server-side plugin ninsho-validator.",
             "homepage": "https://bitbucket.org/aivec/aauth",
             "support": {
-                "source": "https://bitbucket.org/aivec/aauth/src/84aff043ccf5a007949c026434559bb423f9867e/?at=v1.0.1"
+                "source": "https://bitbucket.org/aivec/aauth/src/5466d7c1b2313fadbd6c009e76c9d0ffaf1bf937/?at=v1.0.2"
             },
-            "time": "2019-04-24T06:41:02+00:00"
+            "time": "2019-06-06T07:17:35+00:00"
         },
         {
             "name": "aivec/welcart-generic",

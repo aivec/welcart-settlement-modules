@@ -40,9 +40,6 @@ class Factory {
         add_action('usces_action_settlement_tab_body', array( $this, 'settlementTabBody' ));
         add_action('usces_action_admin_settlement_update', array( $this, 'settlementUpdate' ));
 
-        load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
-        load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
-
         $this->setAvailableSettlement();
     }
 
@@ -295,7 +292,6 @@ class Factory {
         $options = get_option('usces');
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = isset($_POST['activate']) ? sanitize_text_field(wp_unslash($_POST['activate'])) : '';
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['sandbox'] = empty($_POST['sandbox']) ? true : false;
-
         $options[Module::SETTINGS_KEY][$this->module->getActing()] = apply_filters('filter_acting_settings_array_update_' . $this->module->getHookSuffix(), $options[Module::SETTINGS_KEY][$this->module->getActing()]);
         
         $this->error_mes = '';

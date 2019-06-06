@@ -57,3 +57,12 @@ msgstr "Environment"
 
 msgid "Update %s Settings"
 msgstr "Update %s Settings"
+
+msgid "%s is deactivated on the settlement module settings page."
+msgstr "%s is deactivated on the settlement module settings page."
+
+msgid "Please validate your %1$s credentials to use %2$s"
+msgstr "Please validate your %1$s credentials to use %2$s"
+
+msgid "%s cannot be used"
+msgstr "%s cannot be used. Make sure your settings are correct."
