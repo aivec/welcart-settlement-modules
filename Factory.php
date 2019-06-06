@@ -11,7 +11,7 @@ class Factory {
      *
      * @var Module
      */
-    private $module;
+    protected $module;
 
     /**
      * Determines whether to display the settlement tab or not.
@@ -112,8 +112,9 @@ class Factory {
     
         $acting_opts['activate'] = isset($acting_opts['activate']) ? $acting_opts['activate'] : 'off';
         $acting_opts['sandbox'] = isset($acting_opts['sandbox']) ? $acting_opts['sandbox'] : true;
+        $acting_opts = $this->filterActingOptions($acting_opts);
 
-        $documentation_url = apply_filters('filter_documentation_url_' . $this->module->getHookSuffix(), '');
+        $documentation_url = $this->filterDocumentationUrl('');
 
         if ($this->display_tab === true) : ?>
             <div id="uscestabs_<?php echo esc_attr($this->module->getActing()); ?>">
@@ -176,7 +177,7 @@ class Factory {
                             </td>
                             <td></td>
                         </tr>
-                        <?php do_action('settlement_module_fields_' . $this->module->getHookSuffix()); ?>
+                        <?php $this->settlementModuleFields($acting_opts); ?>
                         <tr>
                             <th>
                                 <a
@@ -221,6 +222,7 @@ class Factory {
                             </td>
                         </tr>
                     </table>
+                    <?php $this->extraSettings($acting_opts); ?>
                     <input name="acting" id="acting" type="hidden" value="<?php echo esc_attr($this->module->getActing()); ?>" />
                     <input
                         name="usces_option_update"
@@ -292,10 +294,10 @@ class Factory {
         $options = get_option('usces');
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = isset($_POST['activate']) ? sanitize_text_field(wp_unslash($_POST['activate'])) : '';
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['sandbox'] = empty($_POST['sandbox']) ? true : false;
-        $options[Module::SETTINGS_KEY][$this->module->getActing()] = apply_filters('filter_acting_settings_array_update_' . $this->module->getHookSuffix(), $options[Module::SETTINGS_KEY][$this->module->getActing()]);
+        $options[Module::SETTINGS_KEY][$this->module->getActing()] = $this->filterUpdateOptionsProcessing($options[Module::SETTINGS_KEY][$this->module->getActing()]);
         
         $this->error_mes = '';
-        $this->error_mes = apply_filters('validate_form_post_' . $this->module->getHookSuffix(), $this->error_mes, $_POST);
+        $this->error_mes = $this->validateFormPost($this->error_mes);
             
         if (\WCUtils::is_blank($this->error_mes)) {
             $usces->action_status = 'success';
@@ -315,5 +317,65 @@ class Factory {
         update_option('usces', $options);
         ksort($usces->payment_structure);
         update_option('usces_payment_structure', $usces->payment_structure);
+    }
+
+    /**
+     * Filters the settlement acting_settings option array
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $acting_opts
+     * @return array
+     */
+    protected function filterActingOptions($acting_opts) {
+        return $acting_opts;
+    }
+
+    /**
+     * Filters the documentation url
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $url
+     * @return string
+     */
+    protected function filterDocumentationUrl($url) {
+        return $url;
+    }
+
+    /**
+     * Override to add more config options
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $acting_opts
+     * @return void
+     */
+    protected function settlementModuleFields($acting_opts) {}
+
+    /**
+     * Override to add extra tables/options
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $acting_opts
+     * @return void
+     */
+    protected function extraSettings($acting_opts) {}
+
+    /**
+     * Filter options with POST request
+     *
+     * @param array $options
+     * @return array
+     */
+    protected function filterUpdateOptionsProcessing($options) {
+        return $options;
+    }
+
+    /**
+     * Filter error message after form validation
+     *
+     * @param string $error_message
+     * @return string
+     */
+    protected function validateFormPost($error_message) {
+        return $error_message;
     }
 }

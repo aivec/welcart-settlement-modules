@@ -71,12 +71,6 @@ class Module {
 
         load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
         load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
-
-        if (is_admin()) {
-            (new Factory())->init($this);
-        }
-        
-        (new DisabledViews())->init($this);
     }
 
     /**
