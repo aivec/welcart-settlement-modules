@@ -240,4 +240,13 @@ class Module {
     public function getHookSuffix() {
         return $this->hook_suffix;
     }
+
+    /**
+     * Getter for aauth object
+     *
+     * @return \Aivec\Welcart\ProprietaryAuthentication\Auth|null
+     */
+    public function getAauth() {
+        return $this->aauth;
+    }
 }

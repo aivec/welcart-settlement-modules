@@ -50,7 +50,7 @@ class DisabledViews {
                     class="invalid-settings error_message"
                     style="font-size: 16px; margin-top: 20px; margin-bottom: 20px; text-align: center;"
                 >
-                    ' . sprintf(esc_html__('%s cannot be used', 'aivec-sm'), $this->module->getPaymentName()) . '
+                    ' . sprintf(esc_html__('%s cannot be used', 'smodule'), $this->module->getPaymentName()) . '
                 </div>';
         }
 
@@ -130,7 +130,7 @@ class DisabledViews {
                             $list .= "\t".'<dt class="payment_'.$id.'"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="'.esc_attr($payment['name']).'"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />'.esc_attr($payment['name']).'</label> <b> (' . sprintf(
                                 /* translators: %s: formatted module name. */
                                 __('Please validate your %1$s credentials to use %2$s', 'smodule'),
-                                $this->module->aauth->getProvider(),
+                                $this->module->getAauth()->getProvider(),
                                 $this->module->getPaymentName()
                             ) . ") </b></dt>\n";
                         } elseif ($this->module->isModuleActivated() === false) {
