@@ -1,6 +1,8 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
+use Exception;
+
 /**
  * Settlement Module registration factory
  */

@@ -1,6 +1,7 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
+use Exception;
 use Aivec\Welcart\Generic;
 
 /**
