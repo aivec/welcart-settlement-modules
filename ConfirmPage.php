@@ -29,7 +29,7 @@ class ConfirmPage {
         }
 
         $this->module = $module;
-        add_filter('usces_filter_confirm_inform', 'confirmPagePayButtonHook', 8, 5);
+        add_filter('usces_filter_confirm_inform', array($this, 'confirmPagePayButtonHook'), 8, 5);
     }
 
     /**
