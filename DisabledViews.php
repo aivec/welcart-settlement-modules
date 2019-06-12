@@ -16,12 +16,17 @@ class DisabledViews {
     /**
      * Register hooks
      *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
+     * @throws Exception Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
      * @return void
      */
-    public function init($module) {
-        $this->module = $module;
+    public function __construct($module) {
+        if (!($module instanceof Module)) {
+            throw new Exception('the provided module is not an instance of Aivec\Welcart\SettlementModules\Module');
+        }
 
+        $this->module = $module;
         add_filter('usces_filter_confirm_inform', array($this, 'disabledButton'), 12, 5);
         add_filter('usces_filter_the_payment_method_choices', array($this, 'disablePaymentOption'), 10, 2);
     }

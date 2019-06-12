@@ -32,10 +32,14 @@ class Factory {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
+     * @throws Exception Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
      */
-    public function init($module) {
-        $this->module = $module;
+    public function __construct($module) {
+        if (!($module instanceof Module)) {
+            throw new Exception('the provided module is not an instance of Aivec\Welcart\SettlementModules\Module');
+        }
 
+        $this->module = $module;
         add_action('usces_action_settlement_tab_title', array( $this, 'settlementTabTitle' ));
         add_action('usces_action_settlement_tab_body', array( $this, 'settlementTabBody' ));
         add_action('usces_action_admin_settlement_update', array( $this, 'settlementUpdate' ));
