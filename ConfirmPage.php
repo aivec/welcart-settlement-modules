@@ -14,7 +14,7 @@ class ConfirmPage {
      *
      * @var Module
      */
-    private $module;
+    protected $module;
 
     /**
      * Register usces_filter_confirm_inform hook

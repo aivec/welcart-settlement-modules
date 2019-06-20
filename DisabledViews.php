@@ -13,7 +13,7 @@ class DisabledViews {
      *
      * @var Module
      */
-    private $module;
+    protected $module;
 
     /**
      * Register hooks
