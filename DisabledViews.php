@@ -4,7 +4,7 @@ namespace Aivec\Welcart\SettlementModules;
 use Exception;
 
 /**
- * Delivery and confirm page views for when the settlement module is not activated/authenticated
+ * Delivery view for when the settlement module is not activated/authenticated
  */
 class DisabledViews {
 

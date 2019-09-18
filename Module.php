@@ -2,7 +2,7 @@
 namespace Aivec\Welcart\SettlementModules;
 
 /**
- * Settlement Module registration factory
+ * Settlement Module registration
  */
 class Module {
 
