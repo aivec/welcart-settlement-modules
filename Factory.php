@@ -309,7 +309,11 @@ class Factory {
             $usces->action_status = 'success';
             $usces->action_message = __('options are updated', 'usces');
             if ('on' === $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate']) {
-                $usces->payment_structure[$this->module->getActingFlag()] = $this->module->getPaymentName() . ' 決済';
+                $usces->payment_structure[$this->module->getActingFlag()] = sprintf(
+                    /* translators: %s: formatted plugin name. */
+                    esc_html__('%s Settlement', 'smodule'),
+                    $this->module->getPaymentName()
+                );
             } else {
                 $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = 'off';
                 unset($usces->payment_structure[$this->module->getActingFlag()]);
