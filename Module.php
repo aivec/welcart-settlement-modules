@@ -111,6 +111,7 @@ class Module {
       
         $acting_opts['activate'] = isset($acting_opts['activate']) ? $acting_opts['activate'] : 'off';
         $acting_opts['sandbox'] = isset($acting_opts['sandbox']) ? $acting_opts['sandbox'] : true;
+        $acting_opts = $this->filterActingOpts($acting_opts);
 
         return $acting_opts;
     }
@@ -138,6 +139,18 @@ class Module {
         }
 
         return false;
+    }
+
+    /**
+     * Filter for acting opts array. Should be extended if additional options need
+     * to be added
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $acting_opts
+     * @return array
+     */
+    protected function filterActingOpts($acting_opts) {
+        return $acting_opts;
     }
 
     /**
