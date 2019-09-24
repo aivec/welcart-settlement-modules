@@ -13,15 +13,10 @@
         {
             "type": "vcs",
             "url": "https://bitbucket.org/aivec/welcart-generic"
-        },
-        {
-            "type": "vcs",
-            "url": "https://bitbucket.org/aivec/aauth"
         }
     ],
     "require": {
-        "aivec/welcart-generic": "^1.2.1",
-        "aivec/aauth": "^1.0.2"
+        "aivec/welcart-generic": "^1.5.3"
     },
     "autoload": {
         "psr-4": {"Aivec\\Welcart\\SettlementModules\\": ""}
