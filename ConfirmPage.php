@@ -63,11 +63,13 @@ class ConfirmPage {
     public function setFees($bool) {
         global $usces, $usces_members, $usces_entries;
 
-        usces_get_members();
-        usces_get_entries();
-        $usces->set_cart_fees($usces_members, $usces_entries);
+        if ($this->loadConfirmPage() === true) {
+            usces_get_members();
+            usces_get_entries();
+            $usces->set_cart_fees($usces_members, $usces_entries);
 
-        $this->onFeesSet();
+            $this->onFeesSet();
+        }
 
         return $bool;
     }
