@@ -1,12 +1,12 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
-use Exception;
+use InvalidArgumentException;
 
 /**
- * Delivery view for when the settlement module is not activated/authenticated
+ * Delivery page payment method select hooks
  */
-class DisabledViews {
+class DeliveryPage {
 
     /**
      * Settlement module object
@@ -20,48 +20,59 @@ class DisabledViews {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws Exception Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
      * @return void
      */
     public function __construct($module) {
         if (!($module instanceof Module)) {
-            throw new Exception('the provided module is not an instance of Aivec\Welcart\SettlementModules\Module');
+            throw new InvalidArgumentException(
+                'the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module'
+            );
         }
 
         $this->module = $module;
-        add_filter('usces_filter_confirm_inform', array($this, 'disabledButton'), 12, 5);
+        add_filter('usces_fiter_the_payment_method', array($this, 'filterPaymentMethods'), 10, 2);
+        add_filter('usces_filter_the_continue_payment_method', array($this, 'filterContinueChargePaymentMethods'), 10, 1);
         add_filter('usces_filter_the_payment_method_choices', array($this, 'disablePaymentOption'), 10, 2);
     }
 
     /**
-     * Displays if settlement module is the selected payment method but is not activated or authenticated.
-     *
-     * Serves as a backup for if disablePaymentOption() fails for some reason
+     * Remove settlement module from radio button list of payment methods if the
+     * cart contains an item that this Module cannot process
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param string $html
-     * @param string $payments
-     * @param string $acting_flag
-     * @param int    $rand
-     * @param string $purchase_disabled
-     * @return string
+     * @param array  $payments
+     * @param string $value
+     * @return array
      */
-    public function disabledButton($html, $payments, $acting_flag, $rand, $purchase_disabled) {
-        if ($this->module->getActingFlag() !== $acting_flag) {
-            return $html;
-        }
-        
-        if ($this->module->ready() === false || $this->module->isModuleActivated() === false) {
-            $html = '
-                <div 
-                    class="invalid-settings error_message"
-                    style="font-size: 16px; margin-top: 20px; margin-bottom: 20px; text-align: center;"
-                >
-                    ' . sprintf(esc_html__('%s cannot be used', 'smodule'), $this->module->getPaymentName()) . '
-                </div>';
+    public function filterPaymentMethods($payments, $value) {
+        foreach ((array)$payments as $id => $payment) {
+            if (isset($payment['settlement'])) {
+                if ($payment['settlement'] === $this->module->getActingFlag()) {
+                    if ($this->module->canProcessCart() === false) {
+                        array_splice($payments, $id, 1);
+                    }
+                }
+            }
         }
 
-        return $html;
+        return $payments;
+    }
+
+    /**
+     * If applicable, adds Module to array of valid settlement modules for a cart that contains
+     * a 'continue' charge type item.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $valid_settlements
+     * @return array
+     */
+    public function filterContinueChargePaymentMethods($valid_settlements) {
+        if ($this->module->canProcessCart() === true) {
+            $valid_settlements[] = $this->module->getActingFlag();
+        }
+
+        return $valid_settlements;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
-use Exception;
+use InvalidArgumentException;
 
 /**
  * Settlement Module registration factory
@@ -34,11 +34,13 @@ class Factory {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws Exception Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
      */
     public function __construct($module) {
         if (!($module instanceof Module)) {
-            throw new Exception('the provided module is not an instance of Aivec\Welcart\SettlementModules\Module');
+            throw new InvalidArgumentException(
+                'the provided module is not an instance of Aivec\Welcart\SettlementModules\Module'
+            );
         }
 
         $this->module = $module;
