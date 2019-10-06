@@ -34,13 +34,11 @@ class Factory {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
      */
     public function __construct($module) {
         if (!($module instanceof Module)) {
-            throw new InvalidArgumentException(
-                'the provided module is not an instance of Aivec\Welcart\SettlementModules\Module'
-            );
+            throw new InvalidArgumentException('the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module');
         }
 
         $this->module = $module;
@@ -186,6 +184,9 @@ class Factory {
                             <td></td>
                         </tr>
                         <?php $this->settlementModuleFields($acting_opts); ?>
+                        <?php
+                        ob_start();
+                        ?>
                         <tr>
                             <th>
                                 <a
@@ -229,6 +230,12 @@ class Factory {
                                 </div>
                             </td>
                         </tr>
+                        <?php
+                        $html = ob_get_contents();
+                        $html = $this->filterEnvironmentRow($html, $acting_opts);
+                        ob_end_clean();
+                        echo $html;
+                        ?>
                     </table>
                     <?php $this->extraSettings($acting_opts); ?>
                     <input name="acting" id="acting" type="hidden" value="<?php echo esc_attr($this->module->getActing()); ?>" />
@@ -363,6 +370,18 @@ class Factory {
     protected function settlementModuleFields($acting_opts) {}
 
     /**
+     * Filter the environment select row
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $html
+     * @param array  $acting_opts
+     * @return string
+     */
+    protected function filterEnvironmentRow($html, $acting_opts) {
+        return $html;
+    }
+
+    /**
      * Override to add extra tables/options
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -374,6 +393,7 @@ class Factory {
     /**
      * Filter options with POST request
      *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $options
      * @return array
      */
@@ -384,6 +404,7 @@ class Factory {
     /**
      * Filter error message after form validation
      *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param string $error_message
      * @return string
      */
