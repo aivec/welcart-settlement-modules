@@ -109,15 +109,7 @@ class Factory {
             $this->display_tab = true;
         }
 
-        $options = get_option('usces');
-
-        $acting_opts
-            = isset($options[Module::SETTINGS_KEY][$this->module->getActing()])
-            ? $options[Module::SETTINGS_KEY][$this->module->getActing()]
-            : array();
-    
-        $acting_opts['activate'] = isset($acting_opts['activate']) ? $acting_opts['activate'] : 'off';
-        $acting_opts['sandbox'] = isset($acting_opts['sandbox']) ? $acting_opts['sandbox'] : true;
+        $acting_opts = $this->module->getActingOpts();
         $acting_opts = $this->filterActingOptions($acting_opts);
 
         $documentation_url = $this->filterDocumentationUrl('');
@@ -237,6 +229,14 @@ class Factory {
                         echo $html;
                         ?>
                     </table>
+                    <?php
+                    if ($this->module->getAauth() !== null) {
+                        echo $this->filterAauthRow(
+                            $this->module->getAauth()->getSellers()->getSettlementModuleSellerRadioSelections(),
+                            $acting_opts
+                        );
+                    }
+                    ?>
                     <?php $this->extraSettings($acting_opts); ?>
                     <input name="acting" id="acting" type="hidden" value="<?php echo esc_attr($this->module->getActing()); ?>" />
                     <input
@@ -309,6 +309,9 @@ class Factory {
         $options = get_option('usces');
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = isset($_POST['activate']) ? sanitize_text_field(wp_unslash($_POST['activate'])) : '';
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['sandbox'] = empty($_POST['sandbox']) ? true : false;
+        if ($this->module->getAauth() !== null) {
+            $this->module->getAauth()->getSellers()->updateAuthProvider();
+        }
         $options[Module::SETTINGS_KEY][$this->module->getActing()] = $this->filterUpdateOptionsProcessing($options[Module::SETTINGS_KEY][$this->module->getActing()]);
         
         $this->error_mes = '';
@@ -368,6 +371,18 @@ class Factory {
      * @return void
      */
     protected function settlementModuleFields($acting_opts) {}
+
+    /**
+     * Filter the aauth provider select row
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $html
+     * @param array  $acting_opts
+     * @return string
+     */
+    protected function filterAauthRow($html, $acting_opts) {
+        return $html;
+    }
 
     /**
      * Filter the environment select row

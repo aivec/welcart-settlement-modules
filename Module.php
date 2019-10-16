@@ -1,6 +1,7 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Welcart\ProprietaryAuthentication\Auth;
 use InvalidArgumentException;
 
 /**
@@ -80,7 +81,7 @@ class Module {
     /**
      * Aivec proprietary authentication instance or null if not required
      *
-     * @var \Aivec\Welcart\ProprietaryAuthentication\Auth|null
+     * @var Auth|null
      */
     private $aauth;
 
@@ -88,12 +89,13 @@ class Module {
      * Initializes a settlement module.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param string                                             $payment_name
-     * @param string                                             $acting
-     * @param string                                             $acting_flag
-     * @param string                                             $hook_suffix
-     * @param array                                              $valid_divisions
-     * @param \Aivec\Welcart\ProprietaryAuthentication\Auth|null $aauth
+     * @param string    $payment_name
+     * @param string    $acting
+     * @param string    $acting_flag
+     * @param string    $hook_suffix
+     * @param array     $valid_divisions
+     * @param Auth|null $aauth
+     * @throws InvalidArgumentException Thrown if aauth is set but invalid.
      */
     public function __construct(
         $payment_name,
@@ -106,6 +108,14 @@ class Module {
         ],
         $aauth = null
     ) {
+        if ($aauth !== null) {
+            if (!($aauth instanceof Auth)) {
+                throw new InvalidArgumentException(
+                    'aauth is not an instance of Aivec\Welcart\ProprietaryAuthentication\Auth'
+                );
+            }
+        }
+
         $this->validateDivisions($valid_divisions);
         $this->payment_name = $payment_name;
         $this->acting = $acting;
@@ -320,7 +330,7 @@ class Module {
     /**
      * Getter for aauth object
      *
-     * @return \Aivec\Welcart\ProprietaryAuthentication\Auth|null
+     * @return Auth|null
      */
     public function getAauth() {
         return $this->aauth;
