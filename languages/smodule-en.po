@@ -66,3 +66,6 @@ msgstr "Please validate your %1$s credentials to use %2$s"
 
 msgid "%s cannot be used"
 msgstr "%s cannot be used. Make sure your settings are correct."
+
+msgid "%s cannot be used when multiple shipping addresses are specified."
+msgstr "%s cannot be used when multiple shipping addresses are specified. Please choose a different payment method."

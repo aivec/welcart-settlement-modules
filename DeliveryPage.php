@@ -34,6 +34,7 @@ class DeliveryPage {
         add_filter('usces_fiter_the_payment_method', array($this, 'filterPaymentMethods'), 10, 2);
         add_filter('usces_filter_the_continue_payment_method', array($this, 'filterContinueChargePaymentMethods'), 10, 1);
         add_filter('usces_filter_the_payment_method_choices', array($this, 'disablePaymentOption'), 10, 2);
+        add_filter('usces_filter_delivery_check', array($this, 'multiShippingCheck'), 15, 3);
     }
 
     /**
@@ -175,5 +176,38 @@ class DeliveryPage {
         }
         
         return $html;
+    }
+
+    /**
+     * Returns error message for Module if multi_shipping is selected but
+     * not supported
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $mes
+     * @return string
+     */
+    public function multiShippingCheck($mes) {
+        global $usces;
+    
+        if (isset($_REQUEST['offer']['payment_name'])) {
+            $payments = $usces->getPayments(wp_unslash($_REQUEST['offer']['payment_name']));
+            if ($this->module->getActingFlag() === $payments['settlement']) {
+                if (isset($_SESSION['msa_cart'])) {
+                    if (count($_SESSION['msa_cart']) > 0 &&
+                        isset($_REQUEST['delivery']['delivery_flag']) &&
+                        (int)wp_unslash($_REQUEST['delivery']['delivery_flag']) === 2 &&
+                        $this->module->getMultiShippingSupport() === false
+                    ) {
+                        $mes .= sprintf(
+                            // translators: settlement module name
+                            __('%s cannot be used when multiple shipping addresses are specified.', 'smodule'),
+                            $this->module->getPaymentName()
+                        ) . '<br/>';
+                    }
+                }
+            }
+        }
+    
+        return $mes;
     }
 }

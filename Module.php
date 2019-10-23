@@ -79,6 +79,13 @@ class Module {
     private $valid_divisions;
 
     /**
+     * True if Module provides support for wcex_multi_shipping, false otherwise
+     *
+     * @var boolean
+     */
+    private $multi_shipping_support;
+
+    /**
      * Aivec proprietary authentication instance or null if not required
      *
      * @var Auth|null
@@ -94,6 +101,7 @@ class Module {
      * @param string    $acting_flag
      * @param string    $hook_suffix
      * @param array     $valid_divisions
+     * @param boolean   $multi_shipping_support
      * @param Auth|null $aauth
      * @throws InvalidArgumentException Thrown if aauth is set but invalid.
      */
@@ -106,6 +114,7 @@ class Module {
             'shipped' => ['once'],
             'service' => ['once'],
         ],
+        $multi_shipping_support = false,
         $aauth = null
     ) {
         if ($aauth !== null) {
@@ -122,6 +131,7 @@ class Module {
         $this->acting_flag = $acting_flag;
         $this->hook_suffix = $hook_suffix;
         $this->valid_divisions = $valid_divisions;
+        $this->multi_shipping_support = $multi_shipping_support;
         $this->aauth = $aauth;
 
         load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
@@ -325,6 +335,15 @@ class Module {
      */
     public function getValidDivisions() {
         return $this->valid_divisions;
+    }
+
+    /**
+     * Getter for multi_shipping_support
+     *
+     * @return boolean
+     */
+    public function getMultiShippingSupport() {
+        return $this->multi_shipping_support;
     }
 
     /**

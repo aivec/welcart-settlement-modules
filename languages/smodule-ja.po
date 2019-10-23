@@ -77,3 +77,6 @@ msgstr "%2$s を使用するには、%1$sの認証確認を行ってください
 
 msgid "%s cannot be used"
 msgstr "只今、%sご利用できません。"
+
+msgid "%s cannot be used when multiple shipping addresses are specified."
+msgstr "複数配送先を指定している場合は、%sはご利用いただけません。別のお支払い方法をお選びください。"
