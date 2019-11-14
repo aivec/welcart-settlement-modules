@@ -1,10 +1,10 @@
 <?php
-namespace WCEXAAP\Aivec\Welcart\SettlementModules;
+namespace Aivec\Welcart\SettlementModules;
 
 use InvalidArgumentException;
 
 /**
- * Controller for all orderlist operations.
+ * Order List hooks
  */
 class OrderList {
 
@@ -16,17 +16,17 @@ class OrderList {
     protected $module;
 
     /**
-     * Registers orderlist and order_edit hooks.
+     * Registers orderlist hooks.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of \WCEXAAP\Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
      * @return void
      */
     public function __construct($module) {
         if (!($module instanceof Module)) {
             throw new InvalidArgumentException(
-                'the provided module is not an instance of \WCEXAAP\Aivec\Welcart\SettlementModules\Module'
+                'the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module'
             );
         }
 
