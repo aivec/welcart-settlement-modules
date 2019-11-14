@@ -110,8 +110,6 @@ class Factory {
         }
 
         $acting_opts = $this->module->getActingOpts();
-        $acting_opts = $this->filterActingOptions($acting_opts);
-
         $documentation_url = $this->filterDocumentationUrl('');
 
         if ($this->display_tab === true) : ?>
@@ -339,17 +337,6 @@ class Factory {
         update_option('usces', $options);
         ksort($usces->payment_structure);
         update_option('usces_payment_structure', $usces->payment_structure);
-    }
-
-    /**
-     * Filters the settlement acting_settings option array
-     *
-     * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param array $acting_opts
-     * @return array
-     */
-    protected function filterActingOptions($acting_opts) {
-        return $acting_opts;
     }
 
     /**
