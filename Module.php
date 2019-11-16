@@ -261,19 +261,21 @@ class Module {
         global $usces;
 
         $cart = $usces->cart->get_cart();
-        foreach ($cart as $item) {
-            // check if division of item is supported by this Module
-            $item_division = get_post_meta($item['post_id'], '_item_division', true);
-            $division = empty($item_division) ? 'shipped' : $item_division;
-            if (!array_key_exists($division, $this->valid_divisions)) {
-                return false;
-            }
+        if (is_array($cart)) {
+            foreach ($cart as $item) {
+                // check if division of item is supported by this Module
+                $item_division = get_post_meta($item['post_id'], '_item_division', true);
+                $division = empty($item_division) ? 'shipped' : $item_division;
+                if (!array_key_exists($division, $this->valid_divisions)) {
+                    return false;
+                }
             
-            // check if charge type of item is supported by this Module
-            $item_charge_type = $usces->getItemChargingType($item['post_id']);
-            $charge_type = empty($item_charge_type) ? 'once' : $item_charge_type;
-            if (!in_array($charge_type, $this->valid_divisions[$division], true)) {
-                return false;
+                // check if charge type of item is supported by this Module
+                $item_charge_type = $usces->getItemChargingType($item['post_id']);
+                $charge_type = empty($item_charge_type) ? 'once' : $item_charge_type;
+                if (!in_array($charge_type, $this->valid_divisions[$division], true)) {
+                    return false;
+                }
             }
         }
 
