@@ -34,11 +34,11 @@ class Factory {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
      */
     public function __construct($module) {
         if (!($module instanceof Module)) {
-            throw new InvalidArgumentException('the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module');
+            throw new InvalidArgumentException('the provided module is not an instance of Aivec\Welcart\SettlementModules\Module');
         }
 
         $this->module = $module;
@@ -134,8 +134,8 @@ class Factory {
                     name="<?php echo esc_attr($this->module->getActing()); ?>_form"
                     id="<?php echo esc_attr($this->module->getActing()); ?>_form"
                 >
-                    <table class="settle_table">
-                        <tr>
+                    <table class="settle_table aivec">
+                        <tr class="radio">
                             <th>
                                 <?php echo sprintf(
                                     /* translators: %s: formatted plugin name. */
@@ -144,80 +144,106 @@ class Factory {
                                 ); ?>
                             </th>
                             <td>
-                                <input
-                                    name="activate"
-                                    type="radio"
-                                    id="activate_<?php echo esc_attr($this->module->getActing()); ?>_1"
-                                    value="on"
-                                    <?php echo $acting_opts['activate'] === 'on' ? 'checked' : ''; ?>
-                                />
+                                <div>
+                                    <label>
+                                        <input
+                                            name="activate"
+                                            type="radio"
+                                            id="activate_<?php echo esc_attr($this->module->getActing()); ?>_1"
+                                            value="on"
+                                            <?php echo $acting_opts['activate'] === 'on' ? 'checked' : ''; ?>
+                                        />
+                                        <span><?php echo esc_html__('Enable', 'smodule'); ?></span>
+                                    </label>
+                                    <label>
+                                        <input
+                                            name="activate"
+                                            type="radio"
+                                            id="activate_<?php echo esc_attr($this->module->getActing()); ?>_2"
+                                            value="off"
+                                            <?php echo $acting_opts['activate'] === 'off' ? 'checked' : ''; ?>
+                                        />
+                                        <span><?php echo esc_html__('Disable', 'smodule'); ?></span>
+                                    </label>
+                                </div>
                             </td>
-                            <td>
-                                <label for="activate_<?php echo esc_attr($this->module->getActing()); ?>_1">
-                                    <?php echo esc_html__('Enable', 'smodule'); ?>
-                                </label>
-                            </td>
-                            <td>
-                                <input
-                                    name="activate"
-                                    type="radio"
-                                    id="activate_<?php echo esc_attr($this->module->getActing()); ?>_2"
-                                    value="off"
-                                    <?php echo $acting_opts['activate'] === 'off' ? 'checked' : ''; ?>
-                                />
-                            </td>
-                            <td>
-                                <label for="activate_<?php echo esc_attr($this->module->getActing()); ?>_2">
-                                    <?php echo esc_html__('Disable', 'smodule'); ?>
-                                </label>
-                            </td>
-                            <td></td>
                         </tr>
                         <?php $this->settlementModuleFields($acting_opts); ?>
                         <?php
                         ob_start();
                         ?>
-                        <tr>
+                        <?php if ($this->module->getCapturePaymentOptSupport() === true) : ?>
+                            <tr class="radio">
+                                <th>
+                                    <a class="explanation-label" id="label_ex_payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>">
+                                        <?php echo esc_html__('Processing classification', 'usces'); // 処理区分 ?>
+                                    </a>
+                                </th>
+                                <td>
+                                    <div>
+                                        <label>
+                                            <input
+                                                name="payment_capture_type" 
+                                                type="radio"
+                                                id="payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_1"
+                                                value="on_purchase"
+                                                <?php echo $acting_opts['payment_capture_type'] === 'on_purchase' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e('Credit', 'usces'); // 与信 ?></span>
+                                        </label>
+                                        <label>
+                                            <input
+                                                name="payment_capture_type"
+                                                type="radio"
+                                                id="payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_2"
+                                                value="after_purchase"
+                                                <?php echo $acting_opts['payment_capture_type'] === 'after_purchase' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e('Credit sales', 'usces'); // 与信売上計上 ?></span>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="ex_payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>" class="explanation">
+                                <td colspan="2">
+                                    <?php _e("In case of 'Credit' setting, it need to change to 'Sales recorded' manually in later. In case of 'Credit sales recorded' setting, sales will be recorded at the time of purchase.", 'usces'); ?>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                        <tr class="radio">
                             <th>
-                                <a
-                                    style="cursor:pointer;"
-                                    onclick="toggleVisibility('ex_sandbox_<?php echo esc_attr($this->module->getActing()); ?>');"
-                                >
+                                <a class="explanation-label" id="label_ex_sandbox_<?php echo esc_attr($this->module->getActing()); ?>">
                                     <?php echo esc_html__('Environment', 'smodule'); ?>
                                 </a>
                             </th>
                             <td>
-                                <input
-                                    name="sandbox" 
-                                    type="radio"
-                                    id="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_1"
-                                    value=""
-                                    <?php echo (boolean)$acting_opts['sandbox'] === true ? 'checked' : ''; ?>
-                                />
-                            </td>
-                            <td>
-                                <label for="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_1">
-                                    <?php echo esc_html__('Test environment', 'smodule'); ?>
-                                </label>
-                            </td>
-                            <td>
-                                <input
-                                    name="sandbox"
-                                    type="radio"
-                                    id="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_2"
-                                    value="1"
-                                    <?php echo $acting_opts['sandbox'] === false ? 'checked' : ''; ?>
-                                />
-                            </td>
-                            <td>
-                                <label for="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_2">
-                                    <?php echo esc_html__('Production environment', 'smodule'); ?>
-                                </label>
-                            </td>
-                            <td>
-                                <div id="ex_sandbox_<?php echo esc_attr($this->module->getActing()); ?>" class="explanation">
-                                    <?php echo esc_html__('Changes between test and production versions.', 'smodule'); ?>
+                                <div>
+                                    <label>
+                                        <input
+                                            name="sandbox" 
+                                            type="radio"
+                                            id="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_1"
+                                            value=""
+                                            <?php echo (boolean)$acting_opts['sandbox'] === true ? 'checked' : ''; ?>
+                                        />
+                                        <span><?php echo esc_html__('Test environment', 'smodule'); ?></span>
+                                    </label>
+                                    <label>
+                                        <input
+                                            name="sandbox"
+                                            type="radio"
+                                            id="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_2"
+                                            value="1"
+                                            <?php echo $acting_opts['sandbox'] === false ? 'checked' : ''; ?>
+                                        />
+                                        <span><?php echo esc_html__('Production environment', 'smodule'); ?></span>
+                                    </label>
                                 </div>
+                            </td>
+                        </tr>
+                        <tr id="ex_sandbox_<?php echo esc_attr($this->module->getActing()); ?>" class="explanation">
+                            <td colspan="2">
+                                <?php echo esc_html__('Changes between test and production versions.', 'smodule'); ?>
                             </td>
                         </tr>
                         <?php
@@ -282,6 +308,17 @@ class Factory {
                     </p>
                 </div>
             </div>
+            <style>
+                table.settle_table.aivec tr.radio td > div {
+                    display: flex;
+                    flex-flow: column nowrap;
+                }
+                @media only screen and (max-width: 782px) {
+                    table.settle_table.aivec tr.radio td > div > *:not(:last-child) {
+                        padding-bottom: 10px;
+                    }
+                }
+            </style>
         <?php endif;
     }
     
@@ -309,6 +346,10 @@ class Factory {
         $options[Module::SETTINGS_KEY][$this->module->getActing()]['sandbox'] = empty($_POST['sandbox']) ? true : false;
         if ($this->module->getAauth() !== null) {
             $this->module->getAauth()->getSellers()->updateAuthProvider();
+        }
+        if ($this->module->getCapturePaymentOptSupport() === true) {
+            $pc_type = $options[Module::SETTINGS_KEY][$this->module->getActing()]['payment_capture_type'];
+            $options[Module::SETTINGS_KEY][$this->module->getActing()]['payment_capture_type'] = isset($_POST['payment_capture_type']) ? $_POST['payment_capture_type'] : $pc_type;
         }
         $options[Module::SETTINGS_KEY][$this->module->getActing()] = $this->filterUpdateOptionsProcessing($options[Module::SETTINGS_KEY][$this->module->getActing()]);
         
@@ -357,7 +398,8 @@ class Factory {
      * @param array $acting_opts
      * @return void
      */
-    protected function settlementModuleFields($acting_opts) {}
+    protected function settlementModuleFields($acting_opts) {
+    }
 
     /**
      * Filter the aauth provider select row
@@ -390,7 +432,8 @@ class Factory {
      * @param array $acting_opts
      * @return void
      */
-    protected function extraSettings($acting_opts) {}
+    protected function extraSettings($acting_opts) {
+    }
 
     /**
      * Filter options with POST request

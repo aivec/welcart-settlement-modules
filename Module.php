@@ -93,6 +93,17 @@ class Module {
     private $aauth;
 
     /**
+     * If true, displays option on settlement settings page for determining
+     * payment capture type (処理区分).
+     *
+     * 'on_purchase' => '与信'
+     * 'after_purchase' => '与信売上計上'
+     *
+     * @var boolean
+     */
+    private $capture_payment_opt_support;
+
+    /**
      * Initializes a settlement module.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -103,6 +114,7 @@ class Module {
      * @param array     $valid_divisions
      * @param boolean   $multi_shipping_support
      * @param Auth|null $aauth
+     * @param boolean   $capture_payment_opt_support
      * @throws InvalidArgumentException Thrown if aauth is set but invalid.
      */
     public function __construct(
@@ -115,7 +127,8 @@ class Module {
             'service' => ['once'],
         ],
         $multi_shipping_support = false,
-        $aauth = null
+        $aauth = null,
+        $capture_payment_opt_support = false
     ) {
         if ($aauth !== null) {
             if (!($aauth instanceof Auth)) {
@@ -133,6 +146,7 @@ class Module {
         $this->valid_divisions = $valid_divisions;
         $this->multi_shipping_support = $multi_shipping_support;
         $this->aauth = $aauth;
+        $this->capture_payment_opt_support = $capture_payment_opt_support;
 
         load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
         load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
@@ -215,6 +229,9 @@ class Module {
             ? $usces->options[self::SETTINGS_KEY][$this->acting]
             : array();
       
+        if ($this->capture_payment_opt_support === true) {
+            $acting_opts['payment_capture_type'] = isset($acting_opts['payment_capture_type']) ? $acting_opts['payment_capture_type'] : 'after_purchase';
+        }
         $acting_opts['activate'] = isset($acting_opts['activate']) ? $acting_opts['activate'] : 'off';
         $acting_opts['sandbox'] = isset($acting_opts['sandbox']) ? $acting_opts['sandbox'] : true;
         $acting_opts = $this->filterActingOpts($acting_opts);
@@ -355,5 +372,14 @@ class Module {
      */
     public function getAauth() {
         return $this->aauth;
+    }
+
+    /**
+     * Getter for capture_payment_opt_support
+     *
+     * @return boolean
+     */
+    public function getCapturePaymentOptSupport() {
+        return $this->capture_payment_opt_support;
     }
 }
