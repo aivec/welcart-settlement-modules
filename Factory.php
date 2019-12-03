@@ -183,21 +183,21 @@ class Factory {
                                     <div>
                                         <label>
                                             <input
-                                                name="payment_capture_type" 
-                                                type="radio"
-                                                id="payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_1"
-                                                value="on_purchase"
-                                                <?php echo $acting_opts['payment_capture_type'] === 'on_purchase' ? 'checked' : ''; ?>
-                                            />
-                                            <span><?php _e('Credit', 'usces'); // 与信 ?></span>
-                                        </label>
-                                        <label>
-                                            <input
                                                 name="payment_capture_type"
                                                 type="radio"
                                                 id="payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_2"
                                                 value="after_purchase"
                                                 <?php echo $acting_opts['payment_capture_type'] === 'after_purchase' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e('Credit', 'usces'); // 与信 ?></span>
+                                        </label>
+                                        <label>
+                                            <input
+                                                name="payment_capture_type" 
+                                                type="radio"
+                                                id="payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_1"
+                                                value="on_purchase"
+                                                <?php echo $acting_opts['payment_capture_type'] === 'on_purchase' ? 'checked' : ''; ?>
                                             />
                                             <span><?php _e('Credit sales', 'usces'); // 与信売上計上 ?></span>
                                         </label>

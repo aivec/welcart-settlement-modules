@@ -96,8 +96,8 @@ class Module {
      * If true, displays option on settlement settings page for determining
      * payment capture type (処理区分).
      *
-     * 'on_purchase' => '与信'
-     * 'after_purchase' => '与信売上計上'
+     * 'after_purchase' => '与信'
+     * 'on_purchase' => '与信売上計上'
      *
      * @var boolean
      */
