@@ -150,7 +150,7 @@ class DeliveryPage {
                                 $list .= "\t".'<dt class="payment_'.$id.'"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="'.esc_attr($payment['name']).'"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />'.esc_attr($payment['name']).'</label> <b> (' . sprintf(
                                     /* translators: name of settlement module */
                                     esc_html__('%s cannot be used', 'smodule'),
-                                    $this->module->getPaymentName(),
+                                    $this->module->getPaymentName()
                                 ) . ") </b></dt>\n";
                             }
                         } else {
