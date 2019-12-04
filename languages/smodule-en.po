@@ -2,70 +2,79 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Aivec LLC.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-01-20 00:00+0900\n"
+"POT-Creation-Date: 2019-12-04T11:50:10+09:00\n"
 "PO-Revision-Date: 2018-11-21 22:15+0900\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Poedit 1.8.11\n"
-"Last-Translator: \n"
-"Language: en\n"
 
-# Description of the plugin/theme
-msgid "%s for Welcart by Aivec LLC."
-msgstr "%s for Welcart by Aivec LLC."
+#. translators: name of settlement module
+#: ConfirmPage.php:134 DeliveryPage.php:152
+msgid "%s cannot be used"
+msgstr "%s cannot be used at this time."
 
-# Author of the plugin/theme
-msgid "Aivec LLC."
-msgstr "Aivec LLC."
+#. translators: settlement module name
+#: DeliveryPage.php:196
+msgid "%s cannot be used when multiple shipping addresses are specified."
+msgstr ""
+"%s cannot be used when multiple shipping addresses are specified. Please "
+"choose a different payment method."
 
 # Settlement config
+#: Factory.php:127
 msgid "Thoroughly test your integration before going live."
 msgstr "Thoroughly test your integration before going live."
 
+#. translators: %s: formatted plugin name.
+#: Factory.php:142
 msgid "enable/disable %s"
 msgstr "enable/disable %s"
 
+#: Factory.php:156
 msgid "Enable"
 msgstr "Enable"
 
+#: Factory.php:166
 msgid "Disable"
 msgstr "Disable"
 
-msgid "Test environment"
-msgstr "Test environment"
-
-msgid "Production environment"
-msgstr "Production environment"
-
-msgid "Changes between test and production versions."
-msgstr "Changes between test and production versions."
-
-msgid "%s Settlement"
-msgstr "%s Settlement"
-
-msgid "Click here for more information about %s"
-msgstr "Click here for more information about %s 》"
-
-msgid "This module is for %s"
-msgstr "This module is for %s"
-
+#: Factory.php:216
 msgid "Environment"
 msgstr "Environment"
 
+#: Factory.php:229
+msgid "Test environment"
+msgstr "Test environment"
+
+#: Factory.php:239
+msgid "Production environment"
+msgstr "Production environment"
+
+#: Factory.php:246
+msgid "Changes between test and production versions."
+msgstr "Changes between test and production versions."
+
+#. translators: %s: formatted plugin name.
+#: Factory.php:273
 msgid "Update %s Settings"
 msgstr "Update %s Settings"
 
-msgid "%s is deactivated on the settlement module settings page."
-msgstr "%s is deactivated on the settlement module settings page."
+#. translators: %s: formatted plugin name.
+#: Factory.php:285 Factory.php:365
+msgid "%s Settlement"
+msgstr "%s Settlement"
 
-msgid "Please validate your %1$s credentials to use %2$s"
-msgstr "Please validate your %1$s credentials to use %2$s"
+#. translators: %s: formatted plugin name.
+#: Factory.php:295
+msgid "Click here for more information about %s"
+msgstr "Click here for more information about %s 》"
 
-msgid "%s cannot be used"
-msgstr "%s cannot be used. Make sure your settings are correct."
-
-msgid "%s cannot be used when multiple shipping addresses are specified."
-msgstr "%s cannot be used when multiple shipping addresses are specified. Please choose a different payment method."
+#. translators: %s: formatted plugin name.
+#: Factory.php:304
+msgid "This module is for %s"
+msgstr "This module is for %s"

@@ -1,79 +1,78 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Aivec LLC.\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-04T11:50:10+09:00\n"
-"PO-Revision-Date: 2019-06-06 16:02+0900\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: ja\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.2.1\n"
+"POT-Creation-Date: 2019-12-04T11:50:10+09:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.4.0\n"
+"X-Domain: smodule\n"
 
 #. translators: name of settlement module
-#: ConfirmPage.php:134 DeliveryPage.php:152
+#: ConfirmPage.php:134
+#: DeliveryPage.php:152
 msgid "%s cannot be used"
-msgstr "只今、%sご利用できません。"
+msgstr ""
 
 #. translators: settlement module name
 #: DeliveryPage.php:196
 msgid "%s cannot be used when multiple shipping addresses are specified."
 msgstr ""
-"複数配送先を指定している場合は、%sはご利用いただけません。別のお支払い方法を"
-"お選びください。"
 
 #: Factory.php:127
 msgid "Thoroughly test your integration before going live."
-msgstr "十分にテストを行ってから運用してください。"
+msgstr ""
 
 #. translators: %s: formatted plugin name.
 #: Factory.php:142
 msgid "enable/disable %s"
-msgstr "%s決済の利用"
+msgstr ""
 
 #: Factory.php:156
 msgid "Enable"
-msgstr "利用する"
+msgstr ""
 
 #: Factory.php:166
 msgid "Disable"
-msgstr "利用しない"
+msgstr ""
 
 #: Factory.php:216
 msgid "Environment"
-msgstr "動作環境"
+msgstr ""
 
 #: Factory.php:229
 msgid "Test environment"
-msgstr "テスト環境"
+msgstr ""
 
 #: Factory.php:239
 msgid "Production environment"
-msgstr "本番環境"
+msgstr ""
 
 #: Factory.php:246
 msgid "Changes between test and production versions."
-msgstr "動作環境を切り替えます。"
+msgstr ""
 
 #. translators: %s: formatted plugin name.
 #: Factory.php:273
 msgid "Update %s Settings"
-msgstr "%sの設定を更新する"
+msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:285 Factory.php:365
+#: Factory.php:285
+#: Factory.php:365
 msgid "%s Settlement"
-msgstr "%s決済"
+msgstr ""
 
 #. translators: %s: formatted plugin name.
 #: Factory.php:295
 msgid "Click here for more information about %s"
-msgstr "%s決済の詳細はこちら 》"
+msgstr ""
 
 #. translators: %s: formatted plugin name.
 #: Factory.php:304
 msgid "This module is for %s"
-msgstr "この決済は%sのみ決済システムです。"
+msgstr ""

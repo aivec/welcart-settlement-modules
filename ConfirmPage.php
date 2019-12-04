@@ -108,13 +108,34 @@ class ConfirmPage {
             return $html;
         }
 
-        $errorhtml = '
+        ob_start();
+        ?>
+            <form
+                id="purchase_form"
+                action="<?php echo USCES_CART_URL ?>"
+                method="post"
+                onKeyDown="if (event.keyCode == 13) {return false;}"
+            >
+                <div class="send">
+                    <input
+                        name="backDelivery"
+                        type="submit"
+                        id="back_button"
+                        class="back_to_delivery_button"
+                        value="<?php echo apply_filters('usces_filter_confirm_prebutton_value', __('Back to payment method page.', 'usces')); ?>"
+                    />
+                </div>
+            </form>
             <div 
                 class="invalid-settings error_message"
                 style="font-size: 16px; margin-top: 20px; margin-bottom: 20px; text-align: center;"
             >
-                ' . sprintf(esc_html__('%s cannot be used', 'smodule'), $this->module->getPaymentName()) . '
-            </div>';
+                <?php // translators: name of settlement module ?>
+                <?php echo sprintf(esc_html__('%s cannot be used', 'smodule'), $this->module->getPaymentName()) ?>
+            </div>
+        <?php
+        $errorhtml = ob_get_contents();
+        ob_end_clean();
 
         if ($this->module->canProcessCart() === false ||
             $this->module->ready() === false ||

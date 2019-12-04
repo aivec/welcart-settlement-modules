@@ -146,18 +146,11 @@ class DeliveryPage {
                         $list .= "\t".'<dt class="payment_'.$id.'"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="'.esc_attr($payment['name']).'"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />'.esc_attr($payment['name']).'</label> <b> (' . __('cannot use this payment method now.', 'usces') . ") </b></dt>\n";
                     } else {
                         if ($payment['settlement'] === $this->module->getActingFlag()) {
-                            if ($this->module->ready() === false) {
+                            if ($this->module->ready() === false || $this->module->isModuleActivated() === false) {
                                 $list .= "\t".'<dt class="payment_'.$id.'"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="'.esc_attr($payment['name']).'"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />'.esc_attr($payment['name']).'</label> <b> (' . sprintf(
-                                    /* translators: %s: formatted module name. */
-                                    __('Please validate your %1$s credentials to use %2$s', 'smodule'),
-                                    $this->module->getAauth()->getProvider(),
-                                    $this->module->getPaymentName()
-                                ) . ") </b></dt>\n";
-                            } elseif ($this->module->isModuleActivated() === false) {
-                                $list .= "\t".'<dt class="payment_'.$id.'"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="'.esc_attr($payment['name']).'"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />'.esc_attr($payment['name']).'</label> <b> (' . sprintf(
-                                    /* translators: %s: formatted module name. */
-                                    __('%s is deactivated on the settlement module settings page.', 'smodule'),
-                                    $this->module->getPaymentName()
+                                    /* translators: name of settlement module */
+                                    esc_html__('%s cannot be used', 'smodule'),
+                                    $this->module->getPaymentName(),
                                 ) . ") </b></dt>\n";
                             }
                         } else {
