@@ -218,6 +218,7 @@ class Module {
      * Returns acting options for the settlement module
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @throws InvalidArgumentException Thrown if $payment_capture_type is malformed.
      * @global \usc_e_shop $usces
      * @return array
      */
@@ -230,7 +231,11 @@ class Module {
             : array();
       
         if ($this->capture_payment_opt_support === true) {
-            $acting_opts['payment_capture_type'] = isset($acting_opts['payment_capture_type']) ? $acting_opts['payment_capture_type'] : 'after_purchase';
+            $type = $this->filterDefaultPaymentCaptureType('after_purchase');
+            if ($type !== 'on_purchase' && $type !== 'after_purchase') {
+                throw new InvalidArgumentException('payment_capture_type must be one of on_purchase or after_purchase');
+            }
+            $acting_opts['payment_capture_type'] = isset($acting_opts['payment_capture_type']) ? $acting_opts['payment_capture_type'] : $type;
         }
         $acting_opts['activate'] = isset($acting_opts['activate']) ? $acting_opts['activate'] : 'off';
         $acting_opts['sandbox'] = isset($acting_opts['sandbox']) ? $acting_opts['sandbox'] : true;
@@ -297,6 +302,17 @@ class Module {
         }
 
         return true;
+    }
+
+    /**
+     * Filter the default payment capture type (処理区分)
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $type
+     * @return string
+     */
+    protected function filterDefaultPaymentCaptureType($type) {
+        return $type;
     }
 
     /**
