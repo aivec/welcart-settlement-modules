@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Aivec LLC.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-04T11:50:10+09:00\n"
+"POT-Creation-Date: 2019-12-05T13:01:13+09:00\n"
 "PO-Revision-Date: 2019-06-06 16:02+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -64,7 +64,7 @@ msgid "Update %s Settings"
 msgstr "%sの設定を更新する"
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:285 Factory.php:365
+#: Factory.php:285 Factory.php:356
 msgid "%s Settlement"
 msgstr "%s決済"
 
@@ -72,8 +72,3 @@ msgstr "%s決済"
 #: Factory.php:295
 msgid "Click here for more information about %s"
 msgstr "%s決済の詳細はこちら 》"
-
-#. translators: %s: formatted plugin name.
-#: Factory.php:304
-msgid "This module is for %s"
-msgstr "この決済は%sのみ決済システムです。"

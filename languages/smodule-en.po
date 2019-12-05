@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Aivec LLC.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-04T11:50:10+09:00\n"
+"POT-Creation-Date: 2019-12-05T13:01:13+09:00\n"
 "PO-Revision-Date: 2018-11-21 22:15+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -65,7 +65,7 @@ msgid "Update %s Settings"
 msgstr "Update %s Settings"
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:285 Factory.php:365
+#: Factory.php:285 Factory.php:356
 msgid "%s Settlement"
 msgstr "%s Settlement"
 
@@ -73,8 +73,3 @@ msgstr "%s Settlement"
 #: Factory.php:295
 msgid "Click here for more information about %s"
 msgstr "Click here for more information about %s 》"
-
-#. translators: %s: formatted plugin name.
-#: Factory.php:304
-msgid "This module is for %s"
-msgstr "This module is for %s"

@@ -297,15 +297,6 @@ class Factory {
                             );
                         ?>
                     </a>
-                    <p>
-                        <?php
-                            echo sprintf(
-                                /* translators: %s: formatted plugin name. */
-                                esc_html__('This module is for %s', 'smodule'),
-                                $this->module->getPaymentName()
-                            );
-                        ?>
-                    </p>
                 </div>
             </div>
             <style>
