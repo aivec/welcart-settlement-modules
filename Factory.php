@@ -169,9 +169,6 @@ class Factory {
                             </td>
                         </tr>
                         <?php $this->settlementModuleFields($acting_opts); ?>
-                        <?php
-                        ob_start();
-                        ?>
                         <?php if ($this->module->getCapturePaymentOptSupport() === true) : ?>
                             <tr class="radio">
                                 <th>
@@ -210,6 +207,9 @@ class Factory {
                                 </td>
                             </tr>
                         <?php endif; ?>
+                        <?php
+                        ob_start();
+                        ?>
                         <tr class="radio">
                             <th>
                                 <a class="explanation-label" id="label_ex_sandbox_<?php echo esc_attr($this->module->getActing()); ?>">
