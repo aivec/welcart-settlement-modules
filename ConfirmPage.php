@@ -14,6 +14,20 @@ use Aivec\Welcart\Generic;
 class ConfirmPage {
 
     /**
+     * Back button form
+     *
+     * @var string
+     */
+    public $backbutton;
+
+    /**
+     * Generic error html
+     *
+     * @var string
+     */
+    public $errorhtml;
+
+    /**
      * Settlement module object
      *
      * @var Module
@@ -38,6 +52,20 @@ class ConfirmPage {
             );
         }
 
+        ob_start();
+        ?>
+            <div
+                class="invalid-settings error_message"
+                style="font-size: 16px; margin-top: 20px; margin-bottom: 20px; text-align: center;"
+            >
+                <?php // translators: name of settlement module ?>
+                <?php echo sprintf(esc_html__('%s cannot be used', 'smodule'), $module->getPaymentName()) ?>
+            </div>
+        <?php
+        $errorhtml = ob_get_contents();
+        ob_end_clean();
+
+        $this->errorhtml = $errorhtml;
         $this->module = $module;
         add_filter('usces_filter_confirm_inform', array($this, 'confirmPagePayButtonHook'), 10, 5);
         add_action('usces_filter_template_redirect', array($this, 'setFees'), 1, 1);
@@ -110,38 +138,33 @@ class ConfirmPage {
 
         ob_start();
         ?>
-            <form
-                id="purchase_form"
-                action="<?php echo USCES_CART_URL ?>"
-                method="post"
-                onKeyDown="if (event.keyCode == 13) {return false;}"
-            >
-                <div class="send">
-                    <input
-                        name="backDelivery"
-                        type="submit"
-                        id="back_button"
-                        class="back_to_delivery_button"
-                        value="<?php echo apply_filters('usces_filter_confirm_prebutton_value', __('Back to payment method page.', 'usces')); ?>"
-                    />
-                </div>
-            </form>
-            <div 
-                class="invalid-settings error_message"
-                style="font-size: 16px; margin-top: 20px; margin-bottom: 20px; text-align: center;"
-            >
-                <?php // translators: name of settlement module ?>
-                <?php echo sprintf(esc_html__('%s cannot be used', 'smodule'), $this->module->getPaymentName()) ?>
+        <form
+            id="purchase_form"
+            action="<?php echo USCES_CART_URL ?>"
+            method="post"
+            onKeyDown="if (event.keyCode == 13) {return false;}"
+        >
+            <div class="send">
+                <input
+                    name="backDelivery"
+                    type="submit"
+                    id="back_button"
+                    class="back_to_delivery_button"
+                    value="<?php echo apply_filters('usces_filter_confirm_prebutton_value', __('Back to payment method page.', 'usces')); ?>"
+                />
             </div>
+        </form>
         <?php
-        $errorhtml = ob_get_contents();
+        $backbutton = ob_get_contents();
         ob_end_clean();
+
+        $this->backbutton = $backbutton;
 
         if ($this->module->canProcessCart() === false ||
             $this->module->ready() === false ||
             $this->module->isModuleActivated() === false
         ) {
-            return $errorhtml;
+            return $this->backbutton . $this->errorhtml;
         }
 
         return $this->filterConfirmPagePayButton($html, $payments, $acting_flag, $rand, $purchase_disabled);
