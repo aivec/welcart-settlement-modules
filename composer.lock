@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b06de21b8f2c740c48ea84454a1f6dfe",
+    "content-hash": "95770bbddda6824da5d720528f319075",
     "packages": [
         {
             "name": "aivec/aauth",
@@ -44,18 +44,21 @@
         },
         {
             "name": "aivec/welcart-generic",
-            "version": "v2.3.1",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aivec/welcart-generic.git",
-                "reference": "2d3d8b0ef4e94bf2b0a1eeda1e23a6a350f527f6"
+                "reference": "ce7777d745dcb19e790130500b584d94624f866f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aivec/welcart-generic/zipball/2d3d8b0ef4e94bf2b0a1eeda1e23a6a350f527f6",
-                "reference": "2d3d8b0ef4e94bf2b0a1eeda1e23a6a350f527f6",
+                "url": "https://api.github.com/repos/aivec/welcart-generic/zipball/ce7777d745dcb19e790130500b584d94624f866f",
+                "reference": "ce7777d745dcb19e790130500b584d94624f866f",
                 "shasum": ""
             },
+            "bin": [
+                "bin/welthemes"
+            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -73,22 +76,22 @@
                 }
             ],
             "description": "Generic interfaces/abstract-classes/utils for Welcart libraries (settlement modules, customizations, etc.)",
-            "time": "2020-01-10T02:18:57+00:00"
+            "time": "2020-02-20T04:27:11+00:00"
         }
     ],
     "packages-dev": [
         {
             "name": "aivec/phpcs-wp",
-            "version": "v1.0.2",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aivec/phpcs-wp.git",
-                "reference": "c9ef7a6f7b938bede7435e4d2eabd7ee9a215cec"
+                "reference": "874f6757ab672682855b0baf43d6e8a965242c88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aivec/phpcs-wp/zipball/c9ef7a6f7b938bede7435e4d2eabd7ee9a215cec",
-                "reference": "c9ef7a6f7b938bede7435e4d2eabd7ee9a215cec",
+                "url": "https://api.github.com/repos/aivec/phpcs-wp/zipball/874f6757ab672682855b0baf43d6e8a965242c88",
+                "reference": "874f6757ab672682855b0baf43d6e8a965242c88",
                 "shasum": ""
             },
             "require": {
@@ -104,7 +107,7 @@
                 "GPL-2.0-only"
             ],
             "description": "Package contains all coding standards for Aivec WordPress PHP",
-            "time": "2020-02-01T11:18:09+00:00"
+            "time": "2020-02-16T03:37:09+00:00"
         },
         {
             "name": "dealerdirect/phpcodesniffer-composer-installer",
@@ -283,16 +286,16 @@
         },
         {
             "name": "wp-coding-standards/wpcs",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WordPress/WordPress-Coding-Standards.git",
-                "reference": "f90e8692ce97b693633db7ab20bfa78d930f536a"
+                "reference": "b5a453203114cc2284b1a614c4953456fbe4f546"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/f90e8692ce97b693633db7ab20bfa78d930f536a",
-                "reference": "f90e8692ce97b693633db7ab20bfa78d930f536a",
+                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/b5a453203114cc2284b1a614c4953456fbe4f546",
+                "reference": "b5a453203114cc2284b1a614c4953456fbe4f546",
                 "shasum": ""
             },
             "require": {
@@ -300,12 +303,12 @@
                 "squizlabs/php_codesniffer": "^3.3.1"
             },
             "require-dev": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5 || ^0.6",
                 "phpcompatibility/php-compatibility": "^9.0",
                 "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
             },
             "suggest": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0 || This Composer plugin will sort out the PHPCS 'installed_paths' automatically."
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.6 || This Composer plugin will sort out the PHPCS 'installed_paths' automatically."
             },
             "type": "phpcodesniffer-standard",
             "notification-url": "https://packagist.org/downloads/",
@@ -324,7 +327,7 @@
                 "standards",
                 "wordpress"
             ],
-            "time": "2019-11-11T12:34:03+00:00"
+            "time": "2020-02-04T02:52:06+00:00"
         }
     ],
     "aliases": [],
