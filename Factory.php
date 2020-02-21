@@ -332,17 +332,16 @@ class Factory {
             }
         }
 
-        $options = get_option('usces');
-        $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = isset($_POST['activate']) ? sanitize_text_field(wp_unslash($_POST['activate'])) : '';
-        $options[Module::SETTINGS_KEY][$this->module->getActing()]['sandbox'] = empty($_POST['sandbox']) ? true : false;
+        $options = $this->module->getActingOpts();
+        $options['activate'] = isset($_POST['activate']) ? sanitize_text_field(wp_unslash($_POST['activate'])) : $options['activate'];
+        $options['sandbox'] = empty($_POST['sandbox']) ? true : false;
         if ($this->module->getAauth() !== null) {
             $this->module->getAauth()->getSellers()->updateAuthProvider();
         }
         if ($this->module->getCapturePaymentOptSupport() === true) {
-            $pc_type = $options[Module::SETTINGS_KEY][$this->module->getActing()]['payment_capture_type'];
-            $options[Module::SETTINGS_KEY][$this->module->getActing()]['payment_capture_type'] = isset($_POST['payment_capture_type']) ? $_POST['payment_capture_type'] : $pc_type;
+            $options['payment_capture_type'] = isset($_POST['payment_capture_type']) ? $_POST['payment_capture_type'] : $options['payment_capture_type'];
         }
-        $options[Module::SETTINGS_KEY][$this->module->getActing()] = $this->filterUpdateOptionsProcessing($options[Module::SETTINGS_KEY][$this->module->getActing()]);
+        $options = $this->filterUpdateOptionsProcessing($options);
         
         $this->error_mes = '';
         $this->error_mes = $this->validateFormPost($this->error_mes);
@@ -350,23 +349,24 @@ class Factory {
         if (\WCUtils::is_blank($this->error_mes)) {
             $usces->action_status = 'success';
             $usces->action_message = __('options are updated', 'usces');
-            if ('on' === $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate']) {
+            if ('on' === $options['activate']) {
                 $usces->payment_structure[$this->module->getActingFlag()] = sprintf(
                     /* translators: %s: formatted plugin name. */
                     esc_html__('%s Settlement', 'smodule'),
                     $this->module->getPaymentName()
                 );
             } else {
-                $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = 'off';
+                $options['activate'] = 'off';
                 unset($usces->payment_structure[$this->module->getActingFlag()]);
             }
         } else {
             $usces->action_status = 'error';
             $usces->action_message = __('Data have deficiency.', 'usces');
-            $options[Module::SETTINGS_KEY][$this->module->getActing()]['activate'] = 'off';
+            $options['activate'] = 'off';
             unset($usces->payment_structure[$this->module->getActingFlag()]);
         }
-        update_option('usces', $options);
+
+        $this->module->updateActingOpts($options);
         ksort($usces->payment_structure);
         update_option('usces_payment_structure', $usces->payment_structure);
     }

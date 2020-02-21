@@ -245,6 +245,22 @@ class Module {
     }
 
     /**
+     * Updates settlement module options
+     *
+     * This is a convenience method for updating values in the options array returned
+     * by {@see \Aivec\Welcart\SettlementModules\Module::getActingOpts()}.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $opts
+     * @return void
+     */
+    public function updateActingOpts(array $opts) {
+        $options = get_option('usces');
+        $options[self::SETTINGS_KEY][$this->acting] = $opts;
+        update_option('usces', $options);
+    }
+
+    /**
      * Checks if settlement module is activated
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
