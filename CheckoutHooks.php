@@ -28,13 +28,7 @@ class CheckoutHooks {
      * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
      * @return void
      */
-    public function __construct($module) {
-        if (!($module instanceof Module)) {
-            throw new InvalidArgumentException(
-                'the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module'
-            );
-        }
-
+    public function __construct(Module $module) {
         $this->module = $module;
         add_action('usces_action_acting_processing', array($this, 'actingProcessingDI'), 10, 2);              // STEP 1
         add_filter('usces_filter_check_acting_return_results', array($this, 'actingReturnResultsDI'), 10, 1); // STEP 2

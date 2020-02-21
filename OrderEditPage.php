@@ -26,13 +26,7 @@ class OrderEditPage {
      * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
      * @return void
      */
-    public function __construct($module) {
-        if (!($module instanceof Module)) {
-            throw new InvalidArgumentException(
-                'the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module'
-            );
-        }
-
+    public function __construct(Module $module) {
         $this->module = $module;
         add_action('usces_action_order_edit_form_status_block_middle', array($this, 'orderEditFormStatusBlockMiddleDI'), 10, 3);
         add_action('usces_action_order_edit_form_status_block_middle', array($this, 'loadAssetsDI'), 10, 3);

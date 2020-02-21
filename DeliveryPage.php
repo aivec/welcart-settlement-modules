@@ -23,13 +23,7 @@ class DeliveryPage {
      * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
      * @return void
      */
-    public function __construct($module) {
-        if (!($module instanceof Module)) {
-            throw new InvalidArgumentException(
-                'the provided module is not an instance of \Aivec\Welcart\SettlementModules\Module'
-            );
-        }
-
+    public function __construct(Module $module) {
         $this->module = $module;
         add_filter('usces_fiter_the_payment_method', array($this, 'filterPaymentMethods'), 10, 2);
         add_filter('usces_filter_the_continue_payment_method', array($this, 'filterContinueChargePaymentMethods'), 10, 1);
