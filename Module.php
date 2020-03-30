@@ -288,7 +288,7 @@ class Module {
     /**
      * Determines whether the settlement module can process all items in the cart.
      *
-     * If even ONE item contains a division or charge type that is not valid for this
+     * If even *ONE* item contains a division or charge type that is not valid for this
      * module, false will be returned, otherwise true is returned.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>

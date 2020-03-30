@@ -20,13 +20,13 @@ class OrderList {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
     public function __construct(Module $module) {
         $this->module = $module;
-        add_action('usces_action_collective_order_status', array($this, 'batchUpdateOrderStatusDI'), 10, 3);
-        add_filter('usces_filter_order_item_ajax', array($this, 'filterErrorLogDI'), 10, 1);
+        add_action('usces_action_collective_order_status', [$this, 'batchUpdateOrderStatusDI'], 10, 3);
+        add_filter('usces_filter_order_item_ajax', [$this, 'filterErrorLogDI'], 10, 1);
     }
 
     /**

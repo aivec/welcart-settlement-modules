@@ -34,21 +34,18 @@ class Factory {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      */
     public function __construct(Module $module) {
         $this->module = $module;
-        add_action('usces_action_settlement_tab_title', array( $this, 'settlementTabTitle' ));
-        add_action('usces_action_settlement_tab_body', array( $this, 'settlementTabBody' ));
-        add_action('usces_action_admin_settlement_update', array( $this, 'settlementUpdate' ));
+        add_action('usces_action_settlement_tab_title', [$this, 'settlementTabTitle']);
+        add_action('usces_action_settlement_tab_body', [$this, 'settlementTabBody']);
+        add_action('usces_action_admin_settlement_update', [$this, 'settlementUpdate']);
 
         $this->setAvailableSettlement();
     }
 
     /**
-     * Hook Source: Welcart
-     * Hook func: usces_action_settlement_tab_title
-     *
      * Adds module as a tab to Welcarts array of payment tabs
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -73,9 +70,6 @@ class Factory {
     }
 
     /**
-     * Hook Source: Welcart
-     * Hook func: usces_filter_available_settlement
-     *
      * Adds module as a payment option to Welcarts option array of payment options
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -90,9 +84,6 @@ class Factory {
     }
 
     /**
-     * Hook Source: Welcart
-     * Hook func: usces_action_settlement_tab_body
-     *
      * Echos the html for this modules settlement tab body.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -310,9 +301,6 @@ class Factory {
     }
     
     /**
-     * Hook Source: Welcart
-     * Hook func: usces_action_admin_settlement_update
-     *
      * Update usces settlement options with config
      * 決済オプション登録・更新
      *

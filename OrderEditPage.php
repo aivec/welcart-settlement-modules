@@ -18,24 +18,24 @@ class OrderEditPage {
     /**
      * Register hooks
      *
-     * We use dependency injection here so that any instance of Module can use
+     * We use dependency injection here so that any instance of `Module` can use
      * this class as a order edit page wrapper
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
     public function __construct(Module $module) {
         $this->module = $module;
-        add_action('usces_action_order_edit_form_status_block_middle', array($this, 'orderEditFormStatusBlockMiddleDI'), 10, 3);
-        add_action('usces_action_order_edit_form_status_block_middle', array($this, 'loadAssetsDI'), 10, 3);
-        add_action('usces_action_update_orderdata', array($this, 'updateOrderDataDI'), 10, 3);
-        add_action('usces_after_update_orderdata', array($this, 'setActionStatusAndMessage'), 10, 2);
+        add_action('usces_action_order_edit_form_status_block_middle', [$this, 'orderEditFormStatusBlockMiddleDI'], 10, 3);
+        add_action('usces_action_order_edit_form_status_block_middle', [$this, 'loadAssetsDI'], 10, 3);
+        add_action('usces_action_update_orderdata', [$this, 'updateOrderDataDI'], 10, 3);
+        add_action('usces_after_update_orderdata', [$this, 'setActionStatusAndMessage'], 10, 2);
     }
 
     /**
-     * Arbitrary hook used for enqueueing assets. Delegates to enqueueAssets for this Module
+     * Arbitrary hook used for enqueueing assets. Delegates to enqueueAssets for this `Module`
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $data
@@ -62,7 +62,7 @@ class OrderEditPage {
     }
 
     /**
-     * Delegates to orderEditFormStatusBlockMiddle for this Module
+     * Delegates to orderEditFormStatusBlockMiddle for this `Module`
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $data
