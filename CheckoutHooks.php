@@ -36,6 +36,7 @@ class CheckoutHooks {
         add_filter('usces_filter_reg_orderdata_status', [$this, 'registerOrderDataStatusDI'], 10, 2);    // STEP 4
         add_action('usces_action_reg_orderdata', [$this, 'registerOrderDataDI'], 10, 2);                 // STEP 5
         add_filter('usces_filter_get_error_settlement', [$this, 'errorPageMessageDI'], 10, 1);
+        add_filter('usces_filter_completion_settlement_message', [$this, 'filterSettlementCompletionPageDI'], 10, 2);
     }
 
     /**
@@ -128,6 +129,7 @@ class CheckoutHooks {
      * Sets order status
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
      * @param string $status
      * @param array  $entry
      * @return string
@@ -135,7 +137,7 @@ class CheckoutHooks {
     public function registerOrderDataStatusDI($status, $entry) {
         global $usces;
 
-        $payments = $usces->getPayments($_SESSION['usces_entry']['order']['payment_name']);
+        $payments = $usces->getPayments($entry['order']['payment_name']);
         $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
         if ($acting_flg === $this->module->getActingFlag()) {
             return $this->registerOrderDataStatus($status, $entry);
@@ -169,10 +171,10 @@ class CheckoutHooks {
     public function registerOrderDataDI($args) {
         global $usces;
         
-        if (!isset($_SESSION['usces_entry']['order']['payment_name'])) {
+        if (!isset($args['entry']['order']['payment_name'])) {
             return;
         }
-        $payments = $usces->getPayments($_SESSION['usces_entry']['order']['payment_name']);
+        $payments = $usces->getPayments($args['entry']['order']['payment_name']);
         if (empty($payments)) {
             return;
         }
@@ -228,6 +230,40 @@ class CheckoutHooks {
      * @return string
      */
     protected function errorPageMessage($html) {
+        return $html;
+    }
+
+    /**
+     * Filters HTML displayed on settlement completion page
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
+     * @param string $html
+     * @param array  $usces_entries
+     * @return string
+     */
+    public function filterSettlementCompletionPageDI($html, array $usces_entries) {
+        global $usces;
+
+        $payments = $usces->getPayments($usces_entries['order']['payment_name']);
+        $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
+        if ($acting_flg === $this->module->getActingFlag()) {
+            $html = $this->filterSettlementCompletionPage($html, $usces_entries);
+        }
+
+        return $html;
+    }
+
+    /**
+     * Filters HTML displayed on settlement completion page
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
+     * @param string $html
+     * @param array  $usces_entries
+     * @return string
+     */
+    protected function filterSettlementCompletionPage($html, array $usces_entries) {
         return $html;
     }
 }

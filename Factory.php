@@ -310,10 +310,11 @@ class Factory {
     public function settlementUpdate() {
         global $usces;
 
-        if (isset($_POST['acting'])) {
-            if ($this->module->getActing() !== $_POST['acting']) {
-                return;
-            }
+        if (!isset($_POST['acting'])) {
+            return;
+        }
+        if ($this->module->getActing() !== $_POST['acting']) {
+            return;
         }
 
         $options = $this->module->getActingOpts();
