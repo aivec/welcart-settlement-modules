@@ -1,0 +1,7 @@
+{
+    "namespace": "welcart-settlement-modules",
+    "projectType": "library",
+    "language": "en_US",
+    "downloadPlugins": ["usc-e-shop"],
+    "ftp": []
+}

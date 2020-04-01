@@ -179,14 +179,14 @@ class Module {
                 }
                 if ($nochargetypes === true) {
                     throw new InvalidArgumentException(
-                        'division \''.$division.'\' does not contain any valid charge types'
+                        "division '{$division}' does not contain any valid charge types"
                     );
                 }
             }
         }
         if ($nodivisions === true) {
             throw new InvalidArgumentException(
-                'valid_divisions must contain at least one of \'shipped\', \'service\', or \'data\''
+                "valid_divisions must contain at least one of 'shipped', 'service', or 'data'"
             );
         }
     }
@@ -233,7 +233,7 @@ class Module {
         if ($this->capture_payment_opt_support === true) {
             $type = $this->filterDefaultPaymentCaptureType('after_purchase');
             if ($type !== 'on_purchase' && $type !== 'after_purchase') {
-                throw new InvalidArgumentException('payment_capture_type must be one of on_purchase or after_purchase');
+                $type = 'after_purchase';
             }
             $acting_opts['payment_capture_type'] = isset($acting_opts['payment_capture_type']) ? $acting_opts['payment_capture_type'] : $type;
         }
@@ -248,7 +248,7 @@ class Module {
      * Updates settlement module options
      *
      * This is a convenience method for updating values in the options array returned
-     * by {@see \Aivec\Welcart\SettlementModules\Module::getActingOpts()}.
+     * by {@see Factory::settlementUpdate()}.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $opts
