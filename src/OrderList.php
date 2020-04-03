@@ -25,6 +25,8 @@ class OrderList {
      */
     public function __construct(Module $module) {
         $this->module = $module;
+
+        add_filter('usces_filter_orderlist_detail_value', [$this, 'filterOrderlistDetailValueDI'], 10, 4);
         add_action('usces_action_collective_order_status', [$this, 'batchUpdateOrderStatusDI'], 10, 3);
         add_filter('usces_filter_order_item_ajax', [$this, 'filterErrorLogDI'], 10, 1);
     }
@@ -167,5 +169,43 @@ class OrderList {
      */
     protected function filterErrorLog($res) {
         return $res;
+    }
+
+    /**
+     * Filters order list row column value
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
+     * @param string $detail
+     * @param string $value
+     * @param string $key
+     * @param int    $order_id
+     * @return string
+     */
+    public function filterOrderlistDetailValueDI($detail, $value, $key, $order_id) {
+        global $usces;
+
+        $order_data = $usces->get_order_data($order_id, 'direct');
+        $payment = usces_get_payments_by_name($order_data['order_payment_name']);
+        $acting_flg = isset($payment['settlement']) ? $payment['settlement'] : '';
+        if ($acting_flg === $this->module->getActingFlag()) {
+            $detail = $this->filterOrderlistDetailValue($detail, $value, $key, $order_id);
+        }
+        
+        return $detail;
+    }
+
+    /**
+     * Filters order list row column value
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $detail
+     * @param string $value
+     * @param string $key
+     * @param int    $order_id
+     * @return string
+     */
+    protected function filterOrderlistDetailValue($detail, $value, $key, $order_id) {
+        return $detail;
     }
 }

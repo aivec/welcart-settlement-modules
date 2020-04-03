@@ -313,6 +313,7 @@ class Factory {
         if (!isset($_POST['acting'])) {
             return;
         }
+
         if ($this->module->getActing() !== $_POST['acting']) {
             return;
         }
@@ -340,20 +341,44 @@ class Factory {
                     esc_html__('%s Settlement', 'smodule'),
                     $this->module->getPaymentName()
                 );
+                $this->onSettingsUpdateActivate($options);
             } else {
                 $options['activate'] = 'off';
                 unset($usces->payment_structure[$this->module->getActingFlag()]);
+                $this->onSettingsUpdateDeactivate($options);
             }
         } else {
             $usces->action_status = 'error';
             $usces->action_message = __('Data have deficiency.', 'usces');
             $options['activate'] = 'off';
             unset($usces->payment_structure[$this->module->getActingFlag()]);
+            $this->onSettingsUpdateDeactivate($options);
         }
 
         $this->module->updateActingOpts($options);
         ksort($usces->payment_structure);
         update_option('usces_payment_structure', $usces->payment_structure);
+    }
+
+    /**
+     * Called when settings are successfully updated and the payment module is activated
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $options
+     * @return void
+     */
+    protected function onSettingsUpdateActivate(array $options) {
+    }
+
+    /**
+     * Called when settings are updated and either an error occurs or the payment module
+     * is deactivated
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $options
+     * @return void
+     */
+    protected function onSettingsUpdateDeactivate(array $options) {
     }
 
     /**
