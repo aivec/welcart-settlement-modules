@@ -40,6 +40,46 @@ class OrderEditPage {
     }
 
     /**
+     * Conditional assets loader for the order edit page.
+     *
+     * If the current page is the order edit page **AND** the payment method used
+     * for the order in question corresponds to our injected `Module` instance, `admin_enqueue_scripts`
+     * will be used to invoke the `$enqueue` callback parameter and `true` will be returned,
+     * otherwise no action will be taken and `false` will be returned.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \use_e_shop $usces
+     * @param callable $enqueue
+     * @return bool
+     */
+    public function loadMyModuleAssets(callable $enqueue) {
+        global $usces;
+
+        if (!WelcartUtils::isOrderEditPage()) {
+            return false;
+        }
+        $orderid = isset($_REQUEST['order_id']) ? (int)$_REQUEST['order_id'] : null;
+        if (empty($orderid)) {
+            return false;
+        }
+        $order_data = $usces->get_order_data($orderid, 'direct');
+        $payment = usces_get_payments_by_name($order_data['order_payment_name']);
+        if (!isset($payment['settlement'])) {
+            return false;
+        }
+        if ($payment['settlement'] !== $this->module->getActingFlag()) {
+            return false;
+        }
+
+        // if all checks pass, enqueue assets
+        add_action('admin_enqueue_scripts', function () use ($enqueue) {
+            $enqueue();
+        });
+
+        return true;
+    }
+
+    /**
      * 支払情報 section of order edit page
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
