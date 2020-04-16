@@ -10,6 +10,8 @@ use InvalidArgumentException;
  */
 class CheckoutHooks {
 
+    const PURCHASE_NONCE_NAME = '_welpurchase';
+    
     /**
      * Settlement module object
      *
@@ -40,6 +42,24 @@ class CheckoutHooks {
     }
 
     /**
+     * Verifies nonce sent by purchase form
+     *
+     * @see ConfirmPage::filterBeforeBackButtonDI()
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    private function verifyPurchaseNonce() {
+        $nonce = '';
+        if (isset($_REQUEST[self::PURCHASE_NONCE_NAME])) {
+            $nonce = sanitize_text_field(wp_unslash($_REQUEST[self::PURCHASE_NONCE_NAME]));
+        }
+        if (!wp_verify_nonce($nonce, $this->module->getActing())) {
+            http_response_code(403);
+            die('Forbidden');
+        }
+    }
+
+    /**
      * Processes acting data and uses PRG pattern to avoid form re-submission
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -49,6 +69,7 @@ class CheckoutHooks {
      */
     public function actingProcessingDI($acting_flag, $post_query) {
         if ($acting_flag === $this->module->getActingFlag()) {
+            $this->verifyPurchaseNonce();
             $this->actingProcessing($acting_flag, $post_query);
         }
     }
@@ -77,6 +98,7 @@ class CheckoutHooks {
      */
     public function filterActingProcessingDI($acting_flag, $post_query, $acting_status) {
         if ($acting_flag === $this->module->getActingFlag()) {
+            $this->verifyPurchaseNonce();
             return $this->filterActingProcessing($acting_flag, $post_query, $acting_status);
         }
 

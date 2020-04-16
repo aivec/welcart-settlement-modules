@@ -37,12 +37,12 @@ class ConfirmPage {
     /**
      * Register usces_filter_confirm_inform hook
      *
-     * We use dependency injection here so that any instance of Module can use
+     * We use dependency injection here so that any instance of `Module` can use
      * this class as a confirm page wrapper
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of \Aivec\Welcart\SettlementModules\Module.
+     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
     public function __construct(Module $module) {
@@ -61,21 +61,22 @@ class ConfirmPage {
 
         $this->errorhtml = $errorhtml;
         $this->module = $module;
-        add_filter('usces_filter_confirm_inform', array($this, 'confirmPagePayButtonHook'), 10, 5);
-        add_action('usces_filter_template_redirect', array($this, 'setFees'), 1, 1);
+        add_filter('usces_filter_confirm_before_backbutton', [$this, 'filterBeforeBackButtonDI'], 10, 4);
+        add_filter('usces_filter_confirm_inform', [$this, 'confirmPagePayButtonHook'], 10, 5);
+        add_action('usces_filter_template_redirect', [$this, 'setFees'], 1, 1);
     }
 
     /**
-     * Sets cart fees (populates usces_entries global)
+     * Sets cart fees (populates `usces_entries` global)
      *
-     * We use the usces template redirect hook because scripts may rely on usces_entries
-     * variables such as 'total_full_price'. The wp_enqueue_scripts hook is called BEFORE
-     * the usces_entries global variable is updated, which means our injected JS variables
+     * We use the usces template redirect hook because scripts may rely on `usces_entries`
+     * variables such as `total_full_price`. The wp_enqueue_scripts hook is called **BEFORE**
+     * the `usces_entries` global variable is updated, which means our injected JS variables
      * will not accurately reflect the total price on initial page load, point usage, and
      * coupon usage.
      *
-     * Therefore, the onFeesSet method called by this class should be extended by any Module
-     * that has scripts that rely on usces_* global variables.
+     * Therefore, the `onFeesSet` method called by this class should be extended by any `Module`
+     * that has scripts that rely on `usces_*` global variables.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @global \usc_e_shop $usces
@@ -105,8 +106,8 @@ class ConfirmPage {
     /**
      * Filter for confirm page payment button
      *
-     * Returns html as-is if the passed in acting_flag is not the same as this classes injected
-     * Module instance. Displays an error message if any of the following are true:
+     * Returns html as-is if the passed in `acting_flag` is not the same as this classes injected
+     * `Module` instance. Displays an error message if any of the following are true:
      *
      * 1. The cart contains an item with a division or charge type that cannot be processed
      * by the selected settlement module.
@@ -114,7 +115,7 @@ class ConfirmPage {
      * settings page.
      * 3. The settlement module requires aauth authentication but is not authenticated
      *
-     * Calls filter method if acting_flag is the same as our Module instance's and all tests
+     * Calls filter method if `acting_flag` is the same as our `Module` instance's and all tests
      * listed above pass.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -168,7 +169,7 @@ class ConfirmPage {
      * Conditional view loader
      *
      * Returns true if the current page is the confirm page and the settlement module
-     * is the same as our injected Module. false otherwise
+     * is the same as our injected `Module`. false otherwise
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @global \usc_e_shop $usces
@@ -192,7 +193,52 @@ class ConfirmPage {
     }
 
     /**
-     * Called if our injected Module instance is the selected payment method
+     * Filters HTML before back button.
+     *
+     * This method will **automatically** add a nonce field to the confirm page purchase
+     * form if the current `Module` is the same as our injected `Module`. Note that
+     * validation of the nonce is done automatically by acting processing methods
+     * in the `CheckoutHooks` class.
+     *
+     * Note also that this filter will have no effect if, for whatever reason, the cart
+     * cannot be processed by the `Module` instance.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param null   $null
+     * @param array  $payments
+     * @param string $acting_flag
+     * @param string $rand
+     * @return null|string
+     */
+    public function filterBeforeBackButtonDI($null, $payments, $acting_flag, $rand) {
+        if ($this->module->getActingFlag() !== $acting_flag) {
+            return $null;
+        }
+
+        $noncefield = wp_nonce_field($this->module->getActing(), CheckoutHooks::PURCHASE_NONCE_NAME, true, false);
+
+        return $noncefield . $this->filterBeforeBackButton($null, $payments, $acting_flag, $rand);
+    }
+
+    /**
+     * Filters HTML before back button.
+     *
+     * Note that this filter will have no effect if, for whatever reason, the cart
+     * cannot be processed by the `Module` instance
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param null   $null
+     * @param array  $payments
+     * @param string $acting_flag
+     * @param string $rand
+     * @return string
+     */
+    protected function filterBeforeBackButton($null, $payments, $acting_flag, $rand) {
+        return '';
+    }
+
+    /**
+     * Called if our injected `Module` instance is the selected payment method
      * on the confirm page.
      *
      * Should be extended for customizing the purchase button.
