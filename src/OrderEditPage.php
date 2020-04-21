@@ -37,6 +37,39 @@ class OrderEditPage {
         add_action('usces_action_order_edit_form_settle_info', [$this, 'settlementInfoDI'], 10, 2);
         add_action('usces_action_endof_order_edit_form', [$this, 'settlementDialogDI'], 10, 2);
         add_action('admin_print_footer_scripts', [$this, 'injectJavascriptDI']);
+        add_filter('usces_filter_deli_comps', [$this, 'filterDeliveryCompaniesDI'], 10, 1);
+    }
+
+    /**
+     * Determines whether the `order_id` for the currently open `order_edit_form.php`
+     * corresponds to an order that was purchased with this classes settlement `Module`
+     * instance.
+     *
+     * This is a fallback method for when no useful parameters are passed to the hook
+     * where you want to check which `Module` was used.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \use_e_shop $usces
+     * @return bool
+     */
+    public function isMyModuleNoParamsCheck() {
+        global $usces;
+
+        if (WelcartUtils::isOrderEditPage()) {
+            $order_id = isset($_REQUEST['order_id']) ? $_REQUEST['order_id'] : '';
+            if (!empty($order_id)) {
+                $order_data = $usces->get_order_data($order_id, 'direct');
+                $payment = usces_get_payments_by_name($order_data['order_payment_name']);
+                if (isset($payment['settlement'])) {
+                    $acting_flg = $payment['settlement'];
+                    if ($this->module->getActingFlag() === $acting_flg) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -270,24 +303,11 @@ class OrderEditPage {
      * Admin footer hook for injecting JavaScript
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @global \use_e_shop $usces
      * @return void
      */
     public function injectJavascriptDI() {
-        global $usces;
-
-        if (WelcartUtils::isOrderEditPage()) {
-            $order_id = isset($_REQUEST['order_id']) ? $_REQUEST['order_id'] : '';
-            if (!empty($order_id)) {
-                $order_data = $usces->get_order_data($order_id, 'direct');
-                $payment = usces_get_payments_by_name($order_data['order_payment_name']);
-                if (isset($payment['settlement'])) {
-                    $acting_flg = $payment['settlement'];
-                    if ($this->module->getActingFlag() === $acting_flg) {
-                        $this->injectJavascript();
-                    }
-                }
-            }
+        if ($this->isMyModuleNoParamsCheck()) {
+            $this->injectJavascript();
         }
     }
 
@@ -298,5 +318,31 @@ class OrderEditPage {
      * @return void
      */
     protected function injectJavascript() {
+    }
+
+    /**
+     * Filters delivery companies displayed in dropdown list
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $deli_comps
+     * @return array
+     */
+    public function filterDeliveryCompaniesDI($deli_comps) {
+        if ($this->isMyModuleNoParamsCheck()) {
+            $deli_comps = $this->filterDeliveryCompanies($deli_comps);
+        }
+
+        return $deli_comps;
+    }
+
+    /**
+     * Filters delivery companies displayed in dropdown list
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $deli_comps
+     * @return array
+     */
+    protected function filterDeliveryCompanies($deli_comps) {
+        return $deli_comps;
     }
 }

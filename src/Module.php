@@ -321,6 +321,24 @@ class Module {
     }
 
     /**
+     * Returns the payment method name which was entered in by the store admin
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return string
+     */
+    public function getPaymentNameByActingFlag() {
+        $payments = usces_get_system_option('usces_payment_method', 'sort');
+        foreach ($payments as $pmethod) {
+            $acting_flag = 'acting' === $pmethod['settlement'] ? $pmethod['module'] : $pmethod['settlement'];
+            if ($acting_flag === $this->getActingFlag()) {
+                return $pmethod['name'];
+            }
+        }
+
+        return $this->getPaymentName();
+    }
+    
+    /**
      * Filter the default payment capture type (処理区分)
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
