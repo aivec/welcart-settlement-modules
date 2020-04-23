@@ -12,36 +12,28 @@ class Module {
     const SETTINGS_KEY = 'acting_settings';
 
     /**
-     * Front facing name of the settlement module
+     * Front facing default name of the `Module`
      *
      * @var string
      */
     private $payment_name;
 
     /**
-     * Acting string for the settlement module.
+     * Acting string for the `Module`.
      *
      * @var string
      */
     private $acting;
 
     /**
-     * Acting flag string for the settlement module.
+     * Acting flag string for the `Module`.
      *
      * @var string
      */
     private $acting_flag;
 
     /**
-     * Suffix string for all hooks and filters unique to an instance
-     * of this class
-     *
-     * @var string
-     */
-    private $hook_suffix;
-
-    /**
-     * Array of valid divisions and payment types for the Module
+     * Array of valid divisions and payment types for the `Module`
      *
      * Divisions:
      * 'shipped' -> 物販
@@ -54,7 +46,7 @@ class Module {
      * 'regular' -> ?
      *
      * simply omit any keys that represent a division or charge type that is not supported
-     * by the Module.
+     * by the `Module`.
      *
      * [
      *      'shipped' => [
@@ -79,7 +71,16 @@ class Module {
     private $valid_divisions;
 
     /**
-     * True if Module provides support for wcex_multi_shipping, false otherwise
+     * Currency object
+     *
+     * Contains convenience methods for currency validation, etc.
+     *
+     * @var Currency
+     */
+    private $currency;
+
+    /**
+     * True if `Module` provides support for wcex_multi_shipping, false otherwise
      *
      * @var boolean
      */
@@ -107,25 +108,26 @@ class Module {
      * Initializes a settlement module.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param string    $payment_name
-     * @param string    $acting
-     * @param string    $acting_flag
-     * @param string    $hook_suffix
-     * @param array     $valid_divisions
-     * @param boolean   $multi_shipping_support
-     * @param Auth|null $aauth
-     * @param boolean   $capture_payment_opt_support
+     * @param string    $payment_name Front facing default name of the `Module`
+     * @param string    $acting Acting string for the `Module`
+     * @param string    $acting_flag Acting flag string for the `Module`
+     * @param array     $valid_divisions Array of valid divisions and payment types for the `Module`. Refer
+     *                                   to the member var doc comment for more details
+     * @param array     $valid_currencies array of valid currencies in ISO 4217 format. Leave the array empty
+     *                                    if you want to support all currencies. Default: empty array
+     * @param boolean   $multi_shipping_support `true` if `Module` provides support for `wcex_multi_shipping`,
+     *                                          `false` otherwise. Default: `false`
+     * @param Auth|null $aauth Aivec proprietary authentication instance or null if not required
+     * @param boolean   $capture_payment_opt_support If true, displays option on settlement settings
+     *                                               page for determining payment capture type (処理区分)
      * @throws InvalidArgumentException Thrown if aauth is set but invalid.
      */
     public function __construct(
         $payment_name,
         $acting,
         $acting_flag,
-        $hook_suffix,
-        $valid_divisions = [
-            'shipped' => ['once'],
-            'service' => ['once'],
-        ],
+        array $valid_divisions = ['shipped' => ['once'], 'service' => ['once']],
+        array $valid_currencies = [],
         $multi_shipping_support = false,
         $aauth = null,
         $capture_payment_opt_support = false
@@ -138,32 +140,30 @@ class Module {
             }
         }
 
+        load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
+        load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
+        
         $this->validateDivisions($valid_divisions);
         $this->payment_name = $payment_name;
         $this->acting = $acting;
         $this->acting_flag = $acting_flag;
-        $this->hook_suffix = $hook_suffix;
         $this->valid_divisions = $valid_divisions;
         $this->multi_shipping_support = $multi_shipping_support;
         $this->aauth = $aauth;
         $this->capture_payment_opt_support = $capture_payment_opt_support;
-
-        load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
-        load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
+        $this->currency = new Currency($this, $valid_currencies);
+        $this->currency->init();
     }
 
     /**
      * Validates form of divisions array
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @throws InvalidArgumentException Thrown if $valid_divisions is malformed.
+     * @throws InvalidArgumentException Thrown if `$valid_divisions` is malformed.
      * @param array $valid_divisions
      * @return void
      */
-    private function validateDivisions($valid_divisions) {
-        if (!is_array($valid_divisions)) {
-            throw new InvalidArgumentException('valid_divisions must be an array');
-        }
+    private function validateDivisions(array $valid_divisions) {
         $nodivisions = true;
         foreach ($valid_divisions as $division => $charge_types) {
             if ($division === 'shipped' || $division === 'data' || $division === 'service') {
@@ -194,7 +194,8 @@ class Module {
     /**
      * Returns true if settlement module can be used
      *
-     * Always returns true if authentication is not required
+     * If `aauth` is not `null`, this method will check whether the user is authenticated
+     * or not. Currency support is also checked.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return boolean
@@ -210,6 +211,8 @@ class Module {
         } else {
             $ready = true;
         }
+
+        $ready = $ready && $this->currency->isCurrencySupported();
 
         return $ready;
     }
@@ -228,7 +231,7 @@ class Module {
         $acting_opts
             = isset($usces->options[self::SETTINGS_KEY][$this->acting])
             ? $usces->options[self::SETTINGS_KEY][$this->acting]
-            : array();
+            : [];
       
         if ($this->capture_payment_opt_support === true) {
             $type = $this->filterDefaultPaymentCaptureType('after_purchase');
@@ -242,6 +245,36 @@ class Module {
         $acting_opts = $this->filterActingOpts($acting_opts);
 
         return $acting_opts;
+    }
+
+    /**
+     * Returns `true` if `payment_capture_type` is `on_purchase`. Returns
+     * `true` by default if capture settings aren't available
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function captureOnPurchase() {
+        if ($this->capture_payment_opt_support === false) {
+            return true;
+        }
+        
+        return $this->getActingOpts()['payment_capture_type'] === 'on_purchase';
+    }
+
+    /**
+     * Returns `true` if `payment_capture_type` is `after_purchase`. Returns
+     * `true` by default if capture settings aren't available
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function captureAfterPurchase() {
+        if ($this->capture_payment_opt_support === false) {
+            return true;
+        }
+        
+        return $this->getActingOpts()['payment_capture_type'] === 'after_purchase';
     }
 
     /**
@@ -268,7 +301,7 @@ class Module {
      */
     public function isModuleActivated() {
         $payment_methods = usces_get_system_option('usces_payment_method', 'sort');
-        $module = array();
+        $module = [];
         foreach ($payment_methods as $index => $values) {
             if ($values['settlement'] === $this->acting_flag) {
                 $module = $values;
@@ -389,21 +422,21 @@ class Module {
     }
 
     /**
-     * Getter for hook_suffix
-     *
-     * @return string
-     */
-    public function getHookSuffix() {
-        return $this->hook_suffix;
-    }
-
-    /**
      * Getter for valid_divisions
      *
      * @return array
      */
     public function getValidDivisions() {
         return $this->valid_divisions;
+    }
+
+    /**
+     * Getter for currency model
+     *
+     * @return array
+     */
+    public function getCurrencyModel() {
+        return $this->currency;
     }
 
     /**

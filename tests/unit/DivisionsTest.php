@@ -1,28 +1,18 @@
 <?php
 use PHPUnit\Framework\TestCase;
 use Aivec\Welcart\SettlementModules\Module;
-use InvalidArgumentException;
 
-require 'mocks.php';
+require_once 'mocks.php';
 
-class ModuleArgsTest extends TestCase
+class DivisionsTest extends TestCase
 {
-    public function testValidateDivisionsWillThrowExceptionOnNotArray()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('valid_divisions must be an array');
-
-        $divisions = 1;
-        new Module('test', 'test', 'test', 'test', $divisions);
-    }
-
     public function testValidateDivisionsWillThrowExceptionOnNoDivisionsGiven()
     {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("valid_divisions must contain at least one of 'shipped', 'service', or 'data'");
 
         $divisions = ['random'];
-        new Module('test', 'test', 'test', 'test', $divisions);
+        new Module('test', 'test', 'test', $divisions);
     }
 
     public function testValidateDivisionsWillThrowExceptionOnPaymentTypeNotArray()
@@ -31,7 +21,7 @@ class ModuleArgsTest extends TestCase
         $this->expectExceptionMessage('charge types must be an array');
 
         $divisions = ['shipped' => 1];
-        new Module('test', 'test', 'test', 'test', $divisions);
+        new Module('test', 'test', 'test', $divisions);
     }
 
     public function testValidateDivisionsWillThrowExceptionOnInvalidPaymentType()
@@ -40,6 +30,6 @@ class ModuleArgsTest extends TestCase
         $this->expectExceptionMessage("division 'shipped' does not contain any valid charge types");
 
         $divisions = ['shipped' => ['random']];
-        new Module('test', 'test', 'test', 'test', $divisions);
+        new Module('test', 'test', 'test', $divisions);
     }
 }

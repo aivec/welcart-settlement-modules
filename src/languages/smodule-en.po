@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Aivec LLC.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-05T13:01:13+09:00\n"
+"POT-Creation-Date: 2020-04-23T11:36:35+09:00\n"
 "PO-Revision-Date: 2018-11-21 22:15+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,62 +14,67 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 
 #. translators: name of settlement module
-#: ConfirmPage.php:134 DeliveryPage.php:152
+#: src/ConfirmPage.php:56 src/DeliveryPage.php:146
 msgid "%s cannot be used"
 msgstr "%s cannot be used at this time."
 
+#. translators: 1. the invalid currency code, 2. settlement module name
+#: src/Currency.php:204
+msgid "The currency code %1$s is not supported by %2$s."
+msgstr "The currency code %1$s is not supported by %2$s."
+
 #. translators: settlement module name
-#: DeliveryPage.php:196
+#: src/DeliveryPage.php:190
 msgid "%s cannot be used when multiple shipping addresses are specified."
 msgstr ""
 "%s cannot be used when multiple shipping addresses are specified. Please "
 "choose a different payment method."
 
 # Settlement config
-#: Factory.php:127
+#: src/Factory.php:114
 msgid "Thoroughly test your integration before going live."
 msgstr "Thoroughly test your integration before going live."
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:142
+#: src/Factory.php:129
 msgid "enable/disable %s"
 msgstr "enable/disable %s"
 
-#: Factory.php:156
+#: src/Factory.php:143
 msgid "Enable"
 msgstr "Enable"
 
-#: Factory.php:166
+#: src/Factory.php:153
 msgid "Disable"
 msgstr "Disable"
 
-#: Factory.php:216
+#: src/Factory.php:203
 msgid "Environment"
 msgstr "Environment"
 
-#: Factory.php:229
+#: src/Factory.php:216
 msgid "Test environment"
 msgstr "Test environment"
 
-#: Factory.php:239
+#: src/Factory.php:226
 msgid "Production environment"
 msgstr "Production environment"
 
-#: Factory.php:246
+#: src/Factory.php:233
 msgid "Changes between test and production versions."
 msgstr "Changes between test and production versions."
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:273
+#: src/Factory.php:260
 msgid "Update %s Settings"
 msgstr "Update %s Settings"
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:285 Factory.php:356
+#: src/Factory.php:272 src/Factory.php:341
 msgid "%s Settlement"
 msgstr "%s Settlement"
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:295
+#: src/Factory.php:282
 msgid "Click here for more information about %s"
 msgstr "Click here for more information about %s 》"

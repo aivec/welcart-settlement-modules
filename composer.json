@@ -1,6 +1,6 @@
 {
   "name": "aivec/welcart-settlement-modules",
-  "description": "Code for creating settlement modules and accompanying hooks/filters given a set of configuration parameters",
+  "description": "This package is for easy creation of Welcart 決済モジュール",
   "type": "library",
   "license": "GPL-2.0-only",
   "authors": [
@@ -37,9 +37,9 @@
     ],
     "i18n:compile-pos": "find ./src/languages -name \"*.po\" | sed 's/\\.po//g' | xargs -I % msgfmt %.po -o %.mo",
     "test": [
-      "aivec-codecept codecept run unit",
+      "codecept run unit",
       "aivec-codecept codecept run wpunit"
     ],
-    "test:unit": "aivec-codecept codecept run unit"
+    "test:unit": "codecept run unit"
   }
 }

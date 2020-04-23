@@ -7,67 +7,72 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2019-12-05T13:01:13+09:00\n"
+"POT-Creation-Date: 2020-04-23T11:36:35+09:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: smodule\n"
 
 #. translators: name of settlement module
-#: ConfirmPage.php:134
-#: DeliveryPage.php:152
+#: src/ConfirmPage.php:56
+#: src/DeliveryPage.php:146
 msgid "%s cannot be used"
 msgstr ""
 
+#. translators: 1. the invalid currency code, 2. settlement module name
+#: src/Currency.php:204
+msgid "The currency code %1$s is not supported by %2$s."
+msgstr ""
+
 #. translators: settlement module name
-#: DeliveryPage.php:196
+#: src/DeliveryPage.php:190
 msgid "%s cannot be used when multiple shipping addresses are specified."
 msgstr ""
 
-#: Factory.php:127
+#: src/Factory.php:114
 msgid "Thoroughly test your integration before going live."
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:142
+#: src/Factory.php:129
 msgid "enable/disable %s"
 msgstr ""
 
-#: Factory.php:156
+#: src/Factory.php:143
 msgid "Enable"
 msgstr ""
 
-#: Factory.php:166
+#: src/Factory.php:153
 msgid "Disable"
 msgstr ""
 
-#: Factory.php:216
+#: src/Factory.php:203
 msgid "Environment"
 msgstr ""
 
-#: Factory.php:229
+#: src/Factory.php:216
 msgid "Test environment"
 msgstr ""
 
-#: Factory.php:239
+#: src/Factory.php:226
 msgid "Production environment"
 msgstr ""
 
-#: Factory.php:246
+#: src/Factory.php:233
 msgid "Changes between test and production versions."
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:273
+#: src/Factory.php:260
 msgid "Update %s Settings"
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:285
-#: Factory.php:356
+#: src/Factory.php:272
+#: src/Factory.php:341
 msgid "%s Settlement"
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: Factory.php:295
+#: src/Factory.php:282
 msgid "Click here for more information about %s"
 msgstr ""
