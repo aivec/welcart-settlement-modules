@@ -248,6 +248,16 @@ class Module {
     }
 
     /**
+     * Returns `true` if `Module` is set to sandbox mode, `false` otherwise
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function isSandboxMode() {
+        return $this->getActingOpts()['sandbox'];
+    }
+    
+    /**
      * Returns `true` if `payment_capture_type` is `on_purchase`. Returns
      * `true` by default if capture settings aren't available
      *
