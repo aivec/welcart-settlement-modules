@@ -341,6 +341,13 @@ class Module {
     public function canProcessCart() {
         global $usces;
 
+        if (!usces_is_cart()) {
+            return false;
+        }
+        if (!$this->isModuleActivated()) {
+            return false;
+        }
+        
         $cart = $usces->cart->get_cart();
         if (is_array($cart)) {
             foreach ($cart as $item) {
