@@ -30,6 +30,7 @@ class OrderEditPage {
     public function __construct(Module $module) {
         $this->module = $module;
 
+        add_action('usces_action_order_edit_form_detail_bottom', [$this, 'afterDetailsSectionDI'], 10, 3);
         add_action('usces_action_order_edit_form_status_block_middle', [$this, 'orderEditFormStatusBlockMiddleDI'], 10, 3);
         add_action('usces_action_order_edit_form_status_block_middle', [$this, 'loadAssetsDI'], 10, 3);
         add_action('usces_action_update_orderdata', [$this, 'updateOrderDataDI'], 10, 3);
@@ -113,6 +114,35 @@ class OrderEditPage {
     }
 
     /**
+     * Action that fires right before the ending `</table>` tag for the extra details section
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $data
+     * @param array $cscs_meta
+     * @param array $action_args ['order_action', 'order_id', 'cart']
+     * @return void
+     */
+    public function afterDetailsSectionDI($data, $cscs_meta, $action_args) {
+        if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
+            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+                $this->afterDetailsSection($data, $cscs_meta, $action_args);
+            }
+        }
+    }
+
+    /**
+     * Action that fires right before the ending `</table>` tag for the extra details section
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $data
+     * @param array $cscs_meta
+     * @param array $action_args ['order_action', 'order_id', 'cart']
+     * @return void
+     */
+    protected function afterDetailsSection($data, $cscs_meta, $action_args) {
+    }
+
+    /**
      * 支払情報 section of order edit page
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -176,8 +206,10 @@ class OrderEditPage {
      * @return void
      */
     public function loadAssetsDI($data, $cscs_meta, $action_args) {
-        if ($data['order_payment_name'] === $this->module->getPaymentName()) {
-            $this->enqueueAssets($data, $cscs_meta, $action_args);
+        if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
+            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+                $this->enqueueAssets($data, $cscs_meta, $action_args);
+            }
         }
     }
 
