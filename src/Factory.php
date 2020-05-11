@@ -16,6 +16,16 @@ class Factory {
     protected $module;
 
     /**
+     * Payment name displayed on the settlement settings page
+     *
+     * This is for cases where the payment name registered on the 基本設定ページ is different
+     * than what should be displayed on the settlement settings page
+     *
+     * @var string
+     */
+    private $payment_display_name;
+
+    /**
      * Determines whether to display the settlement tab or not.
      *
      * @var boolean
@@ -34,10 +44,12 @@ class Factory {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
+     * @param string $payment_display_name
      * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      */
-    public function __construct(Module $module) {
+    public function __construct(Module $module, $payment_display_name = '') {
         $this->module = $module;
+        $this->payment_display_name = !empty($payment_display_name) ? $payment_display_name : $this->module->getPaymentName();
         add_action('usces_action_settlement_tab_title', [$this, 'settlementTabTitle']);
         add_action('usces_action_settlement_tab_body', [$this, 'settlementTabBody']);
         add_action('usces_action_admin_settlement_update', [$this, 'settlementUpdate']);
@@ -62,7 +74,7 @@ class Factory {
             ?>
             <li>
                 <a href="#uscestabs_<?php echo esc_attr($this->module->getActing()); ?>">
-                    <?php echo esc_html($this->module->getPaymentName()); ?>
+                    <?php echo esc_html($this->payment_display_name); ?>
                 </a>
             </li>
             <?php
@@ -78,7 +90,7 @@ class Factory {
     private function setAvailableSettlement() {
         $available_settlement = get_option('usces_available_settlement');
         if (!in_array($this->module->getActing(), $available_settlement, true)) {
-            $available_settlement[$this->module->getActing()] = $this->module->getPaymentName();
+            $available_settlement[$this->module->getActing()] = $this->payment_display_name;
             update_option('usces_available_settlement', $available_settlement);
         }
     }
@@ -103,7 +115,7 @@ class Factory {
             <div id="uscestabs_<?php echo esc_attr($this->module->getActing()); ?>">
                 <div class="settlement_service">
                     <span class="service_title">
-                        <?php echo esc_html($this->module->getPaymentName()); ?>
+                        <?php echo esc_html($this->payment_display_name); ?>
                     </span>
                 </div>
         
@@ -127,7 +139,7 @@ class Factory {
                                 <?php echo sprintf(
                                     /* translators: %s: formatted plugin name. */
                                     esc_html__('enable/disable %s', 'smodule'),
-                                    $this->module->getPaymentName()
+                                    $this->payment_display_name
                                 ); ?>
                             </th>
                             <td>
@@ -258,7 +270,7 @@ class Factory {
                             <?php echo sprintf(
                                 /* translators: %s: formatted plugin name. */
                                 esc_attr__('Update %s Settings', 'smodule'),
-                                $this->module->getPaymentName()
+                                $this->payment_display_name
                             ); ?>"
                     />
                     <?php wp_nonce_field('admin_settlement', 'wc_nonce'); ?>
@@ -270,7 +282,7 @@ class Factory {
                             echo sprintf(
                                 /* translators: %s: formatted plugin name. */
                                 esc_html__('%s Settlement', 'smodule'),
-                                $this->module->getPaymentName()
+                                $this->payment_display_name
                             );
                         ?>
                         </strong>
@@ -280,7 +292,7 @@ class Factory {
                             echo sprintf(
                                 /* translators: %s: formatted plugin name. */
                                 esc_html__('Click here for more information about %s', 'smodule'),
-                                $this->module->getPaymentName()
+                                $this->payment_display_name
                             );
                         ?>
                     </a>
@@ -339,7 +351,7 @@ class Factory {
                 $usces->payment_structure[$this->module->getActingFlag()] = sprintf(
                     /* translators: %s: formatted plugin name. */
                     esc_html__('%s Settlement', 'smodule'),
-                    $this->module->getPaymentName()
+                    $this->payment_display_name
                 );
                 $this->onSettingsUpdateActivate($options);
             } else {
