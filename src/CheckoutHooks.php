@@ -32,6 +32,7 @@ class CheckoutHooks {
      */
     public function __construct(Module $module) {
         $this->module = $module;
+
         add_action('usces_action_acting_processing', [$this, 'actingProcessingDI'], 10, 2);              // STEP 1
         add_filter('usces_filter_acting_processing', [$this, 'filterActingProcessingDI'], 10, 3);        // STEP 2
         add_filter('usces_filter_check_acting_return_results', [$this, 'actingReturnResultsDI'], 10, 1); // STEP 3
@@ -202,6 +203,7 @@ class CheckoutHooks {
         }
         $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
         if ($acting_flg === $this->module->getActingFlag()) {
+            $usces->set_order_meta_value(Module::ACTING_FLAG_ORDER_META_KEY, $acting_flg, $args['order_id']);
             $this->registerOrderData($args);
         }
     }

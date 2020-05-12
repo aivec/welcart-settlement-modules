@@ -10,6 +10,7 @@ use InvalidArgumentException;
 class Module {
 
     const SETTINGS_KEY = 'acting_settings';
+    const ACTING_FLAG_ORDER_META_KEY = 'acting_flag';
 
     /**
      * Front facing default name of the `Module`
@@ -388,6 +389,41 @@ class Module {
         return $this->getPaymentName();
     }
     
+    /**
+     * Returns `true` if the given order_id is associated with the settlement module
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
+     * @param int $order_id
+     * @return bool
+     */
+    public function isOrderAssociated($order_id) {
+        global $usces;
+
+        $order_acting_flag = $usces->get_order_meta_value(self::ACTING_FLAG_ORDER_META_KEY, $order_id);
+        if (!empty($order_acting_flag)) {
+            if ($order_acting_flag === $this->getActingFlag()) {
+                return true;
+            }
+
+            return false;
+        }
+        // fallback for old modules that don't save the acting_flag
+        $order_data = $usces->get_order_data($order_id, 'direct');
+        if (empty($order_data)) {
+            return false;
+        }
+        $payment = usces_get_payments_by_name($order_data['order_payment_name']);
+        if (!isset($payment['settlement'])) {
+            return false;
+        }
+        if ($payment['settlement'] === $this->getActingFlag()) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Filter the default payment capture type (処理区分)
      *

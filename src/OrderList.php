@@ -36,13 +36,12 @@ class OrderList {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @see function updateOrderData
-     * @global usc_e_shop $usces
      * @global wpdb $wpdb
      * @param WlcOrderList|dataList $obj {@see use-e-shop/classes/orderList[2].class.php}
      * @return void
      */
     public function batchUpdateOrderStatusDI($obj) {
-        global $wpdb, $usces;
+        global $wpdb;
 
         check_admin_referer('order_list', 'wc_nonce');
 
@@ -63,9 +62,7 @@ class OrderList {
                 $id
             );
             $order_res = $wpdb->get_row($query, ARRAY_A);
-            $payments = $usces->getPayments($order_res['order_payment_name']);
-            $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
-            if ($acting_flg === $this->module->getActingFlag()) {
+            if ($this->module->isOrderAssociated((int)$id)) {
                 $msgstr = $this->batchUpdateOrderStatus($msgstr, $order_res, $_REQUEST, $id, $obj);
 
                 $change_word = '';
@@ -175,7 +172,6 @@ class OrderList {
      * Filters order list row column value
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @global \usc_e_shop $usces
      * @param string $detail
      * @param string $value
      * @param string $key
@@ -183,12 +179,7 @@ class OrderList {
      * @return string
      */
     public function filterOrderlistDetailValueDI($detail, $value, $key, $order_id) {
-        global $usces;
-
-        $order_data = $usces->get_order_data($order_id, 'direct');
-        $payment = usces_get_payments_by_name($order_data['order_payment_name']);
-        $acting_flg = isset($payment['settlement']) ? $payment['settlement'] : '';
-        if ($acting_flg === $this->module->getActingFlag()) {
+        if ($this->module->isOrderAssociated((int)$order_id)) {
             $detail = $this->filterOrderlistDetailValue($detail, $value, $key, $order_id);
         }
         

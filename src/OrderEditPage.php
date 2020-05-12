@@ -50,27 +50,36 @@ class OrderEditPage {
      * where you want to check which `Module` was used.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @global \use_e_shop $usces
      * @return bool
      */
     public function isMyModuleNoParamsCheck() {
-        global $usces;
-
         if (WelcartUtils::isOrderEditPage()) {
             $order_id = isset($_REQUEST['order_id']) ? $_REQUEST['order_id'] : '';
             if (!empty($order_id)) {
-                $order_data = $usces->get_order_data($order_id, 'direct');
-                $payment = usces_get_payments_by_name($order_data['order_payment_name']);
-                if (isset($payment['settlement'])) {
-                    $acting_flg = $payment['settlement'];
-                    if ($this->module->getActingFlag() === $acting_flg) {
-                        return true;
-                    }
-                }
+                return $this->module->isOrderAssociated($order_id);
             }
         }
 
         return false;
+    }
+
+    /**
+     * Returns `true` if the current page is the order edit page and the order_id
+     * is associated with our `Module` instance
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function isMyModuleOrderEditPage() {
+        if (!WelcartUtils::isOrderEditPage()) {
+            return false;
+        }
+        $orderid = isset($_REQUEST['order_id']) ? (int)$_REQUEST['order_id'] : null;
+        if (empty($orderid)) {
+            return false;
+        }
+        
+        return $this->module->isOrderAssociated($orderid);
     }
 
     /**
@@ -87,21 +96,7 @@ class OrderEditPage {
      * @return bool
      */
     public function loadMyModuleAssets(callable $enqueue) {
-        global $usces;
-
-        if (!WelcartUtils::isOrderEditPage()) {
-            return false;
-        }
-        $orderid = isset($_REQUEST['order_id']) ? (int)$_REQUEST['order_id'] : null;
-        if (empty($orderid)) {
-            return false;
-        }
-        $order_data = $usces->get_order_data($orderid, 'direct');
-        $payment = usces_get_payments_by_name($order_data['order_payment_name']);
-        if (!isset($payment['settlement'])) {
-            return false;
-        }
-        if ($payment['settlement'] !== $this->module->getActingFlag()) {
+        if (!$this->isMyModuleOrderEditPage()) {
             return false;
         }
 
@@ -124,7 +119,7 @@ class OrderEditPage {
      */
     public function afterDetailsSectionDI($data, $cscs_meta, $action_args) {
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
-            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+            if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
                 $this->afterDetailsSection($data, $cscs_meta, $action_args);
             }
         }
@@ -152,7 +147,7 @@ class OrderEditPage {
      */
     public function settlementInfoDI($data, $action_args) {
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
-            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+            if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
                 $this->settlementInfo($data, $action_args);
             }
         }
@@ -179,7 +174,7 @@ class OrderEditPage {
      */
     public function settlementDialogDI($data, $action_args) {
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
-            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+            if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
                 $this->settlementDialog($data, $action_args);
             }
         }
@@ -207,7 +202,7 @@ class OrderEditPage {
      */
     public function loadAssetsDI($data, $cscs_meta, $action_args) {
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
-            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+            if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
                 $this->enqueueAssets($data, $cscs_meta, $action_args);
             }
         }
@@ -236,7 +231,7 @@ class OrderEditPage {
      */
     public function orderEditFormStatusBlockMiddleDI($data, $cscs_meta, $action_args) {
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
-            if ($data['order_payment_name'] === $this->module->getPaymentName()) {
+            if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
                 $this->orderEditFormStatusBlockMiddle($data, $cscs_meta, $action_args);
             }
         }
@@ -258,18 +253,13 @@ class OrderEditPage {
      * Delegates update order processing if current Module.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @global \use_e_shop $usces
      * @param \stdClass $new_orderdata
      * @param string    $old_status
      * @param \stdClass $old_orderdata
      * @return void
      */
     public function updateOrderDataDI($new_orderdata, $old_status, $old_orderdata) {
-        global $usces;
-
-        $payments = $usces->getPayments($old_orderdata->order_payment_name);
-        $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
-        if ($acting_flg === $this->module->getActingFlag()) {
+        if ($this->module->isOrderAssociated((int)$old_orderdata["ID"])) {
             $this->updateOrderData($new_orderdata, $old_status, $old_orderdata);
             $shipped = explode(',', $new_orderdata->order_status);
             $status = trim($shipped[0]);
