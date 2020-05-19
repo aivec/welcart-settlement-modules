@@ -259,7 +259,7 @@ class OrderEditPage {
      * @return void
      */
     public function updateOrderDataDI($new_orderdata, $old_status, $old_orderdata) {
-        if ($this->module->isOrderAssociated((int)$old_orderdata["ID"])) {
+        if ($this->module->isOrderAssociated((int)$old_orderdata->ID)) {
             $this->updateOrderData($new_orderdata, $old_status, $old_orderdata);
             $shipped = explode(',', $new_orderdata->order_status);
             $status = trim($shipped[0]);
