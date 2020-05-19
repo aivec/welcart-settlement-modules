@@ -9,12 +9,6 @@
       "email": "evandanielshaw@gmail.com"
     }
   ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://bitbucket.org/aivec/aauth"
-    }
-  ],
   "require": {
     "aivec/welcart-generic": ">=2.0 <5.0",
     "aivec/aauth": "^3.0.0"
