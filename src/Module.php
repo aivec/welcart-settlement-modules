@@ -141,8 +141,12 @@ class Module {
             }
         }
 
-        load_textdomain('smodule', __DIR__ . '/languages/smodule-ja.mo');
-        load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
+        $mopath = __DIR__ . '/languages/smodule-' . get_locale() . '.mo';
+        if (file_exists($mopath)) {
+            load_textdomain('smodule', $mopath);
+        } else {
+            load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
+        }
         
         $this->validateDivisions($valid_divisions);
         $this->payment_name = $payment_name;

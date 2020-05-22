@@ -184,7 +184,7 @@ class Currency {
      * @return void
      */
     public function init() {
-        if (!empty($this->valid_currencies)) {
+        if (!empty($this->valid_currencies) && defined('USCES_VERSION')) {
             add_action('admin_notices', [$this, 'invalidCurrencyAdminErrorMessage']);
         }
     }
