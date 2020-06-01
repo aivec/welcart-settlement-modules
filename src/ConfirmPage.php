@@ -61,9 +61,106 @@ class ConfirmPage {
 
         $this->errorhtml = $errorhtml;
         $this->module = $module;
+        add_action('usces_action_confirm_page_header', [$this, 'confirmPageHeaderDI'], 10);
+        add_filter('usces_action_confirm_page_point_inform', [$this, 'actionInsidePointsFormDI'], 10);
+        add_filter('wccp_filter_coupon_inform', [$this, 'filterCouponFormDI'], 10, 2);
+        add_filter('usces_filter_shipping_address_info', [$this, 'filterShippingAddressInfoDI'], 10, 1);
+        add_filter('usces_filter_payment_detail', [$this, 'filterOrderSummaryTablePaymentNameDI'], 10, 2);
         add_filter('usces_filter_confirm_before_backbutton', [$this, 'filterBeforeBackButtonDI'], 10, 4);
         add_filter('usces_filter_confirm_inform', [$this, 'confirmPagePayButtonHook'], 10, 5);
         add_action('usces_filter_template_redirect', [$this, 'setFees'], 1, 1);
+    }
+
+    /**
+     * Action for confirm page top header. Recieves no arguments.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function confirmPageHeaderDI() {
+        if ($this->loadConfirmPage() === true &&
+            $this->module->canProcessCart() === true &&
+            $this->module->ready() === true &&
+            $this->module->isModuleActivated() === true
+        ) {
+            $this->confirmPageHeader();
+        }
+    }
+
+    /**
+     * Action hook invoked inside points form on confirm page. Recieves no arguments.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function actionInsidePointsFormDI() {
+        if ($this->loadConfirmPage() === true &&
+            $this->module->canProcessCart() === true &&
+            $this->module->ready() === true &&
+            $this->module->isModuleActivated() === true
+        ) {
+            $this->actionInsidePointsForm();
+        }
+    }
+
+    /**
+     * Allows for additional hidden inputs for coupon form. Not a traditional filter in
+     * that the first parameter is always an empty string.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $emptystring
+     * @param array  $usces_entries
+     * @return string
+     */
+    public function filterCouponFormDI($emptystring, $usces_entries) {
+        if ($this->loadConfirmPage() === true &&
+            $this->module->canProcessCart() === true &&
+            $this->module->ready() === true &&
+            $this->module->isModuleActivated() === true
+        ) {
+            $emptystring = $this->filterCouponForm($emptystring, $usces_entries);
+        }
+
+        return $emptystring;
+    }
+
+    /**
+     * Filters shipping info displayed in order summary table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
+     * @param string $shipping_address_info
+     * @return string
+     */
+    public function filterShippingAddressInfoDI($shipping_address_info) {
+        if ($this->loadConfirmPage() === true &&
+            $this->module->canProcessCart() === true &&
+            $this->module->ready() === true &&
+            $this->module->isModuleActivated() === true
+        ) {
+            global $usces;
+
+            $options = get_option('usces');
+            $applyform = usces_get_apply_addressform($options['system']['addressform']);
+            $data = $_SESSION['usces_entry'];
+            $values = $data;
+            $data['type'] = 'confirm';
+            $values['country'] = !empty($values['country']) ? $values['country'] : usces_get_local_addressform();
+            $values = $usces->stripslashes_deep_post($values);
+            $target_market_count = (isset($options['system']['target_market']) && is_array($options['system']['target_market'])) ? count($options['system']['target_market']) : 1;
+            
+            if (isset($values['delivery'])) {
+                $shipping_address_info = $this->filterShippingAddressInfo(
+                    $shipping_address_info,
+                    $data,
+                    $values,
+                    $applyform,
+                    $target_market_count
+                );
+            }
+        }
+
+        return $shipping_address_info;
     }
 
     /**
@@ -193,6 +290,24 @@ class ConfirmPage {
     }
 
     /**
+     * Filters the payment name displayed in the order summary table on the confirm page
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $emptystr
+     * @param array  $usces_entries
+     * @return string
+     */
+    public function filterOrderSummaryTablePaymentNameDI($emptystr, $usces_entries) {
+        $payments = usces_get_payments_by_name($usces_entries['order']['payment_name']);
+        $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
+        if ($acting_flg === $this->module->getActingFlag()) {
+            $emptystr = $this->filterOrderSummaryTablePaymentName($emptystr, $usces_entries);
+        }
+
+        return $emptystr;
+    }
+
+    /**
      * Filters HTML before back button.
      *
      * This method will **automatically** add a nonce field to the confirm page purchase
@@ -265,5 +380,69 @@ class ConfirmPage {
      * @return void
      */
     public function onFeesSet() {
+    }
+
+    /**
+     * Action for confirm page top header. Recieves no arguments.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    protected function confirmPageHeader() {
+    }
+
+    /**
+     * Action hook invoked inside points form on confirm page. Recieves no arguments.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    protected function actionInsidePointsForm() {
+    }
+
+    /**
+     * Allows for additional hidden inputs for coupon form. Not a traditional filter in
+     * that the first parameter is always an empty string.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $emptystring
+     * @param array  $usces_entries
+     * @return string
+     */
+    protected function filterCouponForm($emptystring, $usces_entries) {
+        return $emptystring;
+    }
+
+    /**
+     * Filters shipping address info displayed in order summary table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $shipping_address_info
+     * @param array  $data
+     * @param array  $values
+     * @param string $applyform
+     * @param int    $target_market_count
+     * @return string
+     */
+    protected function filterShippingAddressInfo(
+        $shipping_address_info,
+        $data,
+        $values,
+        $applyform,
+        $target_market_count
+    ) {
+        return $shipping_address_info;
+    }
+
+    /**
+     * Filters the payment name displayed in the order summary table on the confirm page
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $emptystr
+     * @param array  $usces_entries
+     * @return string
+     */
+    protected function filterOrderSummaryTablePaymentName($emptystr, $usces_entries) {
+        return $emptystr;
     }
 }
