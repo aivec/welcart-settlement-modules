@@ -91,25 +91,41 @@ class CheckoutHooks {
      *
      * The only `acting_status` recognized by Welcart is `error`. All other strings are ignored.
      *
+     * *WARNING:* This filter erroneously passes the `$acting_flag` as the first parameter even though
+     * technically `$acting_status` is the value being filtered. This doesn't change the fact that
+     * WordPress' filter system expects the **first parameter** to contain the filtered value which
+     * is why we pass back `$acting_flag`.
+     *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
      * @param string $acting_flag
      * @param string $post_query
      * @param string $acting_status
      * @return string
      */
     public function filterActingProcessingDI($acting_flag, $post_query, $acting_status) {
-        if ($acting_flag === $this->module->getActingFlag()) {
+        global $usces;
+
+        $entry = $usces->cart->get_entry();
+        $payments = $usces->getPayments($entry['order']['payment_name']);
+        $real_acting_flag = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
+        if ($real_acting_flag === $this->module->getActingFlag()) {
             $this->verifyPurchaseNonce();
             return $this->filterActingProcessing($acting_flag, $post_query, $acting_status);
         }
 
-        return $acting_status;
+        return $acting_flag;
     }
 
     /**
      * Filters the `acting_status` string returned by `\usc_e_shop::acting_processing()`
      *
      * The only `acting_status` recognized by Welcart is `error`. All other strings are ignored.
+     *
+     * *WARNING:* This filter erroneously passes the `$acting_flag` as the first parameter even though
+     * technically `$acting_status` is the value being filtered. This doesn't change the fact that
+     * WordPress' filter system expects the **first parameter** to contain the filtered value which
+     * is why we pass back `$acting_flag`.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param string $acting_flag
@@ -118,7 +134,7 @@ class CheckoutHooks {
      * @return string
      */
     protected function filterActingProcessing($acting_flag, $post_query, $acting_status) {
-        return $acting_status;
+        return $acting_flag;
     }
 
     /**
