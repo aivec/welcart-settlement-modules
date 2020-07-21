@@ -20,6 +20,13 @@ class CheckoutHooks {
     protected $module;
 
     /**
+     * Whether to issue the buyer points in accordance with ポイント率初期値 on purchase.
+     *
+     * @var bool
+     */
+    private $issuePointsOnPurchase;
+
+    /**
      * Registers Welcart checkout hooks.
      *
      * We use dependency injection here so that any instance of `Module` can extend
@@ -27,11 +34,14 @@ class CheckoutHooks {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
+     * @param bool   $issuePointsOnPurchase Whether to issue the buyer points in accordance with ポイント率初期値 on purchase.
+     *                                      Default: `true`
      * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
-    public function __construct(Module $module) {
+    public function __construct(Module $module, $issuePointsOnPurchase = true) {
         $this->module = $module;
+        $this->issuePointsOnPurchase = $issuePointsOnPurchase;
 
         add_action('usces_action_acting_processing', [$this, 'actingProcessingDI'], 10, 2);              // STEP 1
         add_filter('usces_filter_acting_processing', [$this, 'filterActingProcessingDI'], 10, 3);        // STEP 2
@@ -40,6 +50,7 @@ class CheckoutHooks {
         add_action('usces_action_reg_orderdata', [$this, 'registerOrderDataDI'], 10, 2);                 // STEP 5
         add_filter('usces_filter_get_error_settlement', [$this, 'errorPageMessageDI'], 10, 1);
         add_filter('usces_filter_completion_settlement_message', [$this, 'filterSettlementCompletionPageDI'], 10, 2);
+        add_filter('usces_filter_is_complete_settlement', [$this, 'filterPointIssuanceDI'], 10, 3);
     }
 
     /**
@@ -305,5 +316,52 @@ class CheckoutHooks {
      */
     protected function filterSettlementCompletionPage($html, array $usces_entries) {
         return $html;
+    }
+
+    /**
+     * Filters point issuance for the current `Module`
+     *
+     * `$complete` must be set to `true` in order for points to be allotted on purchase
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param bool   $complete
+     * @param string $payment_name
+     * @param string $status
+     * @return bool
+     */
+    public function filterPointIssuanceDI($complete, $payment_name, $status) {
+        $options = get_option('usces');
+        if ((int)$options['point_assign'] === 0) {
+            return $complete;
+        }
+
+        $payments = usces_get_system_option('usces_payment_method', 'name');
+        if (isset($payments[$payment_name]['settlement'])) {
+            if ($payments[$payment_name]['settlement'] === $this->module->getActingFlag()) {
+                if ($this->issuePointsOnPurchase === true) {
+                    $complete = true;
+                } else {
+                    $complete = $this->filterPointIssuance($complete, $payment_name, $status);
+                }
+            }
+        }
+    
+        return $complete;
+    }
+
+    /**
+     * Filters point issuance for the current `Module`
+     *
+     * `$complete` must be set to `true` in order for points to be allotted on purchase. NOTE: this method
+     * is not called if `$issuePointsOnPurchase` is `true`.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param bool   $complete
+     * @param string $payment_name
+     * @param string $status
+     * @return bool
+     */
+    protected function filterPointIssuance($complete, $payment_name, $status) {
+        return $complete;
     }
 }
