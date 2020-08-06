@@ -62,6 +62,7 @@ class ConfirmPage {
         $this->errorhtml = $errorhtml;
         $this->module = $module;
         add_action('usces_action_confirm_page_header', [$this, 'confirmPageHeaderDI'], 10);
+        add_action('usces_action_confirm_page_footer', [$this, 'confirmPageFooterDI'], 10);
         add_filter('usces_action_confirm_page_point_inform', [$this, 'actionInsidePointsFormDI'], 10);
         add_filter('wccp_filter_coupon_inform', [$this, 'filterCouponFormDI'], 10, 2);
         add_filter('usces_filter_shipping_address_info', [$this, 'filterShippingAddressInfoDI'], 10, 1);
@@ -78,12 +79,20 @@ class ConfirmPage {
      * @return void
      */
     public function confirmPageHeaderDI() {
-        if ($this->loadConfirmPage() === true &&
-            $this->module->canProcessCart() === true &&
-            $this->module->ready() === true &&
-            $this->module->isModuleActivated() === true
-        ) {
+        if ($this->loadConfirmPage() === true) {
             $this->confirmPageHeader();
+        }
+    }
+
+    /**
+     * Action for confirm page bottom footer. Recieves no arguments.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function confirmPageFooterDI() {
+        if ($this->loadConfirmPage() === true) {
+            $this->confirmPageFooter();
         }
     }
 
@@ -94,11 +103,7 @@ class ConfirmPage {
      * @return void
      */
     public function actionInsidePointsFormDI() {
-        if ($this->loadConfirmPage() === true &&
-            $this->module->canProcessCart() === true &&
-            $this->module->ready() === true &&
-            $this->module->isModuleActivated() === true
-        ) {
+        if ($this->loadConfirmPage() === true) {
             $this->actionInsidePointsForm();
         }
     }
@@ -113,11 +118,7 @@ class ConfirmPage {
      * @return string
      */
     public function filterCouponFormDI($emptystring, $usces_entries) {
-        if ($this->loadConfirmPage() === true &&
-            $this->module->canProcessCart() === true &&
-            $this->module->ready() === true &&
-            $this->module->isModuleActivated() === true
-        ) {
+        if ($this->loadConfirmPage() === true) {
             $emptystring = $this->filterCouponForm($emptystring, $usces_entries);
         }
 
@@ -133,11 +134,7 @@ class ConfirmPage {
      * @return string
      */
     public function filterShippingAddressInfoDI($shipping_address_info) {
-        if ($this->loadConfirmPage() === true &&
-            $this->module->canProcessCart() === true &&
-            $this->module->ready() === true &&
-            $this->module->isModuleActivated() === true
-        ) {
+        if ($this->loadConfirmPage() === true) {
             global $usces;
 
             $options = get_option('usces');
@@ -185,11 +182,7 @@ class ConfirmPage {
     public function setFees($bool) {
         global $usces, $usces_members, $usces_entries;
 
-        if ($this->loadConfirmPage() === true &&
-            $this->module->canProcessCart() === true &&
-            $this->module->ready() === true &&
-            $this->module->isModuleActivated() === true
-        ) {
+        if ($this->loadConfirmPage() === true) {
             usces_get_members();
             usces_get_entries();
             $usces->set_cart_fees($usces_members, $usces_entries);
@@ -252,10 +245,7 @@ class ConfirmPage {
 
         $this->backbutton = $backbutton;
 
-        if ($this->module->canProcessCart() === false ||
-            $this->module->ready() === false ||
-            $this->module->isModuleActivated() === false
-        ) {
+        if ($this->module->canProcessCart() === false || $this->module->ready() === false) {
             return $this->backbutton . $this->errorhtml;
         }
 
@@ -281,7 +271,9 @@ class ConfirmPage {
                 $payments = $usces->getPayments($_SESSION['usces_entry']['order']['payment_name']);
                 $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
                 if ($acting_flg === $this->module->getActingFlag()) {
-                    $load = true;
+                    if ($this->module->canProcessCart() === true && $this->module->ready() === true) {
+                        $load = true;
+                    }
                 }
             }
         }
@@ -389,6 +381,15 @@ class ConfirmPage {
      * @return void
      */
     protected function confirmPageHeader() {
+    }
+
+    /**
+     * Action for confirm page bottom footer. Recieves no arguments.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    protected function confirmPageFooter() {
     }
 
     /**
