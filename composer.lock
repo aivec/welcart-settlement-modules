@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "94a2dba6bb5baa22a79398711f5dec2e",
+    "content-hash": "0f31d9a390172ae00fe2d05f611abaf0",
     "packages": [
         {
             "name": "aivec/aauth",

@@ -294,6 +294,7 @@ class Factory {
                             );
                         ?>
                     </a>
+                    <?php $this->moduleDescription($acting_opts); ?>
                 </div>
             </div>
             <style>
@@ -444,6 +445,16 @@ class Factory {
      * @return void
      */
     protected function extraSettings($acting_opts) {
+    }
+
+    /**
+     * Override to add a description section for the module
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $acting_opts
+     * @return void
+     */
+    protected function moduleDescription($acting_opts) {
     }
 
     /**

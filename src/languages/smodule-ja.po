@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Aivec LLC.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-23T11:36:35+09:00\n"
+"POT-Creation-Date: 2020-08-26T18:02:46+09:00\n"
 "PO-Revision-Date: 2019-06-06 16:02+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,66 +14,66 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 
 #. translators: name of settlement module
-#: src/ConfirmPage.php:56 src/DeliveryPage.php:146
+#: src/ConfirmPage.php:54 src/DeliveryPage.php:90
 msgid "%s cannot be used"
 msgstr "只今、%sご利用できません。"
 
 #. translators: 1. the invalid currency code, 2. settlement module name
-#: src/Currency.php:204
+#: src/Currency.php:223
 msgid "The currency code %1$s is not supported by %2$s."
 msgstr "%1$sの通貨が%2$sでは使えません。 有効な通貨を選択してください"
 
 #. translators: settlement module name
-#: src/DeliveryPage.php:190
+#: src/DeliveryPage.php:121
 msgid "%s cannot be used when multiple shipping addresses are specified."
 msgstr ""
 "複数配送先を指定している場合は、%sはご利用いただけません。別のお支払い方法を"
 "お選びください。"
 
-#: src/Factory.php:114
+#: src/Factory.php:124
 msgid "Thoroughly test your integration before going live."
 msgstr "十分にテストを行ってから運用してください。"
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:129
+#: src/Factory.php:139
 msgid "enable/disable %s"
 msgstr "%s決済の利用"
 
-#: src/Factory.php:143
+#: src/Factory.php:153
 msgid "Enable"
 msgstr "利用する"
 
-#: src/Factory.php:153
+#: src/Factory.php:163
 msgid "Disable"
 msgstr "利用しない"
 
-#: src/Factory.php:203
+#: src/Factory.php:213
 msgid "Environment"
 msgstr "動作環境"
 
-#: src/Factory.php:216
+#: src/Factory.php:226
 msgid "Test environment"
 msgstr "テスト環境"
 
-#: src/Factory.php:226
+#: src/Factory.php:236
 msgid "Production environment"
 msgstr "本番環境"
 
-#: src/Factory.php:233
+#: src/Factory.php:243
 msgid "Changes between test and production versions."
 msgstr "動作環境を切り替えます。"
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:260
+#: src/Factory.php:270
 msgid "Update %s Settings"
 msgstr "%sの設定を更新する"
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:272 src/Factory.php:341
+#: src/Factory.php:282 src/Factory.php:352
 msgid "%s Settlement"
 msgstr "%s決済"
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:282
+#: src/Factory.php:292
 msgid "Click here for more information about %s"
 msgstr "%s決済の詳細はこちら 》"
