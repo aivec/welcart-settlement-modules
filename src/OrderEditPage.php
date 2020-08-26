@@ -1,7 +1,6 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
-use InvalidArgumentException;
 use Aivec\Welcart\Generic\WelcartUtils;
 
 /**
@@ -24,7 +23,6 @@ class OrderEditPage {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
     public function __construct(Module $module) {

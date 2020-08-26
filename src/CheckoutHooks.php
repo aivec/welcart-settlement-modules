@@ -1,8 +1,6 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
-use InvalidArgumentException;
-
 /**
  * Registers all necessary checkout hooks and delegates
  * requests to checkout model after performing necessary
@@ -27,7 +25,6 @@ class CheckoutHooks {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
     public function __construct(Module $module) {
@@ -282,7 +279,6 @@ class CheckoutHooks {
      * Filters HTML displayed on settlement completion page
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @global \usc_e_shop $usces
      * @param string $html
      * @param array  $usces_entries
      * @return string

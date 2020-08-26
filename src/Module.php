@@ -122,6 +122,7 @@ class Module {
      * @param boolean   $capture_payment_opt_support If true, displays option on settlement settings
      *                                               page for determining payment capture type (処理区分)
      * @throws InvalidArgumentException Thrown if aauth is set but invalid.
+     * @return void
      */
     public function __construct(
         $payment_name,

@@ -1,8 +1,6 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
-use InvalidArgumentException;
-
 /**
  * Settlement Module registration factory
  */
@@ -45,7 +43,7 @@ class Factory {
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
      * @param string $payment_display_name
-     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
+     * @return void
      */
     public function __construct(Module $module, $payment_display_name = '') {
         $this->module = $module;

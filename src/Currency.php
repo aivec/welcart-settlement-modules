@@ -165,8 +165,8 @@ class Currency {
      * @param Module $module the settlement module instance
      * @param array  $valid_currencies array of valid currencies in ISO 4217 format. Should be left empty
      *                                 if you want to support all currencies.
-     * @return void
      * @throws InvalidArgumentException Thrown if any currency isn't valid.
+     * @return void
      */
     public function __construct(Module $module, array $valid_currencies) {
         $this->module = $module;

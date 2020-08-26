@@ -1,15 +1,14 @@
 <?php
 namespace Aivec\Welcart\SettlementModules;
 
-use InvalidArgumentException;
 use Aivec\Welcart\Generic;
 
 /**
  * Wrapper for the purchase button on the confirm page.
  *
- * This class should be extended by any Module instance that requires filtering of
+ * This class should be extended by any `Module` instance that requires filtering of
  * the purchase button. Checks are done in this class, such as whether the injected
- * Module instance is the currently selected payment method, and so forth.
+ * `Module` instance is the currently selected payment method, and so forth.
  */
 class ConfirmPage {
 
@@ -42,7 +41,6 @@ class ConfirmPage {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
-     * @throws InvalidArgumentException Thrown if module is not an instance of `Module`.
      * @return void
      */
     public function __construct(Module $module) {
