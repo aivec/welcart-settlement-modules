@@ -18,6 +18,13 @@ class CheckoutHooks {
     protected $module;
 
     /**
+     * Whether to issue the buyer points in accordance with ポイント率初期値 on purchase.
+     *
+     * @var bool
+     */
+    private $issuePointsOnPurchase;
+
+    /**
      * Registers Welcart checkout hooks.
      *
      * We use dependency injection here so that any instance of `Module` can extend
@@ -25,10 +32,13 @@ class CheckoutHooks {
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
+     * @param bool   $issuePointsOnPurchase Whether to issue the buyer points in accordance with ポイント率初期値 on purchase.
+     *                                      Default: `true`
      * @return void
      */
-    public function __construct(Module $module) {
+    public function __construct(Module $module, $issuePointsOnPurchase = true) {
         $this->module = $module;
+        $this->issuePointsOnPurchase = $issuePointsOnPurchase;
 
         add_action('usces_action_acting_processing', [$this, 'actingProcessingDI'], 10, 2);              // STEP 1
         add_filter('usces_filter_acting_processing', [$this, 'filterActingProcessingDI'], 10, 3);        // STEP 2
@@ -37,6 +47,7 @@ class CheckoutHooks {
         add_action('usces_action_reg_orderdata', [$this, 'registerOrderDataDI'], 10, 2);                 // STEP 5
         add_filter('usces_filter_get_error_settlement', [$this, 'errorPageMessageDI'], 10, 1);
         add_filter('usces_filter_completion_settlement_message', [$this, 'filterSettlementCompletionPageDI'], 10, 2);
+        add_filter('usces_filter_is_complete_settlement', [$this, 'filterPointIssuanceDI'], 10, 3);
     }
 
     /**
@@ -88,25 +99,41 @@ class CheckoutHooks {
      *
      * The only `acting_status` recognized by Welcart is `error`. All other strings are ignored.
      *
+     * *WARNING:* This filter erroneously passes the `$acting_flag` as the first parameter even though
+     * technically `$acting_status` is the value being filtered. This doesn't change the fact that
+     * WordPress' filter system expects the **first parameter** to contain the filtered value which
+     * is why we pass back `$acting_flag`.
+     *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
      * @param string $acting_flag
      * @param string $post_query
      * @param string $acting_status
      * @return string
      */
     public function filterActingProcessingDI($acting_flag, $post_query, $acting_status) {
-        if ($acting_flag === $this->module->getActingFlag()) {
+        global $usces;
+
+        $entry = $usces->cart->get_entry();
+        $payments = $usces->getPayments($entry['order']['payment_name']);
+        $real_acting_flag = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
+        if ($real_acting_flag === $this->module->getActingFlag()) {
             $this->verifyPurchaseNonce();
             return $this->filterActingProcessing($acting_flag, $post_query, $acting_status);
         }
 
-        return $acting_status;
+        return $acting_flag;
     }
 
     /**
      * Filters the `acting_status` string returned by `\usc_e_shop::acting_processing()`
      *
      * The only `acting_status` recognized by Welcart is `error`. All other strings are ignored.
+     *
+     * *WARNING:* This filter erroneously passes the `$acting_flag` as the first parameter even though
+     * technically `$acting_status` is the value being filtered. This doesn't change the fact that
+     * WordPress' filter system expects the **first parameter** to contain the filtered value which
+     * is why we pass back `$acting_flag`.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param string $acting_flag
@@ -115,7 +142,7 @@ class CheckoutHooks {
      * @return string
      */
     protected function filterActingProcessing($acting_flag, $post_query, $acting_status) {
-        return $acting_status;
+        return $acting_flag;
     }
 
     /**
@@ -285,5 +312,52 @@ class CheckoutHooks {
      */
     protected function filterSettlementCompletionPage($html, array $usces_entries) {
         return $html;
+    }
+
+    /**
+     * Filters point issuance for the current `Module`
+     *
+     * `$complete` must be set to `true` in order for points to be allotted on purchase
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param bool   $complete
+     * @param string $payment_name
+     * @param string $status
+     * @return bool
+     */
+    public function filterPointIssuanceDI($complete, $payment_name, $status) {
+        $options = get_option('usces');
+        if ((int)$options['point_assign'] === 0) {
+            return $complete;
+        }
+
+        $payments = usces_get_system_option('usces_payment_method', 'name');
+        if (isset($payments[$payment_name]['settlement'])) {
+            if ($payments[$payment_name]['settlement'] === $this->module->getActingFlag()) {
+                if ($this->issuePointsOnPurchase === true) {
+                    $complete = true;
+                } else {
+                    $complete = $this->filterPointIssuance($complete, $payment_name, $status);
+                }
+            }
+        }
+    
+        return $complete;
+    }
+
+    /**
+     * Filters point issuance for the current `Module`
+     *
+     * `$complete` must be set to `true` in order for points to be allotted on purchase. NOTE: this method
+     * is not called if `$issuePointsOnPurchase` is `true`.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param bool   $complete
+     * @param string $payment_name
+     * @param string $status
+     * @return bool
+     */
+    protected function filterPointIssuance($complete, $payment_name, $status) {
+        return $complete;
     }
 }
