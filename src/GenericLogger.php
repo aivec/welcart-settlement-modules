@@ -16,12 +16,6 @@ class GenericLogger extends Logger {
      * @return void
      */
     public function __construct(Module $module) {
-        $file = $module->getActing() . '.log';
-        $logdir = USCES_PLUGIN_DIR . '/logs';
-        $filep = $logdir . '/' . $file;
-        if (!file_exists($filep)) {
-            file_put_contents($filep, '');
-        }
         parent::__construct($module, $module->getActing() . '.log');
     }
 }
