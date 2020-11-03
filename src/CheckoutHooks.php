@@ -7,6 +7,7 @@ namespace Aivec\Welcart\SettlementModules;
  * checks and data sanatization
  */
 class CheckoutHooks {
+    use HooksAutoloader;
 
     const PURCHASE_NONCE_NAME = '_welpurchase';
     
@@ -39,15 +40,53 @@ class CheckoutHooks {
     public function __construct(Module $module, $issuePointsOnPurchase = true) {
         $this->module = $module;
         $this->issuePointsOnPurchase = $issuePointsOnPurchase;
+    }
 
-        add_action('usces_action_acting_processing', [$this, 'actingProcessingDI'], 10, 2);              // STEP 1
-        add_filter('usces_filter_acting_processing', [$this, 'filterActingProcessingDI'], 10, 3);        // STEP 2
-        add_filter('usces_filter_check_acting_return_results', [$this, 'actingReturnResultsDI'], 10, 1); // STEP 3
-        add_filter('usces_filter_reg_orderdata_status', [$this, 'registerOrderDataStatusDI'], 10, 2);    // STEP 4
-        add_action('usces_action_reg_orderdata', [$this, 'registerOrderDataDI'], 10, 2);                 // STEP 5
-        add_filter('usces_filter_get_error_settlement', [$this, 'errorPageMessageDI'], 10, 1);
-        add_filter('usces_filter_completion_settlement_message', [$this, 'filterSettlementCompletionPageDI'], 10, 2);
+    /**
+     * Adds mandatory actions/filters
+     *
+     * Returns current instance for optional chaining
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return CheckoutHooks
+     */
+    public function init() {
+        add_action('usces_action_reg_orderdata', [$this, 'registerOrderDataDI'], 10, 2);                        // STEP 5
         add_filter('usces_filter_is_complete_settlement', [$this, 'filterPointIssuanceDI'], 10, 3);
+        return $this;
+    }
+
+    /**
+     * Dynamically adds actions/filters.
+     *
+     * Only hooks implemented by the child class are registered
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function addHooks() {
+        $map = [
+            new HookMeta(['actingProcessing'], function () {
+                add_action('usces_action_acting_processing', [$this, 'actingProcessingDI'], 10, 2);              // STEP 1
+            }),
+            new HookMeta(['filterActingProcessing'], function () {
+                add_filter('usces_filter_acting_processing', [$this, 'filterActingProcessingDI'], 10, 3);        // STEP 2
+            }),
+            new HookMeta(['actingReturnResults'], function () {
+                add_filter('usces_filter_check_acting_return_results', [$this, 'actingReturnResultsDI'], 10, 1); // STEP 3
+            }),
+            new HookMeta(['registerOrderDataStatus'], function () {
+                add_filter('usces_filter_reg_orderdata_status', [$this, 'registerOrderDataStatusDI'], 10, 2);    // STEP 4
+            }),
+            new HookMeta(['errorPageMessage'], function () {
+                add_filter('usces_filter_get_error_settlement', [$this, 'errorPageMessageDI'], 10, 1);
+            }),
+            new HookMeta(['filterSettlementCompletionPage'], function () {
+                add_filter('usces_filter_completion_settlement_message', [$this, 'filterSettlementCompletionPageDI'], 10, 2);
+            }),
+        ];
+
+        $this->dynamicallyRegisterHooks($map);
     }
 
     /**

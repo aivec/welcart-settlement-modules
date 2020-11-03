@@ -48,11 +48,22 @@ class Factory {
     public function __construct(Module $module, $payment_display_name = '') {
         $this->module = $module;
         $this->payment_display_name = !empty($payment_display_name) ? $payment_display_name : $this->module->getPaymentName();
+    }
+
+    /**
+     * Adds mandatory actions/filters
+     *
+     * Returns current instance for optional chaining
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return Factory
+     */
+    public function init() {
         add_action('usces_action_settlement_tab_title', [$this, 'settlementTabTitle']);
         add_action('usces_action_settlement_tab_body', [$this, 'settlementTabBody']);
         add_action('usces_action_admin_settlement_update', [$this, 'settlementUpdate']);
-
         $this->setAvailableSettlement();
+        return $this;
     }
 
     /**

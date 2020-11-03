@@ -7,6 +7,7 @@ use Aivec\Welcart\Generic\WelcartUtils;
  * Order edit page
  */
 class OrderEditPage {
+    use HooksAutoloader;
 
     /**
      * Settlement module object
@@ -16,10 +17,10 @@ class OrderEditPage {
     protected $module;
 
     /**
-     * Register hooks
+     * Sets member vars
      *
      * We use dependency injection here so that any instance of `Module` can use
-     * this class as a order edit page wrapper
+     * this class as an order edit page wrapper
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
@@ -27,16 +28,48 @@ class OrderEditPage {
      */
     public function __construct(Module $module) {
         $this->module = $module;
+    }
 
-        add_action('usces_action_order_edit_form_detail_bottom', [$this, 'afterDetailsSectionDI'], 10, 3);
-        add_action('usces_action_order_edit_form_status_block_middle', [$this, 'orderEditFormStatusBlockMiddleDI'], 10, 3);
-        add_action('usces_action_order_edit_form_status_block_middle', [$this, 'loadAssetsDI'], 10, 3);
-        add_action('usces_action_update_orderdata', [$this, 'updateOrderDataDI'], 10, 3);
-        add_action('usces_after_update_orderdata', [$this, 'setActionStatusAndMessage'], 10, 2);
-        add_action('usces_action_order_edit_form_settle_info', [$this, 'settlementInfoDI'], 10, 2);
-        add_action('usces_action_endof_order_edit_form', [$this, 'settlementDialogDI'], 10, 2);
-        add_action('admin_print_footer_scripts', [$this, 'injectJavascriptDI']);
-        add_filter('usces_filter_deli_comps', [$this, 'filterDeliveryCompaniesDI'], 10, 1);
+    /**
+     * Dynamically adds actions/filters.
+     *
+     * Only hooks implemented by the child class are registered
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function addHooks() {
+        $map = [
+            new HookMeta(['afterDetailsSection'], function () {
+                add_action('usces_action_order_edit_form_detail_bottom', [$this, 'afterDetailsSectionDI'], 10, 3);
+            }),
+            new HookMeta(['orderEditFormStatusBlockMiddle'], function () {
+                add_action('usces_action_order_edit_form_status_block_middle', [$this, 'orderEditFormStatusBlockMiddleDI'], 10, 3);
+            }),
+            new HookMeta(['enqueueAssets'], function () {
+                add_action('usces_action_order_edit_form_status_block_middle', [$this, 'loadAssetsDI'], 10, 3);
+            }),
+            new HookMeta(['updateOrderData', 'updateOrderDataCompletion', 'updateOrderDataCancel'], function () {
+                add_action('usces_action_update_orderdata', [$this, 'updateOrderDataDI'], 10, 3);
+            }),
+            new HookMeta(['setActionStatusAndMessage'], function () {
+                add_action('usces_after_update_orderdata', [$this, 'setActionStatusAndMessage'], 10, 2);
+            }),
+            new HookMeta(['settlementInfo'], function () {
+                add_action('usces_action_order_edit_form_settle_info', [$this, 'settlementInfoDI'], 10, 2);
+            }),
+            new HookMeta(['settlementDialog'], function () {
+                add_action('usces_action_endof_order_edit_form', [$this, 'settlementDialogDI'], 10, 2);
+            }),
+            new HookMeta(['injectJavascript'], function () {
+                add_action('admin_print_footer_scripts', [$this, 'injectJavascriptDI']);
+            }),
+            new HookMeta(['filterDeliveryCompanies'], function () {
+                add_filter('usces_filter_deli_comps', [$this, 'filterDeliveryCompaniesDI'], 10, 1);
+            }),
+        ];
+
+        $this->dynamicallyRegisterHooks($map);
     }
 
     /**

@@ -121,7 +121,6 @@ class Module {
      * @param Auth|null $aauth Aivec proprietary authentication instance or null if not required
      * @param boolean   $capture_payment_opt_support If true, displays option on settlement settings
      *                                               page for determining payment capture type (処理区分)
-     * @throws InvalidArgumentException Thrown if aauth is set but invalid.
      * @return void
      */
     public function __construct(
@@ -131,17 +130,9 @@ class Module {
         array $valid_divisions = ['shipped' => ['once'], 'service' => ['once']],
         array $valid_currencies = [],
         $multi_shipping_support = false,
-        $aauth = null,
+        Auth $aauth = null,
         $capture_payment_opt_support = false
     ) {
-        if ($aauth !== null) {
-            if (!($aauth instanceof Auth)) {
-                throw new InvalidArgumentException(
-                    'aauth is not an instance of Aivec\Welcart\ProprietaryAuthentication\Auth'
-                );
-            }
-        }
-
         $mopath = __DIR__ . '/languages/smodule-' . get_locale() . '.mo';
         if (file_exists($mopath)) {
             load_textdomain('smodule', $mopath);

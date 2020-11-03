@@ -5,6 +5,7 @@ namespace Aivec\Welcart\SettlementModules;
  * Order List hooks
  */
 class OrderList {
+    use HooksAutoloader;
 
     /**
      * Settlement module object
@@ -14,7 +15,7 @@ class OrderList {
     protected $module;
 
     /**
-     * Registers orderlist hooks.
+     * Sets member vars
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
@@ -22,10 +23,30 @@ class OrderList {
      */
     public function __construct(Module $module) {
         $this->module = $module;
+    }
 
-        add_filter('usces_filter_orderlist_detail_value', [$this, 'filterOrderlistDetailValueDI'], 10, 4);
-        add_action('usces_action_collective_order_status', [$this, 'batchUpdateOrderStatusDI'], 10, 3);
-        add_filter('usces_filter_order_item_ajax', [$this, 'filterErrorLogDI'], 10, 1);
+    /**
+     * Dynamically adds actions/filters.
+     *
+     * Only hooks implemented by the child class are registered
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function addHooks() {
+        $map = [
+            new HookMeta(['filterOrderlistDetailValue'], function () {
+                add_filter('usces_filter_orderlist_detail_value', [$this, 'filterOrderlistDetailValueDI'], 10, 4);
+            }),
+            new HookMeta(['batchUpdateOrderStatus', 'batchUpdateOrderStatusCompletion', 'batchUpdateOrderStatusCancel'], function () {
+                add_action('usces_action_collective_order_status', [$this, 'batchUpdateOrderStatusDI'], 10, 3);
+            }),
+            new HookMeta(['filterErrorLog'], function () {
+                add_filter('usces_filter_order_item_ajax', [$this, 'filterErrorLogDI'], 10, 1);
+            }),
+        ];
+
+        $this->dynamicallyRegisterHooks($map);
     }
 
     /**

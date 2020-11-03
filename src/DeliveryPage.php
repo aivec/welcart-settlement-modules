@@ -14,7 +14,7 @@ class DeliveryPage {
     protected $module;
 
     /**
-     * Register hooks
+     * Sets member vars
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param Module $module
@@ -22,10 +22,22 @@ class DeliveryPage {
      */
     public function __construct(Module $module) {
         $this->module = $module;
+    }
+
+    /**
+     * Adds mandatory actions/filters
+     *
+     * Returns current instance for optional chaining
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return DeliveryPage
+     */
+    public function init() {
         add_filter('usces_filter_the_payment_method_row', [$this, 'filterPaymentMethodRow'], 10, 7);
         add_filter('usces_fiter_the_payment_method', [$this, 'filterPaymentMethods'], 10, 2);
         add_filter('usces_filter_the_continue_payment_method', [$this, 'filterContinueChargePaymentMethods'], 10, 1);
         add_filter('usces_filter_delivery_check', [$this, 'multiShippingCheck'], 15, 3);
+        return $this;
     }
 
     /**

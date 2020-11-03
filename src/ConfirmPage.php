@@ -11,6 +11,7 @@ use Aivec\Welcart\Generic;
  * `Module` instance is the currently selected payment method, and so forth.
  */
 class ConfirmPage {
+    use HooksAutoloader;
 
     /**
      * Back button form
@@ -59,15 +60,56 @@ class ConfirmPage {
 
         $this->errorhtml = $errorhtml;
         $this->module = $module;
-        add_action('usces_action_confirm_page_header', [$this, 'confirmPageHeaderDI'], 10);
-        add_action('usces_action_confirm_page_footer', [$this, 'confirmPageFooterDI'], 10);
-        add_filter('usces_action_confirm_page_point_inform', [$this, 'actionInsidePointsFormDI'], 10);
-        add_filter('wccp_filter_coupon_inform', [$this, 'filterCouponFormDI'], 10, 2);
-        add_filter('usces_filter_shipping_address_info', [$this, 'filterShippingAddressInfoDI'], 10, 1);
-        add_filter('usces_filter_payment_detail', [$this, 'filterOrderSummaryTablePaymentNameDI'], 10, 2);
+    }
+
+    /**
+     * Adds mandatory actions/filters
+     *
+     * Returns current instance for optional chaining
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return ConfirmPage
+     */
+    public function init() {
         add_filter('usces_filter_confirm_before_backbutton', [$this, 'filterBeforeBackButtonDI'], 10, 4);
         add_filter('usces_filter_confirm_inform', [$this, 'confirmPagePayButtonHook'], 10, 5);
-        add_action('usces_filter_template_redirect', [$this, 'setFees'], 1, 1);
+        return $this;
+    }
+
+    /**
+     * Dynamically adds actions/filters.
+     *
+     * Only hooks implemented by the child class are registered
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function addHooks() {
+        $map = [
+            new HookMeta(['confirmPageHeader'], function () {
+                add_action('usces_action_confirm_page_header', [$this, 'confirmPageHeaderDI'], 10);
+            }),
+            new HookMeta(['confirmPageFooter'], function () {
+                add_action('usces_action_confirm_page_footer', [$this, 'confirmPageFooterDI'], 10);
+            }),
+            new HookMeta(['actionInsidePointsForm'], function () {
+                add_filter('usces_action_confirm_page_point_inform', [$this, 'actionInsidePointsFormDI'], 10);
+            }),
+            new HookMeta(['filterCouponForm'], function () {
+                add_filter('wccp_filter_coupon_inform', [$this, 'filterCouponFormDI'], 10, 2);
+            }),
+            new HookMeta(['filterShippingAddressInfo'], function () {
+                add_filter('usces_filter_shipping_address_info', [$this, 'filterShippingAddressInfoDI'], 10, 1);
+            }),
+            new HookMeta(['filterOrderSummaryTablePaymentName'], function () {
+                add_filter('usces_filter_payment_detail', [$this, 'filterOrderSummaryTablePaymentNameDI'], 10, 2);
+            }),
+            new HookMeta(['onFeesSet'], function () {
+                add_action('usces_filter_template_redirect', [$this, 'setFees'], 1, 1);
+            }),
+        ];
+
+        $this->dynamicallyRegisterHooks($map);
     }
 
     /**
