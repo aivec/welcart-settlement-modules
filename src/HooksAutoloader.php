@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use ReflectionClass;
@@ -7,8 +8,8 @@ use ReflectionException;
 /**
  * A trait for any class that adds action or filter hooks
  */
-trait HooksAutoloader {
-
+trait HooksAutoloader
+{
     /**
      * Reflection of subclass instance
      *
@@ -24,7 +25,7 @@ trait HooksAutoloader {
      * @return void
      */
     public function dynamicallyRegisterHooks(array $hookMetaMap) {
-        $this->child  = new ReflectionClass($this);
+        $this->child = new ReflectionClass($this);
         foreach ($hookMetaMap as $hookMeta) {
             $this->dynamicallyRegisterHook($hookMeta);
         }

@@ -1,11 +1,12 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
  * Delivery page payment method select hooks
  */
-class DeliveryPage {
-
+class DeliveryPage
+{
     /**
      * Settlement module object
      *
@@ -97,14 +98,14 @@ class DeliveryPage {
     public function filterPaymentMethodRow($paymentRow, $id, $payment, $checked, $module, $value, $explanation) {
         if ($payment['settlement'] === $this->module->getActingFlag()) {
             if ($this->module->ready() === false) {
-                $paymentRow = "\t".'<dt class="payment_'.$id.'"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="'.esc_attr($payment['name']).'"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />'.esc_attr($payment['name']).'</label> <b> (' . sprintf(
+                $paymentRow = "\t" . '<dt class="payment_' . $id . '"><label for="payment_name_' . $id . '"><input name="offer[payment_name]" id="payment_name_' . $id . '" type="radio" value="' . esc_attr($payment['name']) . '"' . $checked . ' disabled onKeyDown="if (event.keyCode == 13) {return false;}" />' . esc_attr($payment['name']) . '</label> <b> (' . sprintf(
                     /* translators: name of settlement module */
                     esc_html__('%s cannot be used', 'smodule'),
                     $this->module->getPaymentName()
                 ) . ") </b></dt>\n";
             }
         }
-        
+
         return $paymentRow;
     }
 
@@ -118,12 +119,13 @@ class DeliveryPage {
      */
     public function multiShippingCheck($mes) {
         global $usces;
-    
+
         if (isset($_REQUEST['offer']['payment_name'])) {
             $payments = $usces->getPayments(wp_unslash($_REQUEST['offer']['payment_name']));
             if ($this->module->getActingFlag() === $payments['settlement']) {
                 if (isset($_SESSION['msa_cart'])) {
-                    if (count($_SESSION['msa_cart']) > 0 &&
+                    if (
+                        count($_SESSION['msa_cart']) > 0 &&
                         isset($_REQUEST['delivery']['delivery_flag']) &&
                         (int)wp_unslash($_REQUEST['delivery']['delivery_flag']) === 2 &&
                         $this->module->getMultiShippingSupport() === false
@@ -137,7 +139,7 @@ class DeliveryPage {
                 }
             }
         }
-    
+
         return $mes;
     }
 }

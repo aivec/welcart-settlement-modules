@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
@@ -6,11 +7,12 @@ namespace Aivec\Welcart\SettlementModules;
  * requests to checkout model after performing necessary
  * checks and data sanatization
  */
-class CheckoutHooks {
+class CheckoutHooks
+{
     use HooksAutoloader;
 
     const PURCHASE_NONCE_NAME = '_welpurchase';
-    
+
     /**
      * Settlement module object
      *
@@ -256,7 +258,7 @@ class CheckoutHooks {
      */
     public function registerOrderDataDI($args) {
         global $usces;
-        
+
         if (!isset($args['entry']['order']['payment_name'])) {
             return;
         }
@@ -296,11 +298,11 @@ class CheckoutHooks {
         global $usces;
 
         if (!isset($_SESSION['usces_entry']['order']['payment_name'])) {
-            return;
+            return $html;
         }
         $payments = $usces->getPayments($_SESSION['usces_entry']['order']['payment_name']);
         if (empty($payments)) {
-            return;
+            return $html;
         }
         $acting_flg = 'acting' === $payments['settlement'] ? $payments['module'] : $payments['settlement'];
         if ($acting_flg === $this->module->getActingFlag()) {
@@ -380,7 +382,7 @@ class CheckoutHooks {
                 }
             }
         }
-    
+
         return $complete;
     }
 

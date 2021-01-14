@@ -1,10 +1,12 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
  * Order List hooks
  */
-class OrderList {
+class OrderList
+{
     use HooksAutoloader;
 
     /**
@@ -63,11 +65,11 @@ class OrderList {
 
         check_admin_referer('order_list', 'wc_nonce');
 
-        $table_name = $wpdb->prefix.'usces_order';
-        $ids = isset($_POST['listcheck']) ? $_POST['listcheck'] : array();
+        $table_name = $wpdb->prefix . 'usces_order';
+        $ids = isset($_POST['listcheck']) ? $_POST['listcheck'] : [];
 
         $msgstr = '';
-        foreach ((array) $ids as $id) :
+        foreach ((array)$ids as $id) :
             $query = $wpdb->prepare(
                 "SELECT 
                 order_status,
@@ -200,7 +202,7 @@ class OrderList {
         if ($this->module->isOrderAssociated((int)$order_id)) {
             $detail = $this->filterOrderlistDetailValue($detail, $value, $key, $order_id);
         }
-        
+
         return $detail;
     }
 

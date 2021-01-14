@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\ProprietaryAuthentication\Auth;
@@ -7,8 +8,8 @@ use InvalidArgumentException;
 /**
  * Settlement Module registration
  */
-class Module {
-
+class Module
+{
     const SETTINGS_KEY = 'acting_settings';
     const ACTING_FLAG_ORDER_META_KEY = 'acting_flag';
 
@@ -127,7 +128,10 @@ class Module {
         $payment_name,
         $acting,
         $acting_flag,
-        array $valid_divisions = ['shipped' => ['once'], 'service' => ['once']],
+        array $valid_divisions = [
+            'shipped' => ['once'],
+            'service' => ['once'],
+        ],
         array $valid_currencies = [],
         $multi_shipping_support = false,
         Auth $aauth = null,
@@ -139,7 +143,7 @@ class Module {
         } else {
             load_textdomain('smodule', __DIR__ . '/languages/smodule-en.mo');
         }
-        
+
         $this->validateDivisions($valid_divisions);
         $this->payment_name = $payment_name;
         $this->acting = $acting;
@@ -194,6 +198,9 @@ class Module {
      * If `aauth` is not `null`, this method will check whether the user is authenticated
      * or not. Currency support is also checked.
      *
+     * This method will return `true` for plugins that are unauthenticated but are not usage
+     * restricted (ie. only update restricted).
+     *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return boolean
      */
@@ -203,6 +210,20 @@ class Module {
             if (method_exists($this->aauth, 'authenticated')) {
                 if ($this->aauth->authenticated()) {
                     $ready = true;
+                } else {
+                    $cptItem = method_exists($this->aauth, 'getCptItem') ? $this->aauth->getCptItem() : null;
+                    if ($cptItem === null) {
+                        // cptItem hasn't been initiated. Fallback to 'success'
+                        $ready = true;
+                    }
+                    if (is_array($cptItem)) {
+                        $authmode = isset($cptItem['usageTermsCategory']) ? $cptItem['usageTermsCategory'] : '';
+                        if ($authmode !== 'restricted_usage_by_domain') {
+                            // if the user is unauthenticated but usage of the plugin is not restricted,
+                            // set $ready to `true`.
+                            $ready = true;
+                        }
+                    }
                 }
             }
         } else {
@@ -229,7 +250,7 @@ class Module {
             = isset($usces->options[self::SETTINGS_KEY][$this->acting])
             ? $usces->options[self::SETTINGS_KEY][$this->acting]
             : [];
-      
+
         if ($this->capture_payment_opt_support === true) {
             $type = $this->filterDefaultPaymentCaptureType('after_purchase');
             if ($type !== 'on_purchase' && $type !== 'after_purchase') {
@@ -253,7 +274,7 @@ class Module {
     public function isSandboxMode() {
         return $this->getActingOpts()['sandbox'];
     }
-    
+
     /**
      * Returns `true` if `payment_capture_type` is `on_purchase`. Returns
      * `true` by default if capture settings aren't available
@@ -265,7 +286,7 @@ class Module {
         if ($this->capture_payment_opt_support === false) {
             return true;
         }
-        
+
         return $this->getActingOpts()['payment_capture_type'] === 'on_purchase';
     }
 
@@ -280,7 +301,7 @@ class Module {
         if ($this->capture_payment_opt_support === false) {
             return true;
         }
-        
+
         return $this->getActingOpts()['payment_capture_type'] === 'after_purchase';
     }
 
@@ -316,8 +337,10 @@ class Module {
         }
         $options = get_option('usces');
         if (isset($options[self::SETTINGS_KEY][$this->acting]) && !empty($module)) {
-            if ($options[self::SETTINGS_KEY][$this->acting]['activate'] === 'on'
-                && $module['use'] === 'activate') {
+            if (
+                $options[self::SETTINGS_KEY][$this->acting]['activate'] === 'on'
+                && $module['use'] === 'activate'
+            ) {
                 return true;
             }
         }
@@ -344,7 +367,7 @@ class Module {
         if (!$this->isModuleActivated()) {
             return false;
         }
-        
+
         $cart = $usces->cart->get_cart();
         if (is_array($cart)) {
             foreach ($cart as $item) {
@@ -354,7 +377,7 @@ class Module {
                 if (!array_key_exists($division, $this->valid_divisions)) {
                     return false;
                 }
-            
+
                 // check if charge type of item is supported by this Module
                 $item_charge_type = $usces->getItemChargingType($item['post_id']);
                 $charge_type = empty($item_charge_type) ? 'once' : $item_charge_type;
@@ -384,7 +407,7 @@ class Module {
 
         return $this->getPaymentName();
     }
-    
+
     /**
      * Returns `true` if the given order_id is associated with the settlement module
      *

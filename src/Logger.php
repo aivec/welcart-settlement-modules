@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use Psr\Log\AbstractLogger;
@@ -6,8 +7,8 @@ use Psr\Log\AbstractLogger;
 /**
  * Module logger, implements `psr/log` with Welcart's `usces_log` function
  */
-class Logger extends AbstractLogger {
-
+class Logger extends AbstractLogger
+{
     /**
      * Acting `Module` instance
      *

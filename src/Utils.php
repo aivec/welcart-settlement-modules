@@ -1,11 +1,12 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
  * Utility methods for settlement modules
  */
-class Utils {
-
+class Utils
+{
     /**
      * Updates order_status column be replacing comma separated statuses.
      *
@@ -17,9 +18,9 @@ class Utils {
      */
     public static function updateOrderReceipt($order_id, $flag) {
         global $wpdb;
-      
+
         $table_name = $wpdb->prefix . 'usces_order';
-      
+
         if ('receipted' === $flag) {
             $mquery = $wpdb->prepare(
                 "UPDATE $table_name SET order_status = 

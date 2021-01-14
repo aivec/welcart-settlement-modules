@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\Generic;
@@ -10,7 +11,8 @@ use Aivec\Welcart\Generic;
  * the purchase button. Checks are done in this class, such as whether the injected
  * `Module` instance is the currently selected payment method, and so forth.
  */
-class ConfirmPage {
+class ConfirmPage
+{
     use HooksAutoloader;
 
     /**
@@ -185,7 +187,7 @@ class ConfirmPage {
             $values['country'] = !empty($values['country']) ? $values['country'] : usces_get_local_addressform();
             $values = $usces->stripslashes_deep_post($values);
             $target_market_count = (isset($options['system']['target_market']) && is_array($options['system']['target_market'])) ? count($options['system']['target_market']) : 1;
-            
+
             if (isset($values['delivery'])) {
                 $shipping_address_info = $this->filterShippingAddressInfo(
                     $shipping_address_info,

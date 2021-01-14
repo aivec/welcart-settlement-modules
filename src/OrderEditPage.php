@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\Generic\WelcartUtils;
@@ -6,7 +7,8 @@ use Aivec\Welcart\Generic\WelcartUtils;
 /**
  * Order edit page
  */
-class OrderEditPage {
+class OrderEditPage
+{
     use HooksAutoloader;
 
     /**
@@ -109,7 +111,7 @@ class OrderEditPage {
         if (empty($orderid)) {
             return false;
         }
-        
+
         return $this->module->isOrderAssociated($orderid);
     }
 

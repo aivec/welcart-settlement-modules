@@ -1,11 +1,12 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
  * Settlement Module registration factory
  */
-class Factory {
-
+class Factory
+{
     /**
      * The settlement module
      *
@@ -232,7 +233,7 @@ class Factory {
                                             type="radio"
                                             id="sandbox_<?php echo esc_attr($this->module->getActing()); ?>_1"
                                             value=""
-                                            <?php echo (boolean)$acting_opts['sandbox'] === true ? 'checked' : ''; ?>
+                                            <?php echo (bool)$acting_opts['sandbox'] === true ? 'checked' : ''; ?>
                                         />
                                         <span><?php echo esc_html__('Test environment', 'smodule'); ?></span>
                                     </label>
@@ -321,7 +322,7 @@ class Factory {
             </style>
         <?php endif;
     }
-    
+
     /**
      * Update usces settlement options with config
      * 決済オプション登録・更新
@@ -350,10 +351,10 @@ class Factory {
             $options['payment_capture_type'] = isset($_POST['payment_capture_type']) ? $_POST['payment_capture_type'] : $options['payment_capture_type'];
         }
         $options = $this->filterUpdateOptionsProcessing($options);
-        
+
         $this->error_mes = '';
         $this->error_mes = $this->validateFormPost($this->error_mes);
-            
+
         if (\WCUtils::is_blank($this->error_mes)) {
             $usces->action_status = 'success';
             $usces->action_message = __('options are updated', 'usces');

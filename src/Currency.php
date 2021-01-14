@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use InvalidArgumentException;
@@ -6,7 +7,8 @@ use InvalidArgumentException;
 /**
  * Settlement module currency validation model
  */
-class Currency {
+class Currency
+{
 
     /**
      * All ISO 4217 currency codes supported by Welcart

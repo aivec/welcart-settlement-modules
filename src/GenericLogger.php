@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
@@ -6,8 +7,8 @@ namespace Aivec\Welcart\SettlementModules;
  *
  * Implements `psr/log` with Welcart's `usces_log` function
  */
-class GenericLogger extends Logger {
-
+class GenericLogger extends Logger
+{
     /**
      * Constructs `Logger` with the log file set to `$module->getActing() . '.log'`
      *

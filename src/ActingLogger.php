@@ -1,11 +1,12 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 /**
  * Module logger for acting errors, implements `psr/log` with Welcart's `usces_log` function
  */
-class ActingLogger extends Logger {
-
+class ActingLogger extends Logger
+{
     /**
      * Constructs a `Logger` with the log file set to `acting_transaction.log`
      *

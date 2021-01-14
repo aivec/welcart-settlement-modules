@@ -1,4 +1,5 @@
 <?php
+
 namespace Aivec\Welcart\SettlementModules;
 
 use InvalidArgumentException;
@@ -6,8 +7,8 @@ use InvalidArgumentException;
 /**
  * Holds meta data information about an action or filter hook
  */
-final class HookMeta {
-
+final class HookMeta
+{
     /**
      * An array of method names that are invoked by the action/filter called
      * by the `$hook` parameter passed to this class
