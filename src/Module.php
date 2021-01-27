@@ -252,9 +252,9 @@ class Module
             : [];
 
         if ($this->capture_payment_opt_support === true) {
-            $type = $this->filterDefaultPaymentCaptureType('after_purchase');
+            $type = $this->filterDefaultPaymentCaptureType('on_purchase');
             if ($type !== 'on_purchase' && $type !== 'after_purchase') {
-                $type = 'after_purchase';
+                $type = 'on_purchase';
             }
             $acting_opts['payment_capture_type'] = isset($acting_opts['payment_capture_type']) ? $acting_opts['payment_capture_type'] : $type;
         }
