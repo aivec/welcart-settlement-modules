@@ -3,6 +3,7 @@
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\Generic\WelcartUtils;
+use Aivec\Welcart\SettlementModules\Interfaces\TransactionState;
 
 /**
  * Order edit page
@@ -280,6 +281,36 @@ class OrderEditPage
      * @return void
      */
     protected function orderEditFormStatusBlockMiddle($data, $cscs_meta, $action_args) {
+    }
+
+    /**
+     * Displays transaction state as a row within an HTML table
+     *
+     * This method should be called from within an overridden `orderEditFormStatusBlockMiddle` method.
+     * Doing so will display the transaction state under `ステータス` on the left hand side of the
+     * order edit page.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param TransactionState $state
+     * @param string|null      $id span id
+     * @return void
+     */
+    public function displayTransactionState(TransactionState $state, $id = null) {
+        if ($id === null) {
+            $id = $this->module->getActing() . '-acting-status';
+        }
+        ?>
+        <tr>
+            <td class="label status"><?php _e('Settlement status', 'usces'); ?></td>
+            <td class="col1 status">
+                <span class="settlement-status">
+                    <span id="<?php echo esc_attr($id); ?>" class="acting-status <?php echo $state->getCssClass(); ?>">
+                        <?php echo $state->getDisplayText(); ?>
+                    </span>
+                </span>
+            </td>
+        </tr>
+        <?php
     }
 
     /**

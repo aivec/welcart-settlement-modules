@@ -50,4 +50,15 @@ class Utils
         }
         return $res;
     }
+
+    /**
+     * Loads transaction states CSS
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public static function loadTransactionStatesCss() {
+        $url = plugin_dir_url(__FILE__);
+        wp_enqueue_style('welcart-transaction-states', $url . '/Styles/transactionStates.css', [], '1.0.0');
+    }
 }

@@ -1,0 +1,31 @@
+/* 返金 */
+.card-refunded {
+  background-color: #922fff !important;
+}
+
+/* 返金（処理中）*/
+.card-refund-init {
+  background-color: #e5ceff !important;
+  color: black !important;
+  font-weight: 700 !important;
+}
+
+/* 売上計上（処理中）*/
+.card-refund-declined,
+.card-declined {
+  background-color: #ff0000 !important;
+}
+
+/* 売上計上（処理中）*/
+.card-gathering-init {
+  background-color: #0f5 !important;
+  color: black !important;
+  font-weight: 700 !important;
+}
+
+/* 与信（処理中）*/
+.card-auth-init {
+  background-color: #00b6ff !important;
+  color: black !important;
+  font-weight: 700 !important;
+}

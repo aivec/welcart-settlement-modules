@@ -21,14 +21,14 @@ class Module
     private $payment_name;
 
     /**
-     * Acting string for the `Module`.
+     * Acting string for the `Module`
      *
      * @var string
      */
     private $acting;
 
     /**
-     * Acting flag string for the `Module`.
+     * Acting flag string for the `Module`
      *
      * @var string
      */
@@ -38,18 +38,20 @@ class Module
      * Array of valid divisions and payment types for the `Module`
      *
      * Divisions:
-     * 'shipped' -> 物販
-     * 'data' -> コンテンツファイル
-     * 'service' -> サービス
+     * - 'shipped' => 物販
+     * - 'data' => コンテンツファイル
+     * - 'service' => サービス
      *
      * Charge types:
-     * 'once' -> 通常課金
-     * 'continue' -> 継続課金
-     * 'regular' -> ?
+     * - 'once' => 通常課金
+     * - 'continue' => 継続課金
+     * - 'regular' => ?
      *
      * simply omit any keys that represent a division or charge type that is not supported
      * by the `Module`.
      *
+     * Example:
+     * ```
      * [
      *      'shipped' => [
      *          'once',
@@ -67,6 +69,7 @@ class Module
      *          'regular',
      *      ],
      * ]
+     * ```
      *
      * @var array
      */
@@ -82,7 +85,7 @@ class Module
     private $currency;
 
     /**
-     * True if `Module` provides support for wcex_multi_shipping, false otherwise
+     * True if `Module` provides support for `wcex_multi_shipping`, false otherwise
      *
      * @var boolean
      */
@@ -99,8 +102,8 @@ class Module
      * If true, displays option on settlement settings page for determining
      * payment capture type (処理区分).
      *
-     * 'after_purchase' => '与信'
-     * 'on_purchase' => '与信売上計上'
+     * - 'after_purchase' => 与信
+     * - 'on_purchase' => 与信売上計上
      *
      * @var boolean
      */
@@ -352,11 +355,11 @@ class Module
      * Determines whether the settlement module can process all items in the cart.
      *
      * If even *ONE* item contains a division or charge type that is not valid for this
-     * module, false will be returned, otherwise true is returned.
+     * module, `false` will be returned, otherwise `true` is returned.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @global \usc_e_shop $usces
-     * @return boolean
+     * @return bool
      */
     public function canProcessCart() {
         global $usces;
