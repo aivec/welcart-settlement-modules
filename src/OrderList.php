@@ -39,7 +39,7 @@ class OrderList
      */
     public function addHooks() {
         $map = [
-            new HookMeta(['filterOrderlistDetailValue'], function () {
+            new HookMeta(['filterOrderlistDetailValue', 'filterTransactionIdRowColumnValue'], function () {
                 add_filter('usces_filter_orderlist_detail_value', [$this, 'filterOrderlistDetailValueDI'], 10, 4);
             }),
             new HookMeta(['batchUpdateOrderStatus', 'batchUpdateOrderStatusCompletion', 'batchUpdateOrderStatusCancel'], function () {
