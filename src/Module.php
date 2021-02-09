@@ -214,17 +214,20 @@ class Module
                 if ($this->aauth->authenticated()) {
                     $ready = true;
                 } else {
-                    $cptItem = method_exists($this->aauth, 'getCptItem') ? $this->aauth->getCptItem() : null;
-                    if ($cptItem === null) {
-                        // cptItem hasn't been initiated. Fallback to 'success'
-                        $ready = true;
-                    }
-                    if (is_array($cptItem)) {
-                        $authmode = isset($cptItem['usageTermsCategory']) ? $cptItem['usageTermsCategory'] : '';
-                        if ($authmode !== 'restricted_usage_by_domain') {
-                            // if the user is unauthenticated but usage of the plugin is not restricted,
-                            // set $ready to `true`.
+                    // if using aivec/aauth >=7.0.0
+                    if (method_exists($this->aauth, 'getCptItem')) {
+                        $cptItem = $this->aauth->getCptItem();
+                        if ($cptItem === null) {
+                            // cptItem hasn't been initiated. Fallback to 'success'
                             $ready = true;
+                        }
+                        if (is_array($cptItem)) {
+                            $authmode = isset($cptItem['usageTermsCategory']) ? $cptItem['usageTermsCategory'] : '';
+                            if ($authmode !== 'restricted_usage_by_domain') {
+                                // if the user is unauthenticated but usage of the plugin is not restricted,
+                                // set $ready to `true`.
+                                $ready = true;
+                            }
                         }
                     }
                 }
