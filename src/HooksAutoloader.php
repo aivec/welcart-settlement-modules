@@ -46,13 +46,10 @@ trait HooksAutoloader
         }
         foreach ($hookMeta->getMethodsInvokedByHook() as $methodName) {
             try {
-                $childm = $this->child->getMethod($methodName);
-                $declaringClass = $childm->getDeclaringClass()->getName();
-                if ($declaringClass === $this->child->getName()) {
-                    if (is_callable($hookMeta->getHook())) {
-                        $hookMeta->callHook();
-                        break;
-                    }
+                $this->child->getMethod($methodName); // will throw exception if method doesn't exist
+                if (is_callable($hookMeta->getHook())) {
+                    $hookMeta->callHook();
+                    break;
                 }
             } catch (ReflectionException $e) {
                 // method doesn't exist...
