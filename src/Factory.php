@@ -2,6 +2,9 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Plugins\EnvironmentSwitcher;
+use Aivec\CptmClient\ServerControlled;
+
 /**
  * Settlement Module registration factory
  */
@@ -262,14 +265,7 @@ class Factory
                         echo $html;
                         ?>
                     </table>
-                    <?php
-                    if ($this->module->getAauth() !== null) {
-                        echo $this->filterAauthRow(
-                            $this->module->getAauth()->getSellers()->getSettlementModuleSellerRadioSelections(),
-                            $acting_opts
-                        );
-                    }
-                    ?>
+                    <?php $this->displaySettlementModuleProviderRadioSelections(); ?>
                     <?php $this->extraSettings($acting_opts); ?>
                     <input name="acting" id="acting" type="hidden" value="<?php echo esc_attr($this->module->getActing()); ?>" />
                     <input
@@ -324,6 +320,110 @@ class Factory
     }
 
     /**
+     * Provider selection box for Settlement Module using `CptmClient` when more than
+     * one provider exists
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function displaySettlementModuleProviderRadioSelections() {
+        $client = $this->module->getCptmClient();
+        if ($client === null) {
+            return;
+        }
+        $providers = $client->getProviders();
+        $providers = $providers === null ? [] : $providers;
+        $selected = $client->getSelectedProvider();
+        if ($selected !== null) {
+            $selected = $selected->getIdentifier();
+        }
+        ob_start();
+        ?>
+        <tr class="radio">
+            <th><?php esc_html_e('Please choose your provider', 'cptmc'); ?></th>
+            <td>
+                <div>
+                <?php foreach ($providers as $provider) : ?>
+                    <label>
+                        <input
+                            name="<?php echo $client->selectedProviderOptName; ?>"
+                            type="radio"
+                            id="cptmc_provider_<?php echo esc_attr($client->getItemUniqueId() . $provider->getIdentifier()); ?>"
+                            value="<?php echo esc_attr($provider->getIdentifier()); ?>"
+                            <?php echo $selected === $provider->getIdentifier() ? 'checked' : ''; ?>
+                        />
+                        <span><?php echo $client->getProviderEndpoint($provider)->getDisplayText(); ?></span>
+                    </label>
+                <?php endforeach; ?>
+                </div>
+            </td>
+        </tr>
+        <?php
+        $selectfields = (string)ob_get_clean();
+        if (EnvironmentSwitcher\Utils::getEnv() !== 'development') {
+            if (empty($providers)) {
+                return;
+            }
+
+            $this->providerSelectionWrapper($selectfields);
+            return;
+        }
+
+        ob_start();
+        if ($client instanceof ServerControlled) : ?>
+            <tr>
+                <th><?php esc_html_e('Testing Providers URL', 'cptmc'); ?></th>
+                <td>
+                    <?php $optname = $client->providersUrlOverrideOptName; ?>
+                    <input
+                        type="text"
+                        size="60"
+                        name="<?php echo $optname; ?>"
+                        id="<?php echo $optname; ?>"
+                        value="<?php form_option($optname); ?>"
+                    />
+                </td>
+            </tr>
+        <?php endif; ?>
+        <tr>
+            <th><?php esc_html_e('Testing Update URL', 'cptmc'); ?></th>
+            <td>
+                <?php $optname = $client->updateUrlOverrideOptName; ?>
+                <input
+                    type="text"
+                    size="60"
+                    name="<?php echo $optname; ?>"
+                    id="<?php echo $optname; ?>"
+                    value="<?php form_option($optname); ?>"
+                />
+            </td>
+        </tr>
+        <?php
+        $devfields = (string)ob_get_clean();
+        $this->providerSelectionWrapper($selectfields . $devfields);
+    }
+
+    /**
+     * Wraps providers section with a table and displays it
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $innerhtml
+     * @return void
+     */
+    public function providerSelectionWrapper($innerhtml) {
+        ?>
+        <div class="settlement_service">
+            <span class="service_title">
+                <?php esc_html_e('Authentication', 'smodule'); ?>
+            </span>
+        </div>
+        <table class="settle_table aivec">
+            <?php echo $innerhtml; ?>
+        </table>
+        <?php
+    }
+
+    /**
      * Update usces settlement options with config
      * 決済オプション登録・更新
      *
@@ -341,12 +441,14 @@ class Factory
             return;
         }
 
+        $cptmc = $this->module->getCptmClient();
+        if ($cptmc !== null) {
+            $cptmc->updateOptionsWithPost();
+        }
+
         $options = $this->module->getActingOpts();
         $options['activate'] = isset($_POST['activate']) ? sanitize_text_field(wp_unslash($_POST['activate'])) : $options['activate'];
         $options['sandbox'] = empty($_POST['sandbox']) ? true : false;
-        if ($this->module->getAauth() !== null) {
-            $this->module->getAauth()->getSellers()->updateAuthProvider();
-        }
         if ($this->module->getCapturePaymentOptSupport() === true) {
             $options['payment_capture_type'] = isset($_POST['payment_capture_type']) ? $_POST['payment_capture_type'] : $options['payment_capture_type'];
         }

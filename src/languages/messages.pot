@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-01-14T18:19:27+09:00\n"
+"POT-Creation-Date: 2021-05-18T17:00:44+09:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.4.0\n"
 "X-Domain: smodule\n"
@@ -28,51 +28,55 @@ msgstr ""
 msgid "%s cannot be used when multiple shipping addresses are specified."
 msgstr ""
 
-#: src/Factory.php:136
+#: src/Factory.php:139
 msgid "Thoroughly test your integration before going live."
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:151
+#: src/Factory.php:154
 msgid "enable/disable %s"
 msgstr ""
 
-#: src/Factory.php:165
+#: src/Factory.php:168
 msgid "Enable"
 msgstr ""
 
-#: src/Factory.php:175
+#: src/Factory.php:178
 msgid "Disable"
 msgstr ""
 
-#: src/Factory.php:225
+#: src/Factory.php:228
 msgid "Environment"
 msgstr ""
 
-#: src/Factory.php:238
+#: src/Factory.php:241
 msgid "Test environment"
 msgstr ""
 
-#: src/Factory.php:248
+#: src/Factory.php:251
 msgid "Production environment"
 msgstr ""
 
-#: src/Factory.php:255
+#: src/Factory.php:258
 msgid "Changes between test and production versions."
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:282
+#: src/Factory.php:278
 msgid "Update %s Settings"
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:294
-#: src/Factory.php:364
+#: src/Factory.php:290
+#: src/Factory.php:466
 msgid "%s Settlement"
 msgstr ""
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:304
+#: src/Factory.php:300
 msgid "Click here for more information about %s"
+msgstr ""
+
+#: src/Factory.php:417
+msgid "Authentication"
 msgstr ""

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Aivec LLC.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-14T18:19:27+09:00\n"
+"POT-Creation-Date: 2021-05-18T17:00:44+09:00\n"
 "PO-Revision-Date: 2018-11-21 22:15+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -31,50 +31,54 @@ msgstr ""
 "choose a different payment method."
 
 # Settlement config
-#: src/Factory.php:136
+#: src/Factory.php:139
 msgid "Thoroughly test your integration before going live."
 msgstr "Thoroughly test your integration before going live."
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:151
+#: src/Factory.php:154
 msgid "enable/disable %s"
 msgstr "enable/disable %s"
 
-#: src/Factory.php:165
+#: src/Factory.php:168
 msgid "Enable"
 msgstr "Enable"
 
-#: src/Factory.php:175
+#: src/Factory.php:178
 msgid "Disable"
 msgstr "Disable"
 
-#: src/Factory.php:225
+#: src/Factory.php:228
 msgid "Environment"
 msgstr "Environment"
 
-#: src/Factory.php:238
+#: src/Factory.php:241
 msgid "Test environment"
 msgstr "Test environment"
 
-#: src/Factory.php:248
+#: src/Factory.php:251
 msgid "Production environment"
 msgstr "Production environment"
 
-#: src/Factory.php:255
+#: src/Factory.php:258
 msgid "Changes between test and production versions."
 msgstr "Changes between test and production versions."
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:282
+#: src/Factory.php:278
 msgid "Update %s Settings"
 msgstr "Update %s Settings"
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:294 src/Factory.php:364
+#: src/Factory.php:290 src/Factory.php:466
 msgid "%s Settlement"
 msgstr "%s Settlement"
 
 #. translators: %s: formatted plugin name.
-#: src/Factory.php:304
+#: src/Factory.php:300
 msgid "Click here for more information about %s"
 msgstr "Click here for more information about %s 》"
+
+#: src/Factory.php:417
+msgid "Authentication"
+msgstr "Authentication"

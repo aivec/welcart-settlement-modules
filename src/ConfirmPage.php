@@ -245,7 +245,6 @@ class ConfirmPage
      * by the selected settlement module.
      * 2. The selected module is activated as a payment method but turned off on the settlement
      * settings page.
-     * 3. The settlement module requires aauth authentication but is not authenticated
      *
      * Calls filter method if `acting_flag` is the same as our `Module` instance's and all tests
      * listed above pass.

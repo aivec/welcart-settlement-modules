@@ -2,7 +2,7 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
-use Aivec\Welcart\ProprietaryAuthentication\Auth;
+use Aivec\CptmClient\Client;
 use InvalidArgumentException;
 
 /**
@@ -92,11 +92,11 @@ class Module
     private $multi_shipping_support;
 
     /**
-     * Aivec proprietary authentication instance or null if not required
+     * Commercial Plugin/Theme Manager `Client` instance or `null` if not required
      *
-     * @var Auth|null
+     * @var Client|null
      */
-    private $aauth;
+    private $cptmc;
 
     /**
      * If true, displays option on settlement settings page for determining
@@ -113,18 +113,18 @@ class Module
      * Initializes a settlement module.
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param string    $payment_name Front facing default name of the `Module`
-     * @param string    $acting Acting string for the `Module`
-     * @param string    $acting_flag Acting flag string for the `Module`
-     * @param array     $valid_divisions Array of valid divisions and payment types for the `Module`. Refer
-     *                                   to the member var doc comment for more details
-     * @param array     $valid_currencies array of valid currencies in ISO 4217 format. Leave the array empty
-     *                                    if you want to support all currencies. Default: empty array
-     * @param boolean   $multi_shipping_support `true` if `Module` provides support for `wcex_multi_shipping`,
-     *                                          `false` otherwise. Default: `false`
-     * @param Auth|null $aauth Aivec proprietary authentication instance or null if not required
-     * @param boolean   $capture_payment_opt_support If true, displays option on settlement settings
-     *                                               page for determining payment capture type (処理区分)
+     * @param string      $payment_name Front facing default name of the `Module`
+     * @param string      $acting Acting string for the `Module`
+     * @param string      $acting_flag Acting flag string for the `Module`
+     * @param array       $valid_divisions Array of valid divisions and payment types for the `Module`. Refer
+     *                                     to the member var doc comment for more details
+     * @param array       $valid_currencies array of valid currencies in ISO 4217 format. Leave the array empty
+     *                                      if you want to support all currencies. Default: empty array
+     * @param boolean     $multi_shipping_support `true` if `Module` provides support for `wcex_multi_shipping`,
+     *                                            `false` otherwise. Default: `false`
+     * @param Client|null $cptmc Commercial Plugin/Theme Manager `Client` instance or `null` if not required
+     * @param boolean     $capture_payment_opt_support If true, displays option on settlement settings
+     *                                                 page for determining payment capture type (処理区分)
      * @return void
      */
     public function __construct(
@@ -137,7 +137,7 @@ class Module
         ],
         array $valid_currencies = [],
         $multi_shipping_support = false,
-        Auth $aauth = null,
+        Client $cptmc = null,
         $capture_payment_opt_support = false
     ) {
         $mopath = __DIR__ . '/languages/smodule-' . get_locale() . '.mo';
@@ -153,7 +153,7 @@ class Module
         $this->acting_flag = $acting_flag;
         $this->valid_divisions = $valid_divisions;
         $this->multi_shipping_support = $multi_shipping_support;
-        $this->aauth = $aauth;
+        $this->cptmc = $cptmc;
         $this->capture_payment_opt_support = $capture_payment_opt_support;
         $this->currency = new Currency($this, $valid_currencies);
         $this->currency->init();
@@ -198,45 +198,11 @@ class Module
     /**
      * Returns true if settlement module can be used
      *
-     * If `aauth` is not `null`, this method will check whether the user is authenticated
-     * or not. Currency support is also checked.
-     *
-     * This method will return `true` for plugins that are unauthenticated but are not usage
-     * restricted (ie. only update restricted).
-     *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return boolean
      */
     public function ready() {
-        $ready = false;
-        if ($this->aauth !== null) {
-            if (method_exists($this->aauth, 'authenticated')) {
-                if ($this->aauth->authenticated()) {
-                    $ready = true;
-                } else {
-                    // if using aivec/aauth >=7.0.0
-                    if (method_exists($this->aauth, 'getCptItem')) {
-                        $cptItem = $this->aauth->getCptItem();
-                        if ($cptItem === null) {
-                            // cptItem hasn't been initiated. Fallback to 'success'
-                            $ready = true;
-                        }
-                        if (is_array($cptItem)) {
-                            $authmode = isset($cptItem['usageTermsCategory']) ? $cptItem['usageTermsCategory'] : '';
-                            if ($authmode !== 'restricted_usage_by_domain') {
-                                // if the user is unauthenticated but usage of the plugin is not restricted,
-                                // set $ready to `true`.
-                                $ready = true;
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            $ready = true;
-        }
-
-        $ready = $ready && $this->currency->isCurrencySupported();
+        $ready = $this->currency->isCurrencySupported();
 
         return $ready;
     }
@@ -527,12 +493,12 @@ class Module
     }
 
     /**
-     * Getter for aauth object
+     * Getter for cptmc object
      *
-     * @return Auth|null
+     * @return Client|null
      */
-    public function getAauth() {
-        return $this->aauth;
+    public function getCptmClient() {
+        return $this->cptmc;
     }
 
     /**
