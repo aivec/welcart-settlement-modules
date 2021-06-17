@@ -2,8 +2,6 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
-use Aivec\Welcart\SettlementModules\Interfaces\TransactionState;
-
 /**
  * Order List hooks
  */
@@ -238,27 +236,5 @@ class OrderList
      */
     protected function filterOrderlistDetailValue($detail, $value, $key, $order_id) {
         return $detail;
-    }
-
-    /**
-     * Returns order list transaction ID row column value
-     *
-     * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param TransactionState $state
-     * @return string
-     */
-    public function getTransactionIdRowColumnHtml(TransactionState $state) {
-        ob_start();
-        ?>
-        <td>
-            <?php echo $state->getTransactionId(); ?>
-            <span class="acting-status <?php echo $state->getCssClass(); ?>">
-                <?php echo $state->getDisplayText(); ?>
-            </span>
-        </td>
-        <?php
-        $html = ob_get_clean();
-
-        return $html;
     }
 }

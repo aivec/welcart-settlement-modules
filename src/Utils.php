@@ -7,6 +7,9 @@ namespace Aivec\Welcart\SettlementModules;
  */
 class Utils
 {
+    const DATETIME_FORMAT = 'Y-m-d H:i:s';
+    const DEFAULT_TIME_ZONE = 'Asia/Tokyo';
+
     /**
      * Updates order_status column be replacing comma separated statuses.
      *
@@ -52,13 +55,48 @@ class Utils
     }
 
     /**
-     * Loads transaction states CSS
+     * 継続課金会員データ取得
+     *
+     * @global \wpdb $wpdb
+     * @param int $order_id
+     * @param int $member_id
+     * @return array
+     */
+    public static function getSubscriptionOrderData($order_id, $member_id) {
+        global $wpdb;
+
+        $continuation_table_name = $wpdb->prefix . 'usces_continuation';
+        $query = $wpdb->prepare(
+            "SELECT 
+			`con_acting` AS `acting`, 
+			`con_order_price` AS `order_price`, 
+			`con_price` AS `price`, 
+			`con_next_charging` AS `chargedday`, 
+			`con_next_contracting` AS `contractedday`, 
+			`con_startdate` AS `startdate`, 
+			`con_status` AS `status` 
+			FROM {$continuation_table_name} 
+			WHERE con_order_id = %d AND con_member_id = %d",
+            $order_id,
+            $member_id
+        );
+        $data = $wpdb->get_row($query, ARRAY_A);
+        return $data;
+    }
+
+    /**
+     * Returns a `Y-m-d H:i:s` formatted local date time string given a UNIX timestamp
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @return void
+     * @param int $unixt
+     * @return string
      */
-    public static function loadTransactionStatesCss() {
-        $url = plugin_dir_url(__FILE__);
-        wp_enqueue_style('welcart-transaction-states', $url . '/Styles/transactionStates.css', [], '1.0.0');
+    public static function getLocalDateTimeFromUnixTimestamp($unixt) {
+        $timezone = new \DateTimeZone(self::DEFAULT_TIME_ZONE);
+        if (function_exists('wp_timezone')) {
+            $timezone = wp_timezone();
+        }
+
+        return (new \DateTime('@' . $unixt))->setTimezone($timezone)->format(self::DATETIME_FORMAT);
     }
 }

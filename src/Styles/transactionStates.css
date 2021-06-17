@@ -10,7 +10,8 @@
   font-weight: 700 !important;
 }
 
-/* 売上計上（処理中）*/
+/* 返金拒否 */
+/* 取引拒否 */
 .card-refund-declined,
 .card-declined {
   background-color: #ff0000 !important;

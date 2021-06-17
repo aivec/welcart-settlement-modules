@@ -448,6 +448,16 @@ class Module
     }
 
     /**
+     * Returns `log_type` for transaction history log rows in `*_usces_log` table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return string
+     */
+    public function getTransactionHistoryLogType() {
+        return "{$this->acting}_transaction_history";
+    }
+
+    /**
      * Getter for acting
      *
      * @return string

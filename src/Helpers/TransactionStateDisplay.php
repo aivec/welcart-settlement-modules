@@ -1,0 +1,96 @@
+<?php
+
+namespace Aivec\Welcart\SettlementModules\Helpers;
+
+use Aivec\Welcart\SettlementModules\Interfaces\TransactionState;
+use Aivec\Welcart\SettlementModules\Module;
+
+/**
+ * Helper methods for displaying transaction state
+ */
+class TransactionStateDisplay
+{
+    /**
+     * Settlement module object
+     *
+     * @var Module
+     */
+    protected $module;
+
+    /**
+     * Injects `Module` instance
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param Module $module
+     * @return void
+     */
+    public function __construct(Module $module) {
+        $this->module = $module;
+    }
+
+    /**
+     * Loads transaction states CSS
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public static function loadTransactionStatesCss() {
+        $url = plugin_dir_url(__FILE__);
+        wp_enqueue_style('welcart-transaction-states', $url . '../Styles/transactionStates.css', [], '1.0.0');
+    }
+
+    /**
+     * Returns order list transaction ID row column value
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param TransactionState $state
+     * @param bool             $showTransactionId
+     * @return string
+     */
+    public static function getOrderListTransactionIdRowColumnHtml(TransactionState $state, $showTransactionId = true) {
+        ob_start();
+        ?>
+        <td>
+            <?php echo $state->getTransactionId(); ?>
+            <span class="acting-status <?php echo $state->getCssClass(); ?>">
+                <?php echo $state->getDisplayText(); ?>
+            </span>
+        </td>
+        <?php
+        $html = ob_get_clean();
+
+        return $html;
+    }
+
+    /**
+     * Displays transaction state as a row within an HTML table
+     *
+     * This method can be used in various places where the transaction state needs to be displayed,
+     *
+     * For example, you can call this method from within an overridden `orderEditFormStatusBlockMiddle`
+     * method in the `OrderEditPage` class. Doing so will display the transaction state under `ステータス`
+     * on the left hand side of the order edit page.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param TransactionState $state
+     * @param string|null      $id span id. Defaults to `$this->module->getActing() . '-acting-status'`
+     * @return void
+     */
+    public function displayTransactionState(TransactionState $state, $id = null) {
+        if ($id === null) {
+            $id = $this->module->getActing() . '-acting-status';
+        }
+        ?>
+        <tr>
+            <td class="label status"><?php _e('Settlement status', 'usces'); ?></td>
+            <td class="col1 status">
+                <span class="settlement-status">
+                    <span id="<?php echo esc_attr($id); ?>" class="acting-status <?php echo $state->getCssClass(); ?>">
+                        <?php echo $state->getDisplayText(); ?>
+                    </span>
+                </span>
+            </td>
+        </tr>
+        <?php
+    }
+}

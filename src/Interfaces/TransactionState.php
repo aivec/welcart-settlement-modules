@@ -2,7 +2,9 @@
 
 namespace Aivec\Welcart\SettlementModules\Interfaces;
 
-interface TransactionState
+use JsonSerializable;
+
+interface TransactionState extends JsonSerializable
 {
     /**
      * Returns human-readable text representation of current state
@@ -36,7 +38,7 @@ interface TransactionState
      * Returns the ID of a settlement module transaction
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @return string|int
+     * @return string|int|null
      */
     public function getTransactionId();
 }
