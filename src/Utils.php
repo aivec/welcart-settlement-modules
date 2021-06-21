@@ -89,7 +89,7 @@ class Utils
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param int $unixt
-     * @return string
+     * @return string|int
      */
     public static function getLocalDateTimeFromUnixTimestamp($unixt) {
         $timezone = new \DateTimeZone(self::DEFAULT_TIME_ZONE);
@@ -97,6 +97,11 @@ class Utils
             $timezone = wp_timezone();
         }
 
-        return (new \DateTime('@' . $unixt))->setTimezone($timezone)->format(self::DATETIME_FORMAT);
+        try {
+            return (new \DateTime('@' . $unixt))->setTimezone($timezone)->format(self::DATETIME_FORMAT);
+        } catch (\Exception $e) {
+            // return as-is in case of an exception
+            return $unixt;
+        }
     }
 }

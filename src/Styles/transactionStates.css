@@ -26,7 +26,13 @@
 
 /* 与信（処理中）*/
 .card-auth-init {
-  background-color: #00b6ff !important;
+  background-color: #88ddff !important;
   color: black !important;
   font-weight: 700 !important;
+}
+
+/* 与信待ち */
+.card-auth-deferred {
+  background-color: #ff8d00 !important;
+  color: black !important;
 }

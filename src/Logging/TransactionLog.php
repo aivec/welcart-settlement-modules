@@ -4,8 +4,8 @@ namespace Aivec\Welcart\SettlementModules\Logging;
 
 use JsonSerializable;
 use Aivec\Welcart\SettlementModules\Utils;
-use Aivec\ResponseHandler\GenericError;
 use Aivec\Welcart\SettlementModules\Interfaces\TransactionState;
+use Aivec\Welcart\SettlementModules\TransactionPrice;
 
 /**
  * Represents a transaction log to insert into `usces_log` table
@@ -52,7 +52,7 @@ class TransactionLog implements JsonSerializable
     /**
      * Only set if an error occured.
      *
-     * @var GenericError|null
+     * @var mixed|null
      */
     protected $error;
 
@@ -68,7 +68,7 @@ class TransactionLog implements JsonSerializable
      *
      * Not all transactions require amount to be set
      *
-     * @var int|null
+     * @var TransactionPrice|null
      */
     protected $amount;
 
@@ -76,13 +76,14 @@ class TransactionLog implements JsonSerializable
      * Creates a `TransactionLog` instance for passing to `TransactionLogger`
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param string|int        $trackingId
-     * @param string            $actionType
-     * @param string|int        $responseCode
-     * @param string|int|null   $transactionId
-     * @param int|null          $amount
-     * @param GenericError|null $error
-     * @param int|null          $timestamp
+     * @param string|int            $trackingId
+     * @param string                $actionType
+     * @param string|int            $responseCode
+     * @param TransactionState|null $transactionState
+     * @param string|int|null       $transactionId
+     * @param TransactionPrice|null $amount
+     * @param mixed|null            $error
+     * @param int|null              $timestamp
      * @return void
      */
     public function __construct(
@@ -91,8 +92,8 @@ class TransactionLog implements JsonSerializable
         $responseCode,
         TransactionState $transactionState = null,
         $transactionId = null,
-        $amount = null,
-        GenericError $error = null,
+        TransactionPrice $amount = null,
+        $error = null,
         $timestamp = null
     ) {
         $this->trackingId = $trackingId;
@@ -115,6 +116,7 @@ class TransactionLog implements JsonSerializable
         return [
             'trackingId' => $this->trackingId,
             'actionType' => $this->actionType,
+            'actionTypeText' => $this->getActionTypeText(),
             'responseCode' => $this->responseCode,
             'transactionId' => $this->transactionId,
             'transactionState' => $this->transactionState,
@@ -126,7 +128,7 @@ class TransactionLog implements JsonSerializable
     }
 
     /**
-     * Returns a `Y-m-d H:i:s` formatted local date time string for the logs UNIX timestamp
+     * Returns a `Y-m-d H:i:s` formatted local date time string for the log's UNIX timestamp
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return string
@@ -223,7 +225,7 @@ class TransactionLog implements JsonSerializable
      * Getter for `$error`
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @return GenericError|null
+     * @return mixed|null
      */
     public function getError() {
         return $this->error;
