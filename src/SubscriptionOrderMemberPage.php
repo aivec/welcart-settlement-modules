@@ -3,6 +3,7 @@
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\SettlementModules\Helpers\TransactionStateDisplay;
+use Aivec\Welcart\Generic\Helpers\OrderData;
 
 /**
  * Dlseller 継続課金会員リスト
@@ -157,7 +158,7 @@ abstract class SubscriptionOrderMemberPage
     protected function subscriptionDetailsPage($member_id, $order_id) {
         global $usces;
 
-        $continue_data = Utils::getSubscriptionOrderData($order_id, $member_id);
+        $continue_data = OrderData::getSubscriptionOrderData($order_id, $member_id);
         $curent_url = esc_url($_SERVER['REQUEST_URI']);
         $navibutton = '<a href="' . esc_url($_SERVER['HTTP_REFERER']) . '" class="back-list"><span class="dashicons dashicons-list-view"></span>' . __('Back to the continue members list', 'dlseller') . '</a>';
 
