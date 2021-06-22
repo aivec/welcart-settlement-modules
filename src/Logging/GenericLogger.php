@@ -1,6 +1,8 @@
 <?php
 
-namespace Aivec\Welcart\SettlementModules;
+namespace Aivec\Welcart\SettlementModules\Logging;
+
+use Aivec\Welcart\SettlementModules\Module;
 
 /**
  * Logger for errors of any kind (not necessarily related to transactions).

@@ -1,7 +1,8 @@
 <?php
 
-namespace Aivec\Welcart\SettlementModules;
+namespace Aivec\Welcart\SettlementModules\Logging;
 
+use Aivec\Welcart\SettlementModules\Module;
 use Psr\Log\AbstractLogger;
 
 /**

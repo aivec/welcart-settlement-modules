@@ -1,6 +1,8 @@
 <?php
 
-namespace Aivec\Welcart\SettlementModules;
+namespace Aivec\Welcart\SettlementModules\Logging;
+
+use Aivec\Welcart\SettlementModules\Module;
 
 /**
  * Module logger for acting errors, implements `psr/log` with Welcart's `usces_log` function
