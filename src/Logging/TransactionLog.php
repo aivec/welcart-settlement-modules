@@ -13,6 +13,13 @@ use Aivec\Welcart\SettlementModules\TransactionPrice;
 class TransactionLog implements JsonSerializable
 {
     /**
+     * The order ID
+     *
+     * @var int
+     */
+    protected $orderId;
+
+    /**
      * An immutable tracking ID.
      *
      * This ID is used for grouping logs together for a particular order.
@@ -76,6 +83,7 @@ class TransactionLog implements JsonSerializable
      * Creates a `TransactionLog` instance for passing to `TransactionLogger`
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param int                   $orderId
      * @param string|int            $trackingId
      * @param string                $actionType
      * @param string|int            $responseCode
@@ -87,6 +95,7 @@ class TransactionLog implements JsonSerializable
      * @return void
      */
     public function __construct(
+        $orderId,
         $trackingId,
         $actionType,
         $responseCode,
@@ -96,6 +105,7 @@ class TransactionLog implements JsonSerializable
         $error = null,
         $timestamp = null
     ) {
+        $this->orderId = $orderId;
         $this->trackingId = $trackingId;
         $this->actionType = $actionType;
         $this->responseCode = $responseCode;
@@ -114,6 +124,7 @@ class TransactionLog implements JsonSerializable
      */
     public function jsonSerialize() {
         return [
+            'orderId' => $this->orderId,
             'trackingId' => $this->trackingId,
             'actionType' => $this->actionType,
             'actionTypeText' => $this->getActionTypeText(),
@@ -169,6 +180,16 @@ class TransactionLog implements JsonSerializable
      */
     public function setAmount($amount) {
         $this->amount = $amount;
+    }
+
+    /**
+     * Getter for `$orderId`
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return int
+     */
+    public function getOrderId() {
+        return $this->orderId;
     }
 
     /**

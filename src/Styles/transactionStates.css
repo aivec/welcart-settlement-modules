@@ -36,3 +36,20 @@
   background-color: #ff8d00 !important;
   color: black !important;
 }
+
+.subscription-order {
+  background-color: #964313 !important;
+}
+
+.subscription-status {
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.subscription-status .continuation {
+  color: #009933;
+}
+
+.subscription-status .cancellation {
+  color: #ff0000;
+}

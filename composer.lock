@@ -91,16 +91,16 @@
         },
         {
             "name": "aivec/welcart-generic",
-            "version": "v5.1.0",
+            "version": "v5.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aivec/welcart-generic.git",
-                "reference": "197aa2d8d83a48f4b9035ebd5eda6732ac4ca2ad"
+                "reference": "2b59b33b9f6d03c801b8720f54f7b9c6e2d8470e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aivec/welcart-generic/zipball/197aa2d8d83a48f4b9035ebd5eda6732ac4ca2ad",
-                "reference": "197aa2d8d83a48f4b9035ebd5eda6732ac4ca2ad",
+                "url": "https://api.github.com/repos/aivec/welcart-generic/zipball/2b59b33b9f6d03c801b8720f54f7b9c6e2d8470e",
+                "reference": "2b59b33b9f6d03c801b8720f54f7b9c6e2d8470e",
                 "shasum": ""
             },
             "require-dev": {
@@ -126,9 +126,9 @@
             "description": "Generic interfaces/abstract-classes/utils for Welcart libraries (settlement modules, customizations, etc.)",
             "support": {
                 "issues": "https://github.com/aivec/welcart-generic/issues",
-                "source": "https://github.com/aivec/welcart-generic/tree/v5.1.0"
+                "source": "https://github.com/aivec/welcart-generic/tree/v5.1.1"
             },
-            "time": "2021-06-22T03:16:14+00:00"
+            "time": "2021-06-22T09:34:41+00:00"
         },
         {
             "name": "psr/log",

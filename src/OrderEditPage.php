@@ -2,12 +2,16 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Welcart\Generic\Helpers\OrderData as GenericHelper;
 use Aivec\Welcart\Generic\WelcartUtils;
+use Aivec\Welcart\SettlementModules\Helpers\OrderData;
+use Aivec\Welcart\SettlementModules\Helpers\TransactionStateDisplay;
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
 
 /**
  * Order edit page
  */
-class OrderEditPage
+class OrderEditPage implements Initializer
 {
     use HooksAutoloader;
 
@@ -33,6 +37,21 @@ class OrderEditPage
     }
 
     /**
+     * Initializes class
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return OrderEditPage
+     */
+    public function init() {
+        if (!is_admin()) {
+            return $this;
+        }
+        add_action('usces_action_order_edit_form_settle_info', [$this, 'settlementInfoDI'], 10, 2);
+        $this->addHooks();
+        return $this;
+    }
+
+    /**
      * Dynamically adds actions/filters.
      *
      * Only hooks implemented by the child class are registered
@@ -40,7 +59,10 @@ class OrderEditPage
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return void
      */
-    public function addHooks() {
+    private function addHooks() {
+        if (!$this->shouldRegisterHooks()) {
+            return;
+        }
         $map = [
             new HookMeta(['afterDetailsSection'], function () {
                 add_action('usces_action_order_edit_form_detail_bottom', [$this, 'afterDetailsSectionDI'], 10, 3);
@@ -56,9 +78,6 @@ class OrderEditPage
             }),
             new HookMeta(['setActionStatusAndMessage'], function () {
                 add_action('usces_after_update_orderdata', [$this, 'setActionStatusAndMessage'], 10, 2);
-            }),
-            new HookMeta(['settlementInfo'], function () {
-                add_action('usces_action_order_edit_form_settle_info', [$this, 'settlementInfoDI'], 10, 2);
             }),
             new HookMeta(['settlementDialog'], function () {
                 add_action('usces_action_endof_order_edit_form', [$this, 'settlementDialogDI'], 10, 2);
@@ -174,13 +193,25 @@ class OrderEditPage
      * 支払情報 section of order edit page
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global \usc_e_shop $usces
      * @param mixed $data
      * @param mixed $action_args ['order_action', 'order_id', 'cart']
      * @return void
      */
     public function settlementInfoDI($data, $action_args) {
+        global $usces;
+
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
             if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
+                $order_id = (int)$action_args['order_id'];
+                if (GenericHelper::isSubscriptionOrder($order_id)) {
+                    $mem_id = $usces->get_order_data($order_id, 'direct')['mem_id'];
+                    $link = (new OrderData($this->module))->getSubscriptionOrderDetailsPageLink($order_id, $mem_id);
+                    ?>
+                    <a href="<?php echo $link; ?>" class="button"><?php _e('To Subscription Order Details Page', 'smodule'); ?></a>
+                    <?php
+                    return;
+                }
                 $this->settlementInfo($data, $action_args);
             }
         }
@@ -265,6 +296,9 @@ class OrderEditPage
     public function orderEditFormStatusBlockMiddleDI($data, $cscs_meta, $action_args) {
         if (strtolower(trim($action_args['order_action'])) !== 'new' && !empty($action_args['order_id'])) {
             if ($this->module->isOrderAssociated((int)$action_args['order_id'])) {
+                if (GenericHelper::isSubscriptionOrder((int)$action_args['order_id'])) {
+                    TransactionStateDisplay::displaySubscriptionStateTr((int)$action_args['order_id']);
+                }
                 $this->orderEditFormStatusBlockMiddle($data, $cscs_meta, $action_args);
             }
         }

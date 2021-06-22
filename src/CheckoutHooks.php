@@ -2,12 +2,14 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
+
 /**
  * Registers all necessary checkout hooks and delegates
  * requests to checkout model after performing necessary
  * checks and data sanatization
  */
-class CheckoutHooks
+class CheckoutHooks implements Initializer
 {
     use HooksAutoloader;
 
@@ -53,8 +55,12 @@ class CheckoutHooks
      * @return CheckoutHooks
      */
     public function init() {
+        if (is_admin()) {
+            return $this;
+        }
         add_action('usces_action_reg_orderdata', [$this, 'registerOrderDataDI'], 10, 2);                        // STEP 5
         add_filter('usces_filter_is_complete_settlement', [$this, 'filterPointIssuanceDI'], 10, 3);
+        $this->addHooks();
         return $this;
     }
 
@@ -66,7 +72,10 @@ class CheckoutHooks
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return void
      */
-    public function addHooks() {
+    private function addHooks() {
+        if (!$this->shouldRegisterHooks()) {
+            return;
+        }
         $map = [
             new HookMeta(['actingProcessing'], function () {
                 add_action('usces_action_acting_processing', [$this, 'actingProcessingDI'], 10, 2);              // STEP 1

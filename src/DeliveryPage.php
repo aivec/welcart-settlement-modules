@@ -2,10 +2,12 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
+
 /**
  * Delivery page payment method select hooks
  */
-class DeliveryPage
+class DeliveryPage implements Initializer
 {
     /**
      * Settlement module object
@@ -34,6 +36,9 @@ class DeliveryPage
      * @return DeliveryPage
      */
     public function init() {
+        if (is_admin()) {
+            return $this;
+        }
         add_filter('usces_filter_the_payment_method_row', [$this, 'filterPaymentMethodRow'], 10, 7);
         add_filter('usces_fiter_the_payment_method', [$this, 'filterPaymentMethods'], 10, 2);
         add_filter('usces_filter_the_continue_payment_method', [$this, 'filterContinueChargePaymentMethods'], 10, 1);

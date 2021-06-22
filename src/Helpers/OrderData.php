@@ -2,11 +2,49 @@
 
 namespace Aivec\Welcart\SettlementModules\Helpers;
 
+use Aivec\Welcart\SettlementModules\Module;
+
 /**
  * Utility methods for settlement modules
  */
 class OrderData
 {
+    /**
+     * Settlement module object
+     *
+     * @var Module
+     */
+    protected $module;
+
+    /**
+     * Injects `Module` instance
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param Module $module
+     * @return void
+     */
+    public function __construct(Module $module) {
+        $this->module = $module;
+    }
+
+    /**
+     * Returns order details page URL for a subscription order
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param int $order_id
+     * @param int $member_id
+     * @return string
+     */
+    public function getSubscriptionOrderDetailsPageLink($order_id, $member_id) {
+        $queryvars = [
+            'page' => 'usces_continue',
+            'continue_action' => 'settlement_' . $this->module->getActingFlag(),
+            'member_id' => $member_id,
+            'order_id' => $order_id,
+        ];
+        return add_query_arg($queryvars, admin_url('admin.php'));
+    }
+
     /**
      * Updates order_status column be replacing comma separated statuses.
      *

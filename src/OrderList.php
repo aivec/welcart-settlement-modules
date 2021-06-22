@@ -2,10 +2,12 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
+
 /**
  * Order List hooks
  */
-class OrderList
+class OrderList implements Initializer
 {
     use HooksAutoloader;
 
@@ -28,6 +30,20 @@ class OrderList
     }
 
     /**
+     * Initializes class
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return OrderList
+     */
+    public function init() {
+        if (!is_admin()) {
+            return $this;
+        }
+        $this->addHooks();
+        return $this;
+    }
+
+    /**
      * Dynamically adds actions/filters.
      *
      * Only hooks implemented by the child class are registered
@@ -35,7 +51,10 @@ class OrderList
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return void
      */
-    public function addHooks() {
+    private function addHooks() {
+        if (!$this->shouldRegisterHooks()) {
+            return;
+        }
         $map = [
             new HookMeta(['filterOrderlistDetailValue', 'filterTransactionIdRowColumnValue'], function () {
                 add_filter('usces_filter_orderlist_detail_value', [$this, 'filterOrderlistDetailValueDI'], 10, 4);

@@ -2,13 +2,14 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
-use Aivec\Welcart\SettlementModules\Helpers\TransactionStateDisplay;
 use Aivec\Welcart\Generic\Helpers\OrderData;
+use Aivec\Welcart\SettlementModules\Helpers\TransactionStateDisplay;
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
 
 /**
  * Dlseller 継続課金会員リスト
  */
-abstract class SubscriptionOrderMemberPage
+abstract class SubscriptionOrderMemberPage implements Initializer
 {
     use HooksAutoloader;
 
@@ -42,6 +43,9 @@ abstract class SubscriptionOrderMemberPage
      * @return SubscriptionOrderMemberPage
      */
     public function init() {
+        if (!is_admin()) {
+            return $this;
+        }
         add_action('dlseller_action_continue_member_list_page', [$this, 'subscriptionDetailsPageDI'], 10, 1);
         return $this;
     }
@@ -54,7 +58,10 @@ abstract class SubscriptionOrderMemberPage
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return void
      */
-    public function addHooks() {
+    private function addHooks() {
+        if (!$this->shouldRegisterHooks()) {
+            return;
+        }
         $map = [
             new HookMeta(['filterSubscriptionMemberListCondition'], function () {
                 add_filter('dlseller_filter_continue_member_list_condition', [$this, 'filterSubscriptionMemberListConditionDI'], 10, 4);
@@ -82,13 +89,7 @@ abstract class SubscriptionOrderMemberPage
             $isAssociated = $this->module->isOrderAssociated((int)$order_id);
         }
         if ($isAssociated === true) {
-            $queryvars = [
-                'page' => 'usces_continue',
-                'continue_action' => 'settlement_' . $this->module->getActingFlag(),
-                'member_id' => $member_id,
-                'order_id' => $order_id,
-            ];
-            $detailsUrl = add_query_arg($queryvars, admin_url('admin.php'));
+            $detailsUrl = (new Helpers\OrderData($this->module))->getSubscriptionOrderDetailsPageLink($order_id, $member_id);
             $defaultHtml = '<a href="' . $detailsUrl . '">' . __('Detail', 'usces') . '</a>';
             return $this->filterSubscriptionMemberListCondition(
                 $condition,
@@ -139,6 +140,7 @@ abstract class SubscriptionOrderMemberPage
             $order_id = isset($_GET['order_id']) ? (int)$_GET['order_id'] : null;
             if (!empty($member_id) && !empty($order_id)) {
                 if ($this->module->isOrderAssociated($order_id)) {
+                    TransactionStateDisplay::loadTransactionStatesCss();
                     $this->subscriptionDetailsPage($member_id, $order_id);
                     exit;
                 }
@@ -158,7 +160,7 @@ abstract class SubscriptionOrderMemberPage
     protected function subscriptionDetailsPage($member_id, $order_id) {
         global $usces;
 
-        $continue_data = OrderData::getSubscriptionOrderData($order_id, $member_id);
+        $continue_data = OrderData::getSubscriptionOrderData($order_id);
         $curent_url = esc_url($_SERVER['REQUEST_URI']);
         $navibutton = '<a href="' . esc_url($_SERVER['HTTP_REFERER']) . '" class="back-list"><span class="dashicons dashicons-list-view"></span>' . __('Back to the continue members list', 'dlseller') . '</a>';
 
@@ -335,13 +337,14 @@ abstract class SubscriptionOrderMemberPage
                             <?php
                             $log = $log_row->getLog();
                             $state = $log->getTransactionState();
+                            $amount = $log->getAmount()->getAmount();
                             ?>
                             <tbody>
                                 <tr>
                                     <td><?php echo $num; ?></td>
                                     <td><?php echo $log->getLocalDateTime(); ?></td>
                                     <td><?php echo !empty($log->getTransactionId()) ? $log->getTransactionId() : ''; ?></td>
-                                    <td class="amount"><?php echo !empty($log->getAmount()) ? usces_crform($log->getAmount(), false, true, 'return', true) : ''; ?></td>
+                                    <td class="amount"><?php echo !empty($amount) ? usces_crform($amount, false, true, 'return', true) : ''; ?></td>
                                     <?php if ($state !== null) : ?>
                                         <?php echo TransactionStateDisplay::getOrderListTransactionIdRowColumnHtml($state, false); ?>
                                     <?php else : ?>

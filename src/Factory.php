@@ -4,11 +4,12 @@ namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Plugins\EnvironmentSwitcher;
 use Aivec\CptmClient\ServerControlled;
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
 
 /**
  * Settlement Module registration factory
  */
-class Factory
+class Factory implements Initializer
 {
     /**
      * The settlement module
@@ -63,6 +64,9 @@ class Factory
      * @return Factory
      */
     public function init() {
+        if (!is_admin()) {
+            return $this;
+        }
         add_action('usces_action_settlement_tab_title', [$this, 'settlementTabTitle']);
         add_action('usces_action_settlement_tab_body', [$this, 'settlementTabBody']);
         add_action('usces_action_admin_settlement_update', [$this, 'settlementUpdate']);

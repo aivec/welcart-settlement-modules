@@ -3,6 +3,7 @@
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\Generic;
+use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
 
 /**
  * Wrapper for the purchase button on the confirm page.
@@ -11,7 +12,7 @@ use Aivec\Welcart\Generic;
  * the purchase button. Checks are done in this class, such as whether the injected
  * `Module` instance is the currently selected payment method, and so forth.
  */
-class ConfirmPage
+class ConfirmPage implements Initializer
 {
     use HooksAutoloader;
 
@@ -73,8 +74,12 @@ class ConfirmPage
      * @return ConfirmPage
      */
     public function init() {
+        if (is_admin()) {
+            return $this;
+        }
         add_filter('usces_filter_confirm_before_backbutton', [$this, 'filterBeforeBackButtonDI'], 10, 4);
         add_filter('usces_filter_confirm_inform', [$this, 'confirmPagePayButtonHook'], 10, 5);
+        $this->addHooks();
         return $this;
     }
 
@@ -86,7 +91,10 @@ class ConfirmPage
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @return void
      */
-    public function addHooks() {
+    private function addHooks() {
+        if (!$this->shouldRegisterHooks()) {
+            return;
+        }
         $map = [
             new HookMeta(['confirmPageHeader'], function () {
                 add_action('usces_action_confirm_page_header', [$this, 'confirmPageHeaderDI'], 10);

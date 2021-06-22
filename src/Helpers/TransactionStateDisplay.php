@@ -2,6 +2,7 @@
 
 namespace Aivec\Welcart\SettlementModules\Helpers;
 
+use Aivec\Welcart\Generic\Helpers\OrderData as GenericHelper;
 use Aivec\Welcart\SettlementModules\Interfaces\TransactionState;
 use Aivec\Welcart\SettlementModules\Module;
 
@@ -40,6 +41,34 @@ class TransactionStateDisplay
     }
 
     /**
+     * Returns order list transaction ID row column HTML for a dlseller subscription order
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param TransactionState $state
+     * @param int              $order_id
+     * @param int              $member_id
+     * @return string
+     */
+    public function getSubscriptionOrderTransactionIdRowColumnHtml(TransactionState $state, $order_id, $member_id) {
+        $link = (new OrderData($this->module))->getSubscriptionOrderDetailsPageLink($order_id, $member_id);
+        ob_start();
+        ?>
+        <td>
+            <?php echo $state->getTransactionId(); ?>
+            <span class="acting-status subscription-order">
+                <?php _e('Continuation', 'usces'); ?>
+            </span>
+            <span style="display: inline-block">
+                <a href="<?php echo $link; ?>"><?php _e('Detail', 'usces'); ?></a>
+            </span>
+        </td>
+        <?php
+        $html = (string)ob_get_clean();
+
+        return $html;
+    }
+
+    /**
      * Returns order list transaction ID row column value
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
@@ -51,7 +80,9 @@ class TransactionStateDisplay
         ob_start();
         ?>
         <td>
-            <?php echo $state->getTransactionId(); ?>
+            <?php if ($showTransactionId === true) : ?>
+                <?php echo $state->getTransactionId(); ?>
+            <?php endif; ?>
             <span class="acting-status <?php echo $state->getCssClass(); ?>">
                 <?php echo $state->getDisplayText(); ?>
             </span>
@@ -89,6 +120,42 @@ class TransactionStateDisplay
                         <?php echo $state->getDisplayText(); ?>
                     </span>
                 </span>
+            </td>
+        </tr>
+        <?php
+    }
+
+    /**
+     * Displays subscription state as a row within an HTML table
+     *
+     * This method can be used in various places where the subscription state of a dlseller
+     * subscription order needs to be displayed.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param int $order_id
+     * @return void
+     */
+    public static function displaySubscriptionStateTr($order_id) {
+        $sorder = GenericHelper::getSubscriptionOrderData($order_id);
+        if (empty($sorder)) {
+            return;
+        }
+
+        ?>
+        <tr>
+            <td class="label status"><?php _e('Status', 'dlseller'); ?></td>
+            <td class="col1 status">
+                <div class="subscription-status">
+                    <?php if (strtolower($sorder['status']) === 'continuation') : ?>
+                        <div class="continuation">
+                            <?php _e('continuation', 'dlseller'); ?>
+                        </div>
+                    <?php else : ?>
+                        <div class="cancellation">
+                            <?php _e('cancellation', 'dlseller'); ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </td>
         </tr>
         <?php

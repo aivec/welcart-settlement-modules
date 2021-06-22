@@ -78,6 +78,6 @@ class TransactionPrice implements JsonSerializable
      * @return string
      */
     public function getCurrencySymbol() {
-        return __($this->currencyCode, 'usces');
+        return __($this->currencyCode, 'usces'); // phpcs:disable WordPress.WP.I18n.NonSingularStringLiteralText
     }
 }

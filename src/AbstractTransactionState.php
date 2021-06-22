@@ -2,6 +2,9 @@
 
 namespace Aivec\Welcart\SettlementModules;
 
+/**
+ * `TransactionState` abstract class with default implementations
+ */
 abstract class AbstractTransactionState implements Interfaces\TransactionState
 {
     /**

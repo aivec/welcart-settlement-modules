@@ -17,7 +17,7 @@ trait HooksAutoloader
      * @param array $hookMetaMap
      * @return void
      */
-    public function dynamicallyRegisterHooks(array $hookMetaMap) {
+    private function dynamicallyRegisterHooks(array $hookMetaMap) {
         $currentInstance = new ReflectionClass($this);
         foreach ($hookMetaMap as $hookMeta) {
             $this->dynamicallyRegisterHook($hookMeta, $currentInstance);
@@ -34,7 +34,7 @@ trait HooksAutoloader
      * @param ReflectionClass $currentInstance
      * @return void
      */
-    public function dynamicallyRegisterHook(HookMeta $hookMeta, $currentInstance) {
+    private function dynamicallyRegisterHook(HookMeta $hookMeta, $currentInstance) {
         foreach ($hookMeta->getMethodsInvokedByHook() as $methodName) {
             try {
                 // will throw exception if method doesn't exist
@@ -55,5 +55,15 @@ trait HooksAutoloader
                 // method doesn't exist...
             }
         }
+    }
+
+    /**
+     * Checks whether optional hooks should be dynamically registered or not.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    private function shouldRegisterHooks() {
+        return (new ReflectionClass($this))->getParentClass() !== false;
     }
 }
