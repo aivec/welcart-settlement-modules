@@ -223,6 +223,80 @@ class Factory implements Initializer
                                 </td>
                             </tr>
                         <?php endif; ?>
+                        <?php if ($this->module->canHandleSubscriptionOrders()) : ?>
+                            <tr class="radio">
+                                <th>
+                                    <a class="explanation-label" id="label_ex_recurring_payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>">
+                                        <?php _e('Automatic Continuing Charging Processing Classification', 'usces'); // 自動継続課金処理区分 ?>
+                                    </a>
+                                </th>
+                                <td>
+                                    <div>
+                                        <label>
+                                            <input
+                                                name="recurring_payment_capture_type"
+                                                type="radio"
+                                                id="recurring_payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_2"
+                                                value="after_purchase"
+                                                <?php echo $acting_opts['recurring_payment_capture_type'] === 'after_purchase' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e('Credit', 'usces'); // 与信 ?></span>
+                                        </label>
+                                        <label>
+                                            <input
+                                                name="recurring_payment_capture_type"
+                                                type="radio"
+                                                id="recurring_payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>_1"
+                                                value="on_purchase"
+                                                <?php echo $acting_opts['recurring_payment_capture_type'] === 'on_purchase' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e('Credit sales', 'usces'); // 与信売上計上 ?></span>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="ex_recurring_payment_capture_type_<?php echo esc_attr($this->module->getActing()); ?>" class="explanation">
+                                <td colspan="2">
+                                    <?php _e('Processing classification when automatic continuing charging (required WCEX DLSeller).', 'usces'); ?>
+                                </td>
+                            </tr>
+                            <tr class="radio">
+                                <th>
+                                    <a class="explanation-label" id="label_ex_auto_settlement_mail_<?php echo esc_attr($this->module->getActing()); ?>">
+                                        <?php _e('Automatic Continuing Charging Completion Mail', 'usces'); // 自動継続課金完了メール ?>
+                                    </a>
+                                </th>
+                                <td>
+                                    <div>
+                                        <label>
+                                            <input
+                                                name="auto_settlement_mail"
+                                                type="radio"
+                                                id="auto_settlement_mail_<?php echo esc_attr($this->module->getActing()); ?>_1"
+                                                value="on"
+                                                <?php echo $acting_opts['auto_settlement_mail'] === 'on' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e('Send', 'usces'); ?></span>
+                                        </label>
+                                        <label>
+                                            <input
+                                                name="auto_settlement_mail"
+                                                type="radio"
+                                                id="auto_settlement_mail_<?php echo esc_attr($this->module->getActing()); ?>_2"
+                                                value="off"
+                                                <?php echo $acting_opts['auto_settlement_mail'] === 'off' ? 'checked' : ''; ?>
+                                            />
+                                            <span><?php _e("Don't send", 'usces'); ?></span>
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr id="ex_auto_settlement_mail_<?php echo esc_attr($this->module->getActing()); ?>" class="explanation">
+                                <td colspan="2">
+                                    <?php _e('Send billing completion mail to the member on which automatic continuing charging processing (required WCEX DLSeller) is executed.', 'usces'); ?>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                         <?php
                         ob_start();
                         ?>
@@ -455,6 +529,10 @@ class Factory implements Initializer
         $options['sandbox'] = empty($_POST['sandbox']) ? true : false;
         if ($this->module->getCapturePaymentOptSupport() === true) {
             $options['payment_capture_type'] = isset($_POST['payment_capture_type']) ? $_POST['payment_capture_type'] : $options['payment_capture_type'];
+        }
+        if ($this->module->canHandleSubscriptionOrders() === true) {
+            $options['recurring_payment_capture_type'] = isset($_POST['recurring_payment_capture_type']) ? $_POST['recurring_payment_capture_type'] : $options['recurring_payment_capture_type'];
+            $options['auto_settlement_mail'] = isset($_POST['auto_settlement_mail']) ? $_POST['auto_settlement_mail'] : $options['auto_settlement_mail'];
         }
         $options = $this->filterUpdateOptionsProcessing($options);
 

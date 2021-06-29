@@ -230,6 +230,12 @@ class Module
             }
             $acting_opts['payment_capture_type'] = isset($acting_opts['payment_capture_type']) ? $acting_opts['payment_capture_type'] : $type;
         }
+        $type = $this->filterDefaultRecurringPaymentCaptureType('on_purchase');
+        if ($type !== 'on_purchase' && $type !== 'after_purchase') {
+            $type = 'on_purchase';
+        }
+        $acting_opts['recurring_payment_capture_type'] = isset($acting_opts['recurring_payment_capture_type']) ? $acting_opts['recurring_payment_capture_type'] : $type;
+        $acting_opts['auto_settlement_mail'] = isset($acting_opts['auto_settlement_mail']) ? $acting_opts['auto_settlement_mail'] : 'on';
         $acting_opts['activate'] = isset($acting_opts['activate']) ? $acting_opts['activate'] : 'off';
         $acting_opts['sandbox'] = isset($acting_opts['sandbox']) ? $acting_opts['sandbox'] : true;
         $acting_opts = $this->filterActingOpts($acting_opts);
@@ -326,6 +332,9 @@ class Module
      * If even *ONE* item contains a division or charge type that is not valid for this
      * module, `false` will be returned, otherwise `true` is returned.
      *
+     * **WARNING**: if the module supports recurring payments and the cart contains a
+     * subscription item but `wcex_dlseller` is not activated, `false` will be returned.
+     *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @global \usc_e_shop $usces
      * @return bool
@@ -352,6 +361,9 @@ class Module
 
                 // check if charge type of item is supported by this Module
                 $item_charge_type = $usces->getItemChargingType($item['post_id']);
+                if (!defined('WCEX_DLSELLER') && $item_charge_type === 'continue') {
+                    return false;
+                }
                 $charge_type = empty($item_charge_type) ? 'once' : $item_charge_type;
                 if (!in_array($charge_type, $this->valid_divisions[$division], true)) {
                     return false;
@@ -360,6 +372,22 @@ class Module
         }
 
         return true;
+    }
+
+    /**
+     * Returns `true` if the module can process a dlseller subscription order, `false` otherwise
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function canHandleSubscriptionOrders() {
+        foreach ($this->valid_divisions as $division => $charge_types) {
+            if (in_array('continue', $charge_types, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -423,6 +451,17 @@ class Module
      * @return string
      */
     protected function filterDefaultPaymentCaptureType($type) {
+        return $type;
+    }
+
+    /**
+     * Filter the default payment capture type for recurring payments (処理区分)
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $type
+     * @return string
+     */
+    protected function filterDefaultRecurringPaymentCaptureType($type) {
         return $type;
     }
 

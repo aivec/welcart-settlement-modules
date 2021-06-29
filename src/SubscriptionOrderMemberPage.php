@@ -3,6 +3,7 @@
 namespace Aivec\Welcart\SettlementModules;
 
 use Aivec\Welcart\Generic\Helpers\OrderData;
+use Aivec\Welcart\Generic\WelcartUtils;
 use Aivec\Welcart\SettlementModules\Helpers\TransactionStateDisplay;
 use Aivec\Welcart\SettlementModules\Interfaces\Initializer;
 
@@ -43,10 +44,11 @@ abstract class SubscriptionOrderMemberPage implements Initializer
      * @return SubscriptionOrderMemberPage
      */
     public function init() {
-        if (!is_admin()) {
+        if (!is_admin() || !$this->module->canHandleSubscriptionOrders()) {
             return $this;
         }
         add_action('dlseller_action_continue_member_list_page', [$this, 'subscriptionDetailsPageDI'], 10, 1);
+        add_action('usces_action_admin_ajax', [$this, 'handleSettlementInformationUpdateRequest']);
         $this->addHooks();
         return $this;
     }
@@ -142,12 +144,79 @@ abstract class SubscriptionOrderMemberPage implements Initializer
             if (!empty($member_id) && !empty($order_id)) {
                 if ($this->module->isOrderAssociated($order_id)) {
                     TransactionStateDisplay::loadTransactionStatesCss();
+                    $this->loadSubscriptionDetailsPageEssentialAssets($order_id, $member_id);
                     $this->loadSubscriptionDetailsPageAssets($order_id, $member_id);
                     $this->subscriptionDetailsPage($order_id, $member_id);
                     exit;
                 }
             }
         }
+    }
+
+    /**
+     * Loads assets for functionality common across all modules
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param int $order_id
+     * @param int $member_id
+     * @return void
+     */
+    protected function loadSubscriptionDetailsPageEssentialAssets($order_id, $member_id) {
+        $url = plugin_dir_url(__FILE__);
+        $version = $this->getPageJsVersion();
+        $handle = $this->getPageJsHandle();
+        wp_enqueue_script(
+            $handle,
+            "{$url}/SubscriptionOrderMemberPage.js",
+            [],
+            $version,
+            false
+        );
+        $l10n = $this->filterPageInjectionVariables(
+            [
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'updateCompletedMessage' => __('The update was completed.', 'usces'),
+                'updateFailedMessage' => __('failure in update', 'usces'),
+                'dataMalformedMessage' => __('Data have deficiency.', 'usces'),
+                'insertAmountMessage' => sprintf(__('Input the %s', 'usces'), __('Amount', 'dlseller')),
+                'updateConfirmMessge' => __('Are you sure you want to update the settings?', 'usces'),
+            ],
+            $order_id,
+            $member_id
+        );
+        wp_localize_script($handle, 'smodule', $l10n);
+    }
+
+    /**
+     * Returns version string for page JS
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return string
+     */
+    public function getPageJsVersion() {
+        return '1.0.0';
+    }
+
+    /**
+     * Returns handle for page JS
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return string
+     */
+    public function getPageJsHandle() {
+        $version = $this->getPageJsVersion();
+        return "{$version}-subscription-om-page";
+    }
+
+    /**
+     * Override to filter the variables injected into this page's JS
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $vars
+     * @return array
+     */
+    protected function filterPageInjectionVariables(array $vars) {
+        return $vars;
     }
 
     /**
@@ -189,32 +258,26 @@ abstract class SubscriptionOrderMemberPage implements Initializer
                                     <td class="label"><?php _e('Continuation charging information', 'dlseller'); ?></td>
                                     <td>
                                         <table class="order_info">
-                                        <tr>
-                                            <?php $this->subscriptionDetailsMemberInfo($args); ?>
-                                        </tr>
-                                        <tr>
-                                            <?php $this->subscriptionDetailsOrderInfo($args); ?>
-                                        </tr>
-                                        <tr>
-                                            <th><?php _e('Renewal Date', 'dlseller'); ?></th>
-                                            <td>
-                                                <?php $this->subscriptionDetailsContractInfo($args); ?>
-                                            </td>
-                                            <th><?php _e('Next Withdrawal Date', 'dlseller'); ?></th>
-                                            <td>
-                                                <?php $this->subscriptionDetailsNextChargeInfo($args); ?>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <?php $this->subscriptionDetailsAmountInfo($args); ?>
-                                        </tr>
-                                        <tr>
-                                            <th><?php _e('Status', 'dlseller'); ?></th>
-                                            <td>
-                                                <?php $this->subscriptionDetailsStatusUpdateDropdown($args); ?>
-                                            </td>
-                                            <td colspan="2"><input id="continuation-update" type="button" class="button button-primary" value="<?php _e('Update'); ?>" /></td>
-                                        </tr>
+                                            <tr>
+                                                <?php $this->subscriptionDetailsMemberIdCell($args); ?>
+                                                <?php $this->subscriptionDetailsMemberNameCell($args); ?>
+                                            </tr>
+                                            <tr>
+                                                <?php $this->subscriptionDetailsOrderIdCell($args); ?>
+                                                <?php $this->subscriptionDetailsOrderDateCell($args); ?>
+                                            </tr>
+                                            <tr>
+                                                <?php $this->subscriptionDetailsContractRenewalCell($args); ?>
+                                                <?php $this->subscriptionDetailsNextChargeDateCell($args); ?>
+                                            </tr>
+                                            <tr>
+                                                <?php $this->subscriptionDetailsOrderAmountCell($args); ?>
+                                                <?php $this->subscriptionDetailsChargeAmountInputCell($args); ?>
+                                            </tr>
+                                            <tr>
+                                                <?php $this->subscriptionDetailsStatusUpdateDropdownCell($args); ?>
+                                                <?php $this->subscriptionDetailsUpdateButtonCell($args); ?>
+                                            </tr>
                                         </table>
                                         <?php do_action('usces_action_continuation_charging_information', $args['continue_data'], $member_id, $order_id); ?>
                                     </td>
@@ -369,162 +432,230 @@ abstract class SubscriptionOrderMemberPage implements Initializer
     }
 
     /**
-     * Displays member info section for the subscription details table
+     * Displays member ID cell for the subscription details table
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $args
      * @return void
      */
-    public function subscriptionDetailsMemberInfo($args) {
+    public function subscriptionDetailsMemberIdCell($args) {
         ?>
         <th><?php _e('Member ID', 'dlseller'); ?></th>
         <td><?php echo $args['member_id']; ?></td>
+        <?php
+    }
+
+    /**
+     * Displays member name cell for the subscription details table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    public function subscriptionDetailsMemberNameCell($args) {
+        ?>
         <th><?php _e('Contractor name', 'dlseller'); ?></th>
         <td><?php echo esc_html($args['name']); ?></td>
         <?php
     }
 
     /**
-     * Displays order info section for the subscription details table
+     * Displays order ID cell for the subscription details table
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $args
      * @return void
      */
-    public function subscriptionDetailsOrderInfo($args) {
+    public function subscriptionDetailsOrderIdCell($args) {
         ?>
         <th><?php _e('Order ID', 'dlseller'); ?></th>
         <td><?php echo $args['order_id']; ?></td>
+        <?php
+    }
+
+    /**
+     * Displays order date cell for the subscription details table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    public function subscriptionDetailsOrderDateCell($args) {
+        ?>
         <th><?php _e('Application Date', 'dlseller'); ?></th>
         <td><?php echo $args['order_data']['order_date']; ?></td>
         <?php
     }
 
     /**
-     * Displays contract info section for the subscription details table
+     * Displays contract renewal cell for the subscription details table
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $args
      * @return void
      */
-    public function subscriptionDetailsContractInfo($args) {
+    public function subscriptionDetailsContractRenewalCell($args) {
         ?>
-        <select id="contracted-year">
-            <option value="0"<?php if ($args['contracted_year'] == 0) {
-                echo ' selected="selected"';
-                             } ?>></option>
-            <?php for ($i = 0; $i <= 10; $i++) : ?>
-            <option value="<?php echo ($args['year'] + $i); ?>"<?php if ($args['contracted_year'] == ($args['year'] + $i)) {
-                echo ' selected="selected"';
-                           } ?>><?php echo ($args['year'] + $i); ?></option>
-            <?php endfor; ?>
-        </select>-
-        <select id="contracted-month">
-            <option value="0"<?php if ($args['contracted_month'] == 0) {
-                echo ' selected="selected"';
-                             } ?>></option>
-            <?php for ($i = 1; $i <= 12; $i++) : ?>
-            <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['contracted_month'] == $i) {
-                echo ' selected="selected"';
-                           } ?>><?php printf('%2d', $i); ?></option>
-            <?php endfor; ?>
-        </select>-
-        <select id="contracted-day">
-            <option value="0"<?php if ($args['contracted_day'] == 0) {
-                echo ' selected="selected"';
-                             } ?>></option>
-            <?php for ($i = 1; $i <= 31; $i++) : ?>
-            <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['contracted_day'] == $i) {
-                echo ' selected="selected"';
-                           } ?>><?php printf('%2d', $i); ?></option>
-            <?php endfor; ?>
-        </select>
+        <th><?php _e('Renewal Date', 'dlseller'); ?></th>
+        <td>
+            <select id="contracted-year">
+                <option value="0"<?php if ($args['contracted_year'] == 0) {
+                    echo ' selected="selected"';
+                                 } ?>></option>
+                <?php for ($i = 0; $i <= 10; $i++) : ?>
+                <option value="<?php echo ($args['year'] + $i); ?>"<?php if ($args['contracted_year'] == ($args['year'] + $i)) {
+                    echo ' selected="selected"';
+                               } ?>><?php echo ($args['year'] + $i); ?></option>
+                <?php endfor; ?>
+            </select>-
+            <select id="contracted-month">
+                <option value="0"<?php if ($args['contracted_month'] == 0) {
+                    echo ' selected="selected"';
+                                 } ?>></option>
+                <?php for ($i = 1; $i <= 12; $i++) : ?>
+                <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['contracted_month'] == $i) {
+                    echo ' selected="selected"';
+                               } ?>><?php printf('%2d', $i); ?></option>
+                <?php endfor; ?>
+            </select>-
+            <select id="contracted-day">
+                <option value="0"<?php if ($args['contracted_day'] == 0) {
+                    echo ' selected="selected"';
+                                 } ?>></option>
+                <?php for ($i = 1; $i <= 31; $i++) : ?>
+                <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['contracted_day'] == $i) {
+                    echo ' selected="selected"';
+                               } ?>><?php printf('%2d', $i); ?></option>
+                <?php endfor; ?>
+            </select>
+        </td>
         <?php
     }
 
     /**
-     * Displays next charge info section for the subscription details table
+     * Displays next charge date cell for the subscription details table
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $args
      * @return void
      */
-    public function subscriptionDetailsNextChargeInfo($args) {
+    public function subscriptionDetailsNextChargeDateCell($args) {
         ?>
-        <select id="charged-year">
-            <option value="0"<?php if ($args['charged_year'] == 0) {
-                echo ' selected="selected"';
-                             } ?>></option>
-            <option value="<?php echo $args['year']; ?>"<?php if ($args['charged_year'] == $args['year']) {
-                echo ' selected="selected"';
-                           } ?>><?php echo $args['year']; ?></option>
-            <option value="<?php echo $args['year'] + 1; ?>"<?php if ($args['charged_year'] == ($args['year'] + 1)) {
-                echo ' selected="selected"';
-                           } ?>><?php echo $args['year'] + 1; ?></option>
-        </select>-
-        <select id="charged-month">
-            <option value="0"<?php if ($args['charged_month'] == 0) {
-                echo ' selected="selected"';
-                             } ?>></option>
-            <?php for ($i = 1; $i <= 12; $i++) : ?>
-            <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['charged_month'] == $i) {
-                echo ' selected="selected"';
-                           } ?>><?php printf('%2d', $i); ?></option>
-            <?php endfor; ?>
-        </select>-
-        <select id="charged-day">
-            <option value="0"<?php if ($args['charged_day'] == 0) {
-                echo ' selected="selected"';
-                             } ?>></option>
-            <?php for ($i = 1; $i <= 31; $i++) : ?>
-            <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['charged_day'] == $i) {
-                echo ' selected="selected"';
-                           } ?>><?php printf('%2d', $i); ?></option>
-            <?php endfor; ?>
-        </select>
+        <th><?php _e('Next Withdrawal Date', 'dlseller'); ?></th>
+        <td>
+            <select id="charged-year">
+                <option value="0"<?php if ($args['charged_year'] == 0) {
+                    echo ' selected="selected"';
+                                 } ?>></option>
+                <option value="<?php echo $args['year']; ?>"<?php if ($args['charged_year'] == $args['year']) {
+                    echo ' selected="selected"';
+                               } ?>><?php echo $args['year']; ?></option>
+                <option value="<?php echo $args['year'] + 1; ?>"<?php if ($args['charged_year'] == ($args['year'] + 1)) {
+                    echo ' selected="selected"';
+                               } ?>><?php echo $args['year'] + 1; ?></option>
+            </select>-
+            <select id="charged-month">
+                <option value="0"<?php if ($args['charged_month'] == 0) {
+                    echo ' selected="selected"';
+                                 } ?>></option>
+                <?php for ($i = 1; $i <= 12; $i++) : ?>
+                <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['charged_month'] == $i) {
+                    echo ' selected="selected"';
+                               } ?>><?php printf('%2d', $i); ?></option>
+                <?php endfor; ?>
+            </select>-
+            <select id="charged-day">
+                <option value="0"<?php if ($args['charged_day'] == 0) {
+                    echo ' selected="selected"';
+                                 } ?>></option>
+                <?php for ($i = 1; $i <= 31; $i++) : ?>
+                <option value="<?php printf('%02d', $i); ?>"<?php if ((int)$args['charged_day'] == $i) {
+                    echo ' selected="selected"';
+                               } ?>><?php printf('%2d', $i); ?></option>
+                <?php endfor; ?>
+            </select>
+        </td>
         <?php
     }
 
     /**
-     * Displays amount info section for the subscription details table
+     * Displays order amount cell for the subscription details table
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $args
      * @return void
      */
-    public function subscriptionDetailsAmountInfo($args) {
+    public function subscriptionDetailsOrderAmountCell($args) {
         ?>
         <th><?php _e('Amount on order', 'usces'); ?></th>
         <td><?php usces_crform($args['continue_data']['order_price'], false); ?></td>
-        <th><?php _e('Settlement amount', 'usces'); ?></th>
-        <td><input type="text" id="price" style="text-align: right;" value="<?php usces_crform($args['continue_data']['price'], false, false, '', false); ?>"><?php usces_crcode(); ?></td>
         <?php
     }
 
     /**
-     * Displays status update dropdown for the subscription details table
+     * Displays charge amount input cell for the subscription details table
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @param array $args
      * @return void
      */
-    public function subscriptionDetailsStatusUpdateDropdown($args) {
+    public function subscriptionDetailsChargeAmountInputCell($args) {
         ?>
-        <select id="dlseller-status">
-            <?php ob_start(); ?>
-            <?php if ($args['continue_data']['status'] == 'continuation') : ?>
-                <option value="continuation" selected="selected"><?php _e('Continuation', 'dlseller'); ?></option>
-                <option value="cancellation"><?php _e('Stop', 'dlseller'); ?></option>
-            <?php else : ?>
-                <option value="cancellation" selected="selected"><?php _e('Cancellation', 'dlseller'); ?></option>
-                <option value="continuation"><?php _e('Resumption', 'dlseller'); ?></option>
-            <?php endif; ?>
-            <?php
-                $dlseller_status_options = ob_get_clean();
-                $dlseller_status_options = apply_filters('usces_filter_continuation_charging_status_options', $dlseller_status_options, $args['continue_data']);
-                echo $dlseller_status_options;
-            ?>
-        </select>
+        <th><?php _e('Settlement amount', 'usces'); ?></th>
+        <td>
+            <input
+                type="number"
+                min="0"
+                id="price"
+                value="<?php usces_crform($args['continue_data']['price'], false, false, '', false); ?>"
+            />
+            <?php usces_crcode(); ?>
+        </td>
+        <?php
+    }
+
+    /**
+     * Displays status update dropdown cell for the subscription details table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    public function subscriptionDetailsStatusUpdateDropdownCell($args) {
+        ?>
+        <th><?php _e('Status', 'dlseller'); ?></th>
+        <td>
+            <select id="dlseller-status">
+                <?php ob_start(); ?>
+                <?php if ($args['continue_data']['status'] == 'continuation') : ?>
+                    <option value="continuation" selected="selected"><?php _e('Continuation', 'dlseller'); ?></option>
+                    <option value="cancellation"><?php _e('Stop', 'dlseller'); ?></option>
+                <?php else : ?>
+                    <option value="cancellation" selected="selected"><?php _e('Cancellation', 'dlseller'); ?></option>
+                    <option value="continuation"><?php _e('Resumption', 'dlseller'); ?></option>
+                <?php endif; ?>
+                <?php
+                    $dlseller_status_options = ob_get_clean();
+                    $dlseller_status_options = apply_filters('usces_filter_continuation_charging_status_options', $dlseller_status_options, $args['continue_data']);
+                    echo $dlseller_status_options;
+                ?>
+            </select>
+        </td>
+        <?php
+    }
+
+    /**
+     * Displays update button cell for the subscription details table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    public function subscriptionDetailsUpdateButtonCell($args) {
+        ?>
+        <td colspan="2">
+            <input id="continuation-update" type="button" class="button button-primary" value="<?php _e('Update'); ?>" />
+        </td>
         <?php
     }
 
@@ -557,6 +688,106 @@ abstract class SubscriptionOrderMemberPage implements Initializer
      * @return void
      */
     protected function settlementDialog($args) {
+    }
+
+    /**
+     * Updates the subscription order information
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return void
+     */
+    public function handleSettlementInformationUpdateRequest() {
+        if (!isset($_POST['mode'])) {
+            return;
+        }
+
+        $mode = sanitize_title($_POST['mode']);
+        $data = [];
+
+        $routes = ['continuation_update'];
+        if (!in_array($mode, $routes, true)) {
+            return;
+        }
+
+        $order_id = isset($_POST['order_id']) ? $_POST['order_id'] : '';
+        $member_id = isset($_POST['member_id']) ? $_POST['member_id'] : '';
+        if ($this->module->isOrderAssociated($order_id)) {
+            return;
+        }
+
+        check_admin_referer('order_edit', 'wc_nonce');
+
+        switch ($mode) {
+            // 継続課金情報更新
+            case 'continuation_update':
+                $data = $this->updateSubscriptionOrderData($order_id, $member_id);
+                wp_send_json($data);
+                break;
+        }
+    }
+
+    /**
+     * Updates subscription order data with `$_POST` vars. Returns array result for `wp_send_json()`
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param int $order_id
+     * @param int $member_id
+     * @return string[]
+     */
+    public function updateSubscriptionOrderData($order_id, $member_id) {
+        $contracted_year = isset($_POST['contracted_year']) ? $_POST['contracted_year'] : '';
+        $contracted_month = isset($_POST['contracted_month']) ? $_POST['contracted_month'] : '';
+        $contracted_day = isset($_POST['contracted_day']) ? $_POST['contracted_day'] : '';
+        $charged_year = isset($_POST['charged_year']) ? $_POST['charged_year'] : '';
+        $charged_month = isset($_POST['charged_month']) ? $_POST['charged_month'] : '';
+        $charged_day = isset($_POST['charged_day']) ? $_POST['charged_day'] : '';
+        $price = isset($_POST['price']) ? $_POST['price'] : 0;
+        $status = isset($_POST['status']) ? $_POST['status'] : '';
+
+        $continue_data = OrderData::getSubscriptionOrderData($order_id);
+        if (empty($continue_data)) {
+            $data['status'] = 'NG';
+            return $data;
+        }
+
+        // 継続中→停止
+        if ($continue_data['status'] == 'continuation' && $status == 'cancellation') {
+            OrderData::stopSubscription($order_id, $member_id);
+        } else {
+            if (!empty($contracted_year) && !empty($contracted_month) && !empty($contracted_day)) {
+                $contracted_date = (empty($continue_data['contractedday'])) ? dlseller_next_contracting($order_id) : $continue_data['contractedday'];
+                if ($contracted_date) {
+                    $new_contracted_date = $contracted_year . '-' . $contracted_month . '-' . $contracted_day;
+                    if (!WelcartUtils::isdate($new_contracted_date)) {
+                        $data['status'] = 'NG';
+                        $data['message'] = __('Next contract renewal date is incorrect.', 'dlseller');
+                        return $data;
+                    }
+                }
+            } else {
+                $new_contracted_date = '';
+            }
+            $new_charged_date = $charged_year . '-' . $charged_month . '-' . $charged_day;
+            if (!WelcartUtils::isdate($new_charged_date)) {
+                $data['status'] = 'NG';
+                $data['message'] = __('Next settlement date is incorrect.', 'dlseller');
+                return $data;
+            }
+            $tomorrow = date_i18n('Y-m-d', strtotime('+1 day'));
+            if ($new_charged_date < $tomorrow) {
+                $data['status'] = 'NG';
+                $data['message'] = sprintf(__('The next settlement date must be after %s.', 'dlseller'), $tomorrow);
+                return $data;
+            }
+            $continue_data['contractedday'] = $new_contracted_date;
+            $continue_data['chargedday'] = $new_charged_date;
+            $continue_data['price'] = usces_crform($price, false, false, 'return', false);
+            $continue_data['status'] = $status;
+            OrderData::updateSubscriptionOrderData($order_id, $member_id, $continue_data);
+        }
+
+        $data['status'] = 'OK';
+        return $data;
     }
 
     /**
