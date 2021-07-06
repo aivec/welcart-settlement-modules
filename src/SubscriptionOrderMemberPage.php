@@ -427,8 +427,19 @@ abstract class SubscriptionOrderMemberPage implements Initializer
         <h1>Welcart Management <?php _e('Continuation charging member information', 'dlseller'); ?></h1>
         <p class="version_info">Version <?php echo WCEX_DLSELLER_VERSION; ?></p>
         <?php usces_admin_action_status(); ?>
+        <?php $this->beforePageContents($args); ?>
         <div class="edit_pagenav"><?php echo $args['navibutton']; ?></div>
         <?php
+    }
+
+    /**
+     * Override to display content between the header and main table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function beforePageContents($args) {
     }
 
     /**
