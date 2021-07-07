@@ -3,6 +3,8 @@
 namespace Aivec\Welcart\SettlementModules\Logging;
 
 use JsonSerializable;
+use Aivec\Welcart\SettlementModules\Interfaces\SerializeTargetSettable;
+use Aivec\Welcart\SettlementModules\Helpers\SerializeTargetSetter;
 use Aivec\Welcart\SettlementModules\Utils;
 use Aivec\Welcart\SettlementModules\Interfaces\TransactionState;
 use Aivec\Welcart\SettlementModules\TransactionPrice;
@@ -10,8 +12,10 @@ use Aivec\Welcart\SettlementModules\TransactionPrice;
 /**
  * Represents a transaction log to insert into `usces_log` table
  */
-class TransactionLog implements JsonSerializable
+class TransactionLog implements JsonSerializable, SerializeTargetSettable
 {
+    use SerializeTargetSetter;
+
     /**
      * The order ID
      *
@@ -123,19 +127,39 @@ class TransactionLog implements JsonSerializable
      * @return array
      */
     public function jsonSerialize() {
-        return [
+        if ($this->amount !== null) {
+            $this->amount->setSerializeTargetToDisplay();
+        }
+        if ($this->transactionState !== null) {
+            $this->transactionState->setSerializeTargetToDisplay();
+        }
+        if ($this->serializeTargetIsDb()) {
+            if ($this->amount !== null) {
+                $this->amount->setSerializeTargetToDb();
+            }
+            if ($this->transactionState !== null) {
+                $this->transactionState->setSerializeTargetToDb();
+            }
+        }
+
+        $json = [
             'orderId' => $this->orderId,
             'trackingId' => $this->trackingId,
             'actionType' => $this->actionType,
-            'actionTypeText' => $this->getActionTypeText(),
             'responseCode' => $this->responseCode,
             'transactionId' => $this->transactionId,
             'transactionState' => $this->transactionState,
             'amount' => $this->amount,
             'error' => $this->error,
             'timestamp' => $this->timestamp,
-            'datetime' => $this->getLocalDateTime(),
         ];
+
+        if ($this->serializeTargetIsDisplay()) {
+            $json['actionTypeText'] = $this->getActionTypeText();
+            $json['datetime'] = $this->getLocalDateTime();
+        }
+
+        return $json;
     }
 
     /**
@@ -175,7 +199,7 @@ class TransactionLog implements JsonSerializable
      * Sets amount value
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @param int $amount
+     * @param TransactionPrice $amount
      * @return void
      */
     public function setAmount($amount) {
@@ -266,7 +290,7 @@ class TransactionLog implements JsonSerializable
      * Getter for `$amount`
      *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @return int|null
+     * @return TransactionPrice|null
      */
     public function getAmount() {
         return $this->amount;

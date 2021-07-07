@@ -3,12 +3,16 @@
 namespace Aivec\Welcart\SettlementModules;
 
 use JsonSerializable;
+use Aivec\Welcart\SettlementModules\Interfaces\SerializeTargetSettable;
+use Aivec\Welcart\SettlementModules\Helpers\SerializeTargetSetter;
 
 /**
  * Model for transaction price
  */
-class TransactionPrice implements JsonSerializable
+class TransactionPrice implements JsonSerializable, SerializeTargetSettable
 {
+    use SerializeTargetSetter;
+
     /**
      * Transaction amount
      *
@@ -43,12 +47,17 @@ class TransactionPrice implements JsonSerializable
      * @return array
      */
     public function jsonSerialize() {
-        return [
+        $json = [
             'rawAmount' => $this->amount,
-            'amount' => usces_crform($this->amount, false, true, 'return', true),
             'currencyCode' => $this->currencyCode,
-            'currencySymbol' => $this->getCurrencySymbol(),
         ];
+
+        if ($this->serializeTargetIsDisplay()) {
+            $json['amount'] = usces_crform($this->amount, false, true, 'return', true);
+            $json['currencySymbol'] = $this->getCurrencySymbol();
+        }
+
+        return $json;
     }
 
     /**

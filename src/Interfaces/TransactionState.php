@@ -4,7 +4,7 @@ namespace Aivec\Welcart\SettlementModules\Interfaces;
 
 use JsonSerializable;
 
-interface TransactionState extends JsonSerializable
+interface TransactionState extends JsonSerializable, SerializeTargetSettable
 {
     /**
      * Returns human-readable text representation of current state

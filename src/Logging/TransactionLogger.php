@@ -58,6 +58,8 @@ class TransactionLogger
     public static function addLogByType(TransactionLog $log, $logType) {
         global $wpdb;
 
+        $log->setSerializeTargetToDb();
+
         $log_table = $wpdb->prefix . 'usces_log';
         $res = $wpdb->insert(
             $log_table,
