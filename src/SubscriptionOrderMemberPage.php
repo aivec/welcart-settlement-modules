@@ -256,7 +256,9 @@ abstract class SubscriptionOrderMemberPage implements Initializer
                             <table class="search_table">
                                 <tr>
                                     <td class="label"><?php _e('Continuation charging information', 'dlseller'); ?></td>
+                                    <?php $this->beforeSubscriptionInfoTableCell($args); ?>
                                     <td>
+                                        <?php $this->beforeSubscriptionInfoTable($args); ?>
                                         <table class="order_info">
                                             <tr>
                                                 <?php $this->subscriptionDetailsMemberIdCell($args); ?>
@@ -280,7 +282,9 @@ abstract class SubscriptionOrderMemberPage implements Initializer
                                             </tr>
                                         </table>
                                         <?php do_action('usces_action_continuation_charging_information', $args['continue_data'], $member_id, $order_id); ?>
+                                        <?php $this->afterSubscriptionInfoTable($args); ?>
                                     </td>
+                                    <?php $this->afterSubscriptionInfoTableCell($args); ?>
                                 </tr>
                             </table>
                         </div><!-- searchBox -->
@@ -304,16 +308,16 @@ abstract class SubscriptionOrderMemberPage implements Initializer
                             ?>
                             <tbody>
                                 <tr>
-                                    <td><?php echo $num; ?></td>
-                                    <td><?php echo $log->getLocalDateTime(); ?></td>
-                                    <td><?php echo !empty($log->getTransactionId()) ? $log->getTransactionId() : ''; ?></td>
+                                    <td class="row-num"><?php echo $num; ?></td>
+                                    <td class="datetime"><?php echo $log->getLocalDateTime(); ?></td>
+                                    <td class="transaction-id"><?php echo !empty($log->getTransactionId()) ? $log->getTransactionId() : ''; ?></td>
                                     <td class="amount"><?php echo !empty($amount) ? usces_crform($amount->getAmount(), false, true, 'return', true) : ''; ?></td>
                                     <?php if ($state !== null) : ?>
                                         <?php echo TransactionStateDisplay::getOrderListTransactionIdRowColumnHtml($state, false); ?>
                                     <?php else : ?>
                                         <td>&nbsp;</td>
                                     <?php endif; ?>
-                                    <td>
+                                    <td class="action-buttow-cell">
                                         <?php $this->logRowSettlementDetailsButtonColumn($log_row, $num, $args); ?>
                                     </td>
                                 </tr>
@@ -347,7 +351,7 @@ abstract class SubscriptionOrderMemberPage implements Initializer
 
         $continue_data = OrderData::getSubscriptionOrderData($order_id);
         $curent_url = esc_url($_SERVER['REQUEST_URI']);
-        $navibutton = '<a href="' . esc_url($_SERVER['HTTP_REFERER']) . '" class="back-list"><span class="dashicons dashicons-list-view"></span>' . __('Back to the continue members list', 'dlseller') . '</a>';
+        $navibutton = '<a href="' . esc_url(admin_url('admin.php?page=usces_continue')) . '" class="back-list"><span class="dashicons dashicons-list-view"></span>' . __('Back to the continue members list', 'dlseller') . '</a>';
 
         $order_data = $usces->get_order_data($order_id, 'direct');
         if (!$order_data) {
@@ -428,8 +432,21 @@ abstract class SubscriptionOrderMemberPage implements Initializer
         <p class="version_info">Version <?php echo WCEX_DLSELLER_VERSION; ?></p>
         <?php usces_admin_action_status(); ?>
         <?php $this->beforePageContents($args); ?>
-        <div class="edit_pagenav"><?php echo $args['navibutton']; ?></div>
+        <div class="edit_pagenav">
+            <?php $this->beforePageNav($args); ?>
+            <?php echo $args['navibutton']; ?>
+        </div>
         <?php
+    }
+
+    /**
+     * Override to display content before the page nav
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function beforePageNav($args) {
     }
 
     /**
@@ -440,6 +457,46 @@ abstract class SubscriptionOrderMemberPage implements Initializer
      * @return void
      */
     protected function beforePageContents($args) {
+    }
+
+    /**
+     * Override to display content between the subscription info table and label
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function beforeSubscriptionInfoTableCell($args) {
+    }
+
+    /**
+     * Override to display content after the subscription info table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function afterSubscriptionInfoTableCell($args) {
+    }
+
+    /**
+     * Override to display content between the subscription info table and label
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function beforeSubscriptionInfoTable($args) {
+    }
+
+    /**
+     * Override to display content after the subscription info table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function afterSubscriptionInfoTable($args) {
     }
 
     /**

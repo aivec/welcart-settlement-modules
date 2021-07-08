@@ -53,11 +53,50 @@ class TransactionPrice implements JsonSerializable, SerializeTargetSettable
         ];
 
         if ($this->serializeTargetIsDisplay()) {
-            $json['amount'] = usces_crform($this->amount, false, true, 'return', true);
-            $json['currencySymbol'] = $this->getCurrencySymbol();
+            $json['amount'] = $this->getFormattedAmountWithSymbol();
         }
 
         return $json;
+    }
+
+    /**
+     * Returns the formatted price
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @global array $usces_settings
+     * @global \usc_e_shop $usces
+     * @return string
+     */
+    public function getFormattedAmountWithSymbol() {
+        global $usces_settings, $usces;
+
+        $ccToCmap = $usces_settings['currency'];
+
+        $cc = null;
+        if ($this->currencyCode !== 'JPY') {
+            foreach ($ccToCmap as $countryCode => $list) {
+                list($code) = $list;
+                if ($this->currencyCode === $code) {
+                    $cc = $countryCode;
+                    break;
+                }
+            }
+        } else {
+            $cc = 'JP';
+        }
+
+        if ($cc === null) {
+            return $this->amount . ' ' . $this->currencyCode;
+        }
+
+        $curCc = $usces->options['system']['currency'];
+        // temporarily spoof
+        $usces->options['system']['currency'] = $cc;
+        $formatted = usces_crform($this->amount, false, true, 'return', true);
+        // revert
+        $usces->options['system']['currency'] = $curCc;
+
+        return $formatted;
     }
 
     /**
@@ -78,15 +117,5 @@ class TransactionPrice implements JsonSerializable, SerializeTargetSettable
      */
     public function getCurrencyCode() {
         return $this->currencyCode;
-    }
-
-    /**
-     * Returns human-readable currency symbol for the `currencyCode`
-     *
-     * @author Evan D Shaw <evandanielshaw@gmail.com>
-     * @return string
-     */
-    public function getCurrencySymbol() {
-        return __($this->currencyCode, 'usces'); // phpcs:disable WordPress.WP.I18n.NonSingularStringLiteralText
     }
 }

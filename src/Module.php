@@ -284,6 +284,26 @@ class Module
     }
 
     /**
+     * Returns `true` if `recurring_payment_capture_type` is `on_purchase`.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function recurringPaymentCaptureOnCharge() {
+        return $this->getActingOpts()['recurring_payment_capture_type'] === 'on_purchase';
+    }
+
+    /**
+     * Returns `true` if `recurring_payment_capture_type` is `after_purchase`.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return bool
+     */
+    public function recurringPaymentCaptureAfterCharge() {
+        return $this->getActingOpts()['recurring_payment_capture_type'] === 'after_purchase';
+    }
+
+    /**
      * Updates settlement module options
      *
      * This is a convenience method for updating values in the options array returned
