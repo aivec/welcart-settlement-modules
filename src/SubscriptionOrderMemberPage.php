@@ -250,6 +250,7 @@ abstract class SubscriptionOrderMemberPage implements Initializer
         <div class="wrap">
             <div class="usces_admin">
                 <?php $this->pageHeader($args); ?>
+                <?php $this->betweenHeaderAndTable($args); ?>
                 <div id="datatable">
                     <div id="tablesearch" class="usces_tablesearch">
                         <div id="searchBox" style="display:block">
@@ -437,6 +438,16 @@ abstract class SubscriptionOrderMemberPage implements Initializer
             <?php echo $args['navibutton']; ?>
         </div>
         <?php
+    }
+
+    /**
+     * Override to display content between the page nav and settlement info table
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param array $args
+     * @return void
+     */
+    protected function betweenHeaderAndTable($args) {
     }
 
     /**
