@@ -48,7 +48,7 @@ class TransactionPrice implements JsonSerializable, SerializeTargetSettable
      */
     public function jsonSerialize() {
         $json = [
-            'rawAmount' => $this->amount,
+            'rawAmount' => $this->getRawAmount(),
             'currencyCode' => $this->currencyCode,
         ];
 
@@ -62,6 +62,17 @@ class TransactionPrice implements JsonSerializable, SerializeTargetSettable
     /**
      * Returns the formatted price
      *
+     * The amount is formatted with a decimal point and thousands separator
+     * depending on whether the currency code requires it or not.
+     *
+     * Currency symbol display is determined based on the following:
+     * - If the currently selected country in Welcart corresponds to the
+     * currency code, the currency symbol of that country will be appended/prepended
+     * to the formatted amount
+     * - If the currently selected country in Welcart **does not** correspond
+     * to the currency code, the three letter currency code will be appended/prepended
+     * to the formatted amount
+     *
      * @author Evan D Shaw <evandanielshaw@gmail.com>
      * @global array $usces_settings
      * @global \usc_e_shop $usces
@@ -70,33 +81,45 @@ class TransactionPrice implements JsonSerializable, SerializeTargetSettable
     public function getFormattedAmountWithSymbol() {
         global $usces_settings, $usces;
 
-        $ccToCmap = $usces_settings['currency'];
-
-        $cc = null;
-        if ($this->currencyCode !== 'JPY') {
-            foreach ($ccToCmap as $countryCode => $list) {
-                list($code) = $list;
-                if ($this->currencyCode === $code) {
-                    $cc = $countryCode;
-                    break;
-                }
-            }
-        } else {
-            $cc = 'JP';
+        $cc = $usces->options['system']['currency'];
+        $code = isset($usces_settings['currency'][$cc][0]) ? $usces_settings['currency'][$cc][0] : null;
+        if ($code !== $this->currencyCode) {
+            return $this->currencyCode . $this->getFormattedAmount();
         }
 
-        if ($cc === null) {
-            return $this->amount . ' ' . $this->currencyCode;
-        }
+        return usces_crform($this->amount, false, true, 'return', true);
+    }
 
-        $curCc = $usces->options['system']['currency'];
-        // temporarily spoof
-        $usces->options['system']['currency'] = $cc;
-        $formatted = usces_crform($this->amount, false, true, 'return', true);
-        // revert
-        $usces->options['system']['currency'] = $curCc;
+    /**
+     * Returns the formatted amount based on the currency code
+     *
+     * The amount is formatted with a decimal point and thousands separator
+     * depending on whether the currency code requires it or not.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return string
+     */
+    public function getFormattedAmount() {
+        list($decimal, $point, $seperator) = Currency::ISO_4217_DISPLAY_META_MAP[$this->currencyCode];
+        return number_format((double)$this->amount, $decimal, $point, $seperator);
+    }
 
-        return $formatted;
+    /**
+     * Returns the raw amount
+     *
+     * Depending on the currency code, the raw amount may or may not contain
+     * decimal digits but will not contain a thousands separator.
+     *
+     * If the amount passed to the constructor was not in the proper format for the
+     * currency code, this method will append/strip decimal digits accordingly and
+     * return the result.
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @return string
+     */
+    public function getRawAmount() {
+        list($decimal, $point) = Currency::ISO_4217_DISPLAY_META_MAP[$this->currencyCode];
+        return number_format((double)$this->amount, $decimal, $point, '');
     }
 
     /**
