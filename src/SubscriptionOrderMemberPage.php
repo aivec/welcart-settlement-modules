@@ -69,6 +69,9 @@ abstract class SubscriptionOrderMemberPage implements Initializer
             new HookMeta(['filterSubscriptionMemberListCondition'], function () {
                 add_filter('dlseller_filter_continue_member_list_condition', [$this, 'filterSubscriptionMemberListConditionDI'], 10, 4);
             }),
+            new HookMeta(['filterCreditCardExpirationColumnCell'], function () {
+                add_filter('dlseller_filter_continue_member_list_limitofcard', [$this, 'filterCreditCardExpirationColumnCellDI'], 10, 4);
+            }),
         ];
 
         $this->dynamicallyRegisterHooks($map);
@@ -128,6 +131,44 @@ abstract class SubscriptionOrderMemberPage implements Initializer
         $defaultHtml
     ) {
         return $condition;
+    }
+
+    /**
+     * Filters 継続課金会員リスト「カード(月/年)」
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $limitofcard
+     * @param int    $mem_id
+     * @param int    $order_id
+     * @param array  $data
+     * @return string
+     */
+    public function filterCreditCardExpirationColumnCellDI($limitofcard, $mem_id, $order_id, $data) {
+        $isAssociated = false;
+        if (isset($data['acting'])) {
+            $isAssociated = $data['acting'] === $this->module->getActingFlag();
+        } else {
+            $isAssociated = $this->module->isOrderAssociated((int)$order_id);
+        }
+        if ($isAssociated === true) {
+            return $this->filterCreditCardExpirationColumnCell($limitofcard, $mem_id, $order_id, $data);
+        }
+
+        return $limitofcard;
+    }
+
+    /**
+     * Filters 継続課金会員リスト「カード(月/年)」
+     *
+     * @author Evan D Shaw <evandanielshaw@gmail.com>
+     * @param string $limitofcard
+     * @param int    $mem_id
+     * @param int    $order_id
+     * @param array  $data
+     * @return string
+     */
+    protected function filterCreditCardExpirationColumnCell($limitofcard, $mem_id, $order_id, $data) {
+        return $limitofcard;
     }
 
     /**
