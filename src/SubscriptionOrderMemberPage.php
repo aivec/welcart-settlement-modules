@@ -312,7 +312,7 @@ abstract class SubscriptionOrderMemberPage implements Initializer
                                     <td class="row-num"><?php echo $num; ?></td>
                                     <td class="datetime"><?php echo $log->getLocalDateTime(); ?></td>
                                     <td class="transaction-id"><?php echo !empty($log->getTransactionId()) ? $log->getTransactionId() : ''; ?></td>
-                                    <td class="amount"><?php echo !empty($amount) ? usces_crform($amount->getAmount(), false, true, 'return', true) : ''; ?></td>
+                                    <td class="amount"><?php echo !empty($amount) ? $amount->getFormattedAmountWithSymbol() : ''; ?></td>
                                     <?php if ($state !== null) : ?>
                                         <?php echo TransactionStateDisplay::getOrderListTransactionIdRowColumnHtml($state, false); ?>
                                     <?php else : ?>
