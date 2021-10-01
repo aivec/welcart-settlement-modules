@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b70205fd1d8738246d288ae6621969d6",
+    "content-hash": "8424cdcd2a5cd930a3032cb4fde62c5b",
     "packages": [
         {
             "name": "aivec/cptm-client",
