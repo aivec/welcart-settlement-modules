@@ -9,7 +9,6 @@ use InvalidArgumentException;
  */
 class Currency
 {
-
     /**
      * All ISO 4217 currency codes supported by Welcart
      */

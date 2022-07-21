@@ -39,5 +39,10 @@
       "aivec-codecept codecept run wpunit"
     ],
     "test:unit": "codecept run unit"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
