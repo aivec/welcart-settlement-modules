@@ -373,7 +373,13 @@ class Module
         if (is_array($cart)) {
             foreach ($cart as $item) {
                 // check if division of item is supported by this Module
-                $item_division = get_post_meta($item['post_id'], '_item_division', true);
+                $item_division = 'shipped';
+                if (version_compare(USCES_VERSION, '2.7-beta', '>=')) {
+                    $product = wel_get_product($item['post_id']);
+                    $item_division = $product['item_division'];
+                } else {
+                    $item_division = get_post_meta($item['post_id'], '_item_division', true);
+                }
                 $division = empty($item_division) ? 'shipped' : $item_division;
                 if (!array_key_exists($division, $this->valid_divisions)) {
                     return false;
