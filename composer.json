@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "aivec/welcart-generic": ">=2.0 <5.0",
+    "aivec/welcart-generic": ">=2.0 <6.0",
     "aivec/cptm-client": "^3.2",
     "psr/log": "^1.1",
     "aivec/environment-switcher": "^1.0"
