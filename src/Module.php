@@ -45,7 +45,7 @@ class Module
      * Charge types:
      * - 'once' => 通常課金
      * - 'continue' => 継続課金
-     * - 'regular' => ?
+     * - 'regular' => 通常購入（WCEX Auto Delivery）
      *
      * simply omit any keys that represent a division or charge type that is not supported
      * by the `Module`.
@@ -132,8 +132,8 @@ class Module
         $acting,
         $acting_flag,
         array $valid_divisions = [
-            'shipped' => ['once'],
-            'service' => ['once'],
+            'shipped' => ['once', 'regular'],
+            'service' => ['once', 'regular'],
         ],
         array $valid_currencies = [],
         $multi_shipping_support = false,
